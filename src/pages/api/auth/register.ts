@@ -1,20 +1,20 @@
+import { supabase } from "@/utils/db";
 import { NextApiRequest, NextApiResponse } from "next";
-import { supabase } from "../../../utils/db";
 
-type RegisterRequestBody = {
+interface UserRegistrationRequestBody {
   name: string;
   phoneNumber: string;
   email: string;
   password: string;
-  agreementChecked: boolean;
-};
+  agreementAccepted: boolean;
+}
 
-export default async function handler(
+export default async function userRegister(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method not allowed" });
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   const {
@@ -22,107 +22,93 @@ export default async function handler(
     phoneNumber,
     email,
     password,
-    agreementChecked,
-  }: RegisterRequestBody = req.body;
+    agreementAccepted,
+  }: UserRegistrationRequestBody = req.body;
 
-  // Validate name
-  if (!/^[a-zA-Z'-]+(?: [a-zA-Z'-]+)*$/.test(name.trim())) {
-    return res.status(400).json({
-      message:
-        "Name must contain only letters, apostrophes, or hyphens, with single spaces allowed between words",
+  // Validate input
+  if (!validateName(name)) {
+    return res.status(400).json({ error: "Invalid name format" });
+  }
+
+  if (!validatePhoneNumber(phoneNumber)) {
+    return res.status(400).json({ error: "Invalid phone number format" });
+  }
+
+  if (!validateEmail(email)) {
+    return res.status(400).json({ error: "Invalid email format" });
+  }
+
+  if (!validatePassword(password)) {
+    return res
+      .status(400)
+      .json({ error: "Password must be longer than 12 characters" });
+  }
+
+  if (!agreementAccepted) {
+    return res
+      .status(400)
+      .json({ error: "You must accept the agreement and policy" });
+  }
+
+  try {
+    // Check if email already exists
+    const { data: existingUser } = await supabase
+      .from("users")
+      .select("email")
+      .eq("email", email)
+      .single();
+
+    if (existingUser) {
+      return res.status(400).json({ error: "Email already in use" });
+    }
+
+    // Register user
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
     });
-  }
 
-  // Validate phone number (simple regex, you might want to use a more comprehensive one)
-  if (!/^\+?[\d\s-]+$/.test(phoneNumber)) {
-    return res.status(400).json({ message: "Invalid phone number format" });
-  }
-
-  // Validate email
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !email.endsWith(".com")) {
-    return res.status(400).json({ message: "Invalid email format" });
-  }
-
-  // Validate password length
-  if (password.length <= 12) {
-    return res
-      .status(400)
-      .json({ message: "Password must be longer than 12 characters" });
-  }
-
-  // Check agreement
-  if (!agreementChecked) {
-    return res
-      .status(400)
-      .json({ message: "You must agree to the terms and conditions" });
-  }
-  // Check if email is unique
-  const { data: existingUser, error: existingUserError } = await supabase.query(
-    `
-    SELECT email FROM users WHERE email = $1
-  `,
-    [email]
-  );
-
-  if (existingUserError) {
-    return res.status(500).json({ message: "Error checking email uniqueness" });
-  }
-
-  if (existingUser && existingUser.length > 0) {
-    return res.status(400).json({ message: "Email already in use" });
-  }
-
-  // Register the user
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-  });
-
-  if (error) {
-    return res.status(400).json({ message: error.message });
-  }
-
-  // If registration is successful, add additional user info to a custom table
-  if (data?.user) {
-    // Start a transaction
-    const { error: transactionError } = await supabase.rpc("begin_transaction");
-    if (transactionError) {
-      return res.status(500).json({ message: "Error starting transaction" });
+    if (error) {
+      return res.status(400).json({ error: error.message });
     }
-    try {
-      // Insert user profile
-      const { error: profileError } = await supabase.query(
-        `
-      INSERT INTO users (user_id, name, phone_number)
-      VALUES ($1, $2, $3)
-    `,
-        [data.user.id, name, phoneNumber]
-      );
 
-      if (profileError) throw new Error("Error creating user profile");
+    // Add additional user data to a custom table
+    const { error: profileError } = await supabase
+      .from("user_profiles")
+      .insert({
+        user_id: data.user!.id,
+        name,
+        phone_number: phoneNumber,
+      });
 
-      // Update user type
-      const { error: userTypeError } = await supabase.query(
-        `
-      UPDATE users
-      SET user_type = 'customer'
-      WHERE user_id = $1
-    `,
-        [data.user.id]
-      );
-
-      if (userTypeError) throw new Error("Error setting user type");
-
-      // Commit the transaction
-      await supabase.rpc("commit_transaction");
-    } catch (error) {
-      // Rollback the transaction
-      await supabase.rpc("rollback_transaction");
-      // Delete the auth user
-      await supabase.auth.admin.deleteUser(data.user.id);
-      return res.status(500).json({ message: error.message });
+    if (profileError) {
+      return res.status(500).json({ error: "Failed to create user profile" });
     }
-  }
 
-  res.status(200).json({ user: data?.user });
+    return res.status(200).json({
+      message: "User registered successfully",
+      userId: data.user!.id,
+    });
+  } catch (error) {
+    console.error("Registration error:", error);
+    return res.status(500).json({ error: "An unexpected error occurred" });
+  }
+}
+
+function validateName(name: string): boolean {
+  return /^[a-zA-Z'-]+$/.test(name);
+}
+
+function validatePhoneNumber(phoneNumber: string): boolean {
+  // This is a simple regex for phone number validation
+  // You might want to use a more sophisticated validation based on your specific requirements
+  return /^\+?[\d\s-]{10,14}$/.test(phoneNumber);
+}
+
+function validateEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.endsWith(".com");
+}
+
+function validatePassword(password: string): boolean {
+  return password.length > 12;
 }
