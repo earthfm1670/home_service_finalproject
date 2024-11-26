@@ -1,4 +1,4 @@
-import { supabase } from "@/utils/db";
+import { connectionPool, supabase } from "@/utils/db";
 import { NextApiRequest, NextApiResponse } from "next";
 
 interface UserLoginRequestBody {
@@ -18,12 +18,13 @@ export default async function userLogin(
   if (error) {
     //check if credential invalid
     console.log(error);
-    
     if (
       error.code === "invalid_credential" ||
       error.message.includes("Invalid login credential")
     ) {
-      return res.status(400).json({ error: "Your password is incorect" });
+      return res
+        .status(400)
+        .json({ error: "Your email or password is incorect" });
     }
     return res.status(400).json({ error: error.message });
   }
