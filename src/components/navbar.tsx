@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 
 export function Navbar() {
   return (
-    <div className="flex justify-between items-center border shadow-lg p-2">
+    <div className="flex justify-between items-center border shadow-lg p-2 bg-white">
       <div>
         <img src="/image/homeservicelogo.svg"></img>
       </div>
