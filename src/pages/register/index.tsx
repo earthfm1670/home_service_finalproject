@@ -60,7 +60,7 @@ function Registration() {
                   id="terms"
                   name="terms"
                   required
-                  className="w-5 h-5 translate-y-1"
+                  className="w-5 h-5 translate-y-1 opacity-40"
                 />
                 <label
                   htmlFor="terms"
