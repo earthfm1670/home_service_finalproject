@@ -17,6 +17,8 @@ export default async function userLogin(
   });
   if (error) {
     //check if credential invalid
+    console.log(error);
+    
     if (
       error.code === "invalid_credential" ||
       error.message.includes("Invalid login credential")
