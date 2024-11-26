@@ -18,7 +18,7 @@ function Registration() {
                   name="name"
                   placeholder="กรุณากรอกชื่อ นามสกุล"
                   required
-                  className="border border-gray-300 rounded-md h-10"
+                  className="border border-gray-300 rounded-md h-10 pl-3"
                 ></input>
               </div>
               <div className="flex flex-col mx-2 my-5">
@@ -29,7 +29,7 @@ function Registration() {
                   name="phone"
                   placeholder="กรุณากรอกเบอร์โทรศัพท์"
                   required
-                  className="border border-gray-300 rounded-md h-10"
+                  className="border border-gray-300 rounded-md h-10 pl-3"
                 ></input>
               </div>
               <div className="flex flex-col mx-2 my-5">
@@ -40,7 +40,7 @@ function Registration() {
                   name="email"
                   placeholder="กรุณากรอกอีเมล"
                   required
-                  className="border border-gray-300 rounded-md h-10"
+                  className="border border-gray-300 rounded-md h-10 pl-3"
                 ></input>
               </div>
               <div className="flex flex-col mx-2 my-5">
@@ -51,7 +51,7 @@ function Registration() {
                   name="password"
                   placeholder="กรุณากรอกรหัสผ่าน"
                   required
-                  className="border border-gray-300 rounded-md h-10"
+                  className="border border-gray-300 rounded-md h-10 pl-3"
                 ></input>
               </div>
               <div className="flex flex-row items-baseline mx-2 my-5">
