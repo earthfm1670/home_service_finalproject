@@ -100,8 +100,9 @@ function Registration() {
               <div className="mx-3 lg:w-3/4 lg:mx-auto">
                 <button
                   type="submit"
-                  className="w-full py-3 px-6 text-blue-600 border border-blue-600 font-semibold rounded-md hover:bg-blue-500 focus:bg-blue-800"
+                  className="w-full flex gap-4 justify-center py-3 px-6 text-blue-600 border border-blue-600 font-semibold rounded-md hover:bg-blue-500 focus:bg-blue-800"
                 >
+                  <img src="/image/facebooklogo.svg"></img>
                   เข้าสู่ระบบด้วย Facebook
                 </button>
               </div>
