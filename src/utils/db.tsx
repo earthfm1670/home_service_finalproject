@@ -1,6 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
 import "dotenv/config";
-import { connection } from "next/server";
 import * as pg from "pg";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
