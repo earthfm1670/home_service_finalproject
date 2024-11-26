@@ -60,18 +60,24 @@ function Registration() {
                   id="terms"
                   name="terms"
                   required
-                  className="scale-125"
+                  className="w-5 h-5 translate-y-1"
                 />
                 <label
                   htmlFor="terms"
-                  className="ml-5 text-sm text-gray-600 w-4/5"
+                  className="ml-4 text-[16px] text-gray-600 w-5/6"
                 >
                   ยอมรับ{" "}
-                  <a href="#" className="text-blue-600 hover:text-blue-400">
+                  <a
+                    href="#"
+                    className="text-blue-600 hover:text-blue-400 underline font-bold"
+                  >
                     ข้อตกลงและเงื่อนไข
                   </a>{" "}
                   และ{" "}
-                  <a href="#" className="text-blue-600 hover:text-blue-400">
+                  <a
+                    href="#"
+                    className="text-blue-600 hover:text-blue-400 underline font-bold"
+                  >
                     นโยบายความเป็นส่วนตัว
                   </a>
                   .
@@ -85,7 +91,7 @@ function Registration() {
                   ลงทะเบียน
                 </button>
               </div>
-              <div className="relative w-full flex items-center justify-center">
+              <div className="my-5 relative w-full flex items-center justify-center">
                 <div className="absolute inset-x-0 top-1/2 border-t border-gray-300"></div>
                 <span className="relative bg-white px-4 text-gray-500">
                   หรือลงชื่อเข้าใช้ผ่าน
@@ -99,7 +105,7 @@ function Registration() {
                   เข้าสู่ระบบด้วย Facebook
                 </button>
               </div>
-              <div>
+              <div className="my-5 text-center">
                 <a className="text-blue-600 underline">กลับไปหน้าเข้าสู่ระบบ</a>
               </div>
             </form>
