@@ -1,4 +1,5 @@
-import { connectionPool, supabase } from "@/utils/db";
+import { connectionPool } from "@/utils/db";
+import { supabase } from "@/utils/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
 
 interface UserLoginRequestBody {
