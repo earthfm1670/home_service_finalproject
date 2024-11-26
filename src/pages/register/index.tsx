@@ -6,8 +6,8 @@ function Registration() {
     <>
       <div className="bg-gray-100 min-h-screen">
         <Navbar />
-        <div className="flex">
-          <div className="mx-2 my-10 border border-gray-300 rounded-lg bg-white lg:w-[614px] lg:mx-auto">
+        <div className="flex justify-center">
+          <div className="mx-4 my-10 border border-gray-300 justify-center rounded-lg bg-white lg:w-[614px] lg:mx-auto">
             <form>
               <h2 className="text-[20px] text-center my-5">ลงทะเบียน</h2>
               <div className="flex flex-col mx-2 my-5 lg:w-3/4 lg:mx-auto">
