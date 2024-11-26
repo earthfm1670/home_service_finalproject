@@ -31,7 +31,12 @@ export default async function userRegister(
   }
 
   if (!validatePhoneNumber(phoneNumber)) {
-    return res.status(400).json({ error: "Invalid phone number format" });
+    return res
+      .status(400)
+      .json({
+        error:
+          "Phone number should be in the format 0XXXXXXXXX (10 digits starting with 0)",
+      });
   }
 
   if (!validateEmail(email)) {
@@ -51,58 +56,94 @@ export default async function userRegister(
   }
 
   try {
-    // Check if email already exists
+    // Check if user already exists in the users table
     const { data: existingUser } = await supabase
       .from("users")
-      .select("email")
+      .select("user_id")
       .eq("email", email)
       .single();
 
     if (existingUser) {
-      return res.status(400).json({ error: "Email already in use" });
+      return res
+        .status(400)
+        .json({ error: "User with this email already exists" });
     }
 
-    // Register user
+    // Register user via Supabase Auth
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
 
     if (error) {
+      if (error.message === "User already registered") {
+        return res
+          .status(400)
+          .json({ error: "User with this email already exists" });
+      }
       return res.status(400).json({ error: error.message });
     }
 
-    // Add additional user data to a custom table
-    const { error: profileError } = await supabase
-      .from("user_profiles")
-      .insert({
-        user_id: data.user!.id,
-        name,
-        phone_number: phoneNumber,
-      });
-
-    if (profileError) {
-      return res.status(500).json({ error: "Failed to create user profile" });
+    if (!data.user) {
+      return res.status(500).json({ error: "Failed to create user" });
     }
 
-    return res.status(200).json({
-      message: "User registered successfully",
-      userId: data.user!.id,
-    });
+    // Insert user data into 'users' table
+    const { data: insertData, error: insertError } = await supabase
+      .from("users")
+      .insert([
+        {
+          user_id: data.user.id,
+          name,
+          email,
+          phone_number: phoneNumber,
+          address: null,
+          user_type: "Customer",
+        },
+      ])
+      .select();
+
+    if (insertError) {
+      // If there's an error inserting into the users table, delete the auth user
+      await supabase.auth.admin.deleteUser(data.user.id);
+      console.error("Error inserting user data:", insertError);
+
+      if (insertError.code === "23505") {
+        // This error code indicates a unique constraint violation
+        return res.status(400).json({
+          error: "User with this email or phone number already exists",
+        });
+      } else {
+        return res.status(500).json({
+          error: "Failed to create user profile",
+          details: insertError.message,
+        });
+      }
+    }
+
+    if (!insertData || insertData.length === 0) {
+      await supabase.auth.admin.deleteUser(data.user.id);
+      return res
+        .status(500)
+        .json({ error: "Failed to create user profile: No data returned" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "User registered successfully", user: insertData[0] });
   } catch (error) {
-    console.error("Registration error:", error);
+    console.error("Unexpected error during registration:", error);
     return res.status(500).json({ error: "An unexpected error occurred" });
   }
 }
 
 function validateName(name: string): boolean {
-  return /^[a-zA-Z'-]+$/.test(name);
+  return /^[a-zA-Z]+([''-]?[a-zA-Z]+)*([ ]?[a-zA-Z]+)*$/.test(name);
 }
 
 function validatePhoneNumber(phoneNumber: string): boolean {
-  // This is a simple regex for phone number validation
-  // You might want to use a more sophisticated validation based on your specific requirements
-  return /^\+?[\d\s-]{10,14}$/.test(phoneNumber);
+  // Validate phone number format: 0XXXXXXXXX (10 digits starting with 0)
+  return /^0\d{9}$/.test(phoneNumber);
 }
 
 function validateEmail(email: string): boolean {
