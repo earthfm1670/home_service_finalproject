@@ -1,4 +1,4 @@
-import { supabase } from "@/utils/db";
+import { supabase } from "@/utils/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
 /**
  * @swagger
