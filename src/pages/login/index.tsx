@@ -9,7 +9,7 @@ export default function Login() {
         <Navbar />
         {/* div login form */}
         <div className="flex items-center justify-center">
-          <div className="my-10 mx-2 rounded-lg border bg-white border-gray-300 max-w-[614px] w-[343px] lg:w-screen px-4 py-7">
+          <div className="my-10 rounded-lg border bg-white border-gray-300 max-w-[614px] w-[343px] lg:w-screen px-4 py-7">
             <form>
               {/* head title */}
               <h1 className="mb-7 text-center text-2xl text-[#001C59] font-medium">
