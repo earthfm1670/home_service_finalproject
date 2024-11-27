@@ -1,5 +1,95 @@
 import { supabase } from "@/utils/db";
 import { NextApiRequest, NextApiResponse } from "next";
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     description: Creates a new user account with the provided information
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - phoneNumber
+ *               - email
+ *               - password
+ *               - agreementAccepted
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: User's full name
+ *               phoneNumber:
+ *                 type: string
+ *                 description: User's phone number (format: 0XXXXXXXXX)
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: User's email address
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 description: User's password (must be longer than 12 characters)
+ *               agreementAccepted:
+ *                 type: boolean
+ *                 description: Indicates if the user has accepted the agreement and policy
+ *     responses:
+ *       200:
+ *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     user_id:
+ *                       type: string
+ *                     name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     phone_number:
+ *                       type: string
+ *                     address:
+ *                       type: string
+ *                       nullable: true
+ *                     user_type:
+ *                       type: string
+ *       400:
+ *         description: Bad request - validation error or user already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       405:
+ *         description: Method not allowed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
 
 interface UserRegistrationRequestBody {
   name: string;
@@ -149,6 +239,12 @@ function validatePhoneNumber(phoneNumber: string): boolean {
 function validateEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.endsWith(".com");
 }
+// function validateEmail(email: string): boolean {
+//   // This regex pattern is more permissive and covers most valid email formats
+//   const emailRegex =
+//     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+//   return emailRegex.test(email);
+// }
 
 function validatePassword(password: string): boolean {
   return password.length > 12;
