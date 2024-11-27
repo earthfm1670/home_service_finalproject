@@ -43,6 +43,8 @@ function Registration() {
                   placeholder="กรุณากรอกชื่อ นามสกุล"
                   required
                   className="border border-gray-300 rounded-md h-10 pl-3"
+                  pattern="^[A-Za-z\s-]*$"
+                  title="กรุณากรอกตัวอักษรภาษาอังกฤษ, เว้นวรรค หรือ - เท่านั้น"
                 ></input>
               </div>
               <div className="flex flex-col mx-2 my-5 lg:w-3/4 lg:mx-auto">
@@ -54,6 +56,8 @@ function Registration() {
                   placeholder="กรุณากรอกเบอร์โทรศัพท์"
                   required
                   className="border border-gray-300 rounded-md h-10 pl-3"
+                  pattern="^0\d{9}$"
+                  title="กรุณากรอกเบอร์โทรศัพท์ที่เริ่มต้นด้วย 0 และมี 10 หลัก"
                 ></input>
               </div>
               <div className="flex flex-col mx-2 my-5 lg:w-3/4 lg:mx-auto">
@@ -65,6 +69,8 @@ function Registration() {
                   placeholder="กรุณากรอกอีเมล"
                   required
                   className="border border-gray-300 rounded-md h-10 pl-3"
+                  pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                  title="กรุณากรอกอีเมลที่ถูกต้อง เช่น example@domain.com"
                 ></input>
               </div>
               <div className="flex flex-col mx-2 my-5 lg:w-3/4 lg:mx-auto">
@@ -76,6 +82,8 @@ function Registration() {
                   placeholder="กรุณากรอกรหัสผ่าน"
                   required
                   className="border border-gray-300 rounded-md h-10 pl-3"
+                  minLength={13}
+                  title="รหัสผ่านต้องมีมากกว่า 12 ตัวอักษร"
                 ></input>
               </div>
               <div className="flex flex-row items-baseline mx-2 my-5 lg:w-3/4 lg:mx-auto">
