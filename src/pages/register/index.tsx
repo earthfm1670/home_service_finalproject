@@ -216,8 +216,8 @@ function Registration() {
             <p>
               หากคุณมีคำถามหรือข้อสงสัยเกี่ยวกับข้อตกลงนี้ กรุณาติดต่อเราได้ที่:
             </p>
-            <p>Email: support@example.com</p>
-            <p>Phone: 123-456-7890</p>
+            <p>Email: support@techup.com</p>
+            <p>Phone: (+66)12-345-6789</p>
           </DialogDescription>
           <div className="flex justify-end space-x-4 mt-4">
             <button
