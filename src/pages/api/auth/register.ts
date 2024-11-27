@@ -1,95 +1,5 @@
 import { supabase } from "@/utils/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
-/**
- * @swagger
- * /api/auth/register:
- *   post:
- *     summary: Register a new user
- *     description: Creates a new user account with the provided information
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *               - phoneNumber
- *               - email
- *               - password
- *               - agreementAccepted
- *             properties:
- *               name:
- *                 type: string
- *                 description: User's full name
- *               phoneNumber:
- *                 type: string
- *                 description: User's phone number (format: 0XXXXXXXXX)
- *               email:
- *                 type: string
- *                 format: email
- *                 description: User's email address
- *               password:
- *                 type: string
- *                 format: password
- *                 description: User's password (must be longer than 12 characters)
- *               agreementAccepted:
- *                 type: boolean
- *                 description: Indicates if the user has accepted the agreement and policy
- *     responses:
- *       200:
- *         description: User registered successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 user:
- *                   type: object
- *                   properties:
- *                     user_id:
- *                       type: string
- *                     name:
- *                       type: string
- *                     email:
- *                       type: string
- *                     phone_number:
- *                       type: string
- *                     address:
- *                       type: string
- *                       nullable: true
- *                     user_type:
- *                       type: string
- *       400:
- *         description: Bad request - validation error or user already exists
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *       405:
- *         description: Method not allowed
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- */
 
 interface UserRegistrationRequestBody {
   name: string;
@@ -121,12 +31,10 @@ export default async function userRegister(
   }
 
   if (!validatePhoneNumber(phoneNumber)) {
-    return res
-      .status(400)
-      .json({
-        error:
-          "Phone number should be in the format 0XXXXXXXXX (10 digits starting with 0)",
-      });
+    return res.status(400).json({
+      error:
+        "Phone number should be in the format 0XXXXXXXXX (10 digits starting with 0)",
+    });
   }
 
   if (!validateEmail(email)) {
@@ -136,7 +44,7 @@ export default async function userRegister(
   if (!validatePassword(password)) {
     return res
       .status(400)
-      .json({ error: "Password must be longer than 12 characters" });
+      .json({ error: "Password must be at least 12 characters long" });
   }
 
   if (!agreementAccepted) {
@@ -247,5 +155,5 @@ function validateEmail(email: string): boolean {
 // }
 
 function validatePassword(password: string): boolean {
-  return password.length > 12;
+  return password.length >= 12;
 }
