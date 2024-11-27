@@ -96,7 +96,7 @@ export default async function userRegister(
           email,
           phone_number: phoneNumber,
           address: null,
-          user_type: "Customer",
+          user_type: "customer",
         },
       ])
       .select();
