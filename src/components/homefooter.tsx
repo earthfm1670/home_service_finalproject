@@ -55,12 +55,18 @@ export default function HomeFooter() {
           </div>
         </div>
         {/* bottom footer section */}
-        <div>
-          <div>
-            <div>เงื่อนไขและข้อตกลงการใช้งานเว็บไซต์</div>
-            <div>นโยบายความเป็นส่วนตัว</div>
+        <div className="w-full h-[116px] bg-gray-100">
+          <div className="mx-4 py-2">
+            <div className="text-[14px] text-gray-700 font-normal my-2">
+              เงื่อนไขและข้อตกลงการใช้งานเว็บไซต์
+            </div>
+            <div className="text-[14px] text-gray-700 font-normal my-2">
+              นโยบายความเป็นส่วนตัว
+            </div>
           </div>
-          <div>copyright © 2021 HomeServices.com All rights reserved</div>
+          <div className="text-[12px] text-gray-500 font-normal mx-4">
+            copyright © 2021 HomeServices.com All rights reserved
+          </div>
         </div>
       </footer>
     </>
