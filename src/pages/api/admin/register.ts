@@ -100,9 +100,7 @@ export default async function adminRegister(
         .json({ error: "Error occurred during insert data" });
     }
 
-    return res
-      .status(201)
-      .json({ message: "Register successfully", detail: insertResult });
+    return res.status(201).json({ message: "Register successfully" });
   } catch (err) {
     console.log("Unexpected error during registration:", err);
     return res.status(500).json({ error: "An unexpected error occurred" });
