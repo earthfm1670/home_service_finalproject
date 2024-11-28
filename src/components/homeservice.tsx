@@ -3,10 +3,10 @@ import React from "react";
 export default function HomeService() {
   return (
     <div className="h-[1316px] lg:h-[790px]">
-      <h2 className="py-8 lg:pt-14 text-[20px] font-medium text-center">
+      <h2 className="py-8 lg:pt-20 lg:py-12 text-[20px] font-medium text-center text-blue-950 lg:text-[32px]">
         บริการยอดฮิตของเรา
       </h2>
-      <div className="flex flex-col gap-6 lg:flex lg:justify-center">
+      <div className="flex flex-col gap-6 lg:flex-row lg:justify-center">
         {/* div for service box */}
         <div className="border h-[350px] mx-3 rounded-lg lg:h-[365px] lg:w-[349px]">
           <div className="h-[200px]">
@@ -20,11 +20,11 @@ export default function HomeService() {
             <div className="mb-1 border w-[79px] h-[26px] text-[12px] flex justify-center items-center rounded-lg text-blue-800 font-normal bg-blue-100">
               บริการทั่วไป
             </div>
-            <div className="text-[18px] font-medium text-gray-950">
+            <div className="text-[18px] lg:text-[20px] font-medium text-gray-950">
               ทำความสะอาดทั่วไป
             </div>
 
-            <div className="text-[14px] text-gray-700 flex gap-2 items-center">
+            <div className="text-[14px] text-gray-700 flex gap-2 items-center font-normal">
               <img
                 src="/image/pricetag.svg"
                 alt="pricetaglogo"
@@ -53,11 +53,11 @@ export default function HomeService() {
             <div className="mb-1 border w-[79px] h-[26px] text-[12px] flex justify-center items-center rounded-lg text-blue-800 font-normal bg-blue-100">
               บริการทั่วไป
             </div>
-            <div className="text-[18px] font-medium text-gray-950">
+            <div className="text-[18px] lg:text-[20px] font-medium text-gray-950">
               ทำความสะอาดทั่วไป
             </div>
 
-            <div className="text-[14px] text-gray-700 flex gap-2 items-center">
+            <div className="text-[14px] text-gray-700 flex gap-2 items-center font-normal">
               <img
                 src="/image/pricetag.svg"
                 alt="pricetaglogo"
@@ -86,11 +86,11 @@ export default function HomeService() {
             <div className="mb-1 border w-[79px] h-[26px] text-[12px] flex justify-center items-center rounded-lg text-blue-800 font-normal bg-blue-100">
               บริการทั่วไป
             </div>
-            <div className="text-[18px] font-medium text-gray-950">
+            <div className="text-[18px] lg:text-[20px] font-medium text-gray-950">
               ทำความสะอาดทั่วไป
             </div>
 
-            <div className="text-[14px] text-gray-700 flex gap-2 items-center">
+            <div className="text-[14px] text-gray-700 flex gap-2 items-center font-normal">
               <img
                 src="/image/pricetag.svg"
                 alt="pricetaglogo"
@@ -108,7 +108,7 @@ export default function HomeService() {
       </div>
       {/* end of service3 */}
       <div className="flex justify-center">
-        <button className="my-6 w-[155px] h-[44px] bg-blue-600 rounded-lg text-[16px] font-medium text-white">
+        <button className="my-6 lg:my-16 w-[155px] h-[44px] bg-blue-600 rounded-lg text-[16px] font-medium text-white">
           ดูบริการทั้งหมด
         </button>
       </div>
