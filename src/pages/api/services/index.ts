@@ -17,7 +17,7 @@ type ServicesResponse = {
   totalPages?: number;
 };
 
-export default async function handler(
+export default async function getAllServices(
   req: NextApiRequest,
   res: NextApiResponse<ServicesResponse>
 ) {
