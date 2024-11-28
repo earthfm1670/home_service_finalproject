@@ -4,25 +4,29 @@ export default function HomeJoinUs() {
   return (
     <>
       {/* overall container */}
-      <div className="w-full h-[731] bg-blue-600 relative">
+      <div className="w-full h-[731] lg:h-[378px] bg-blue-600 relative lg:flex">
         {/* banner */}
-        <div className="w-full h-[278px]">
-          <img src="/image/joinusbanner.svg" alt="handyman"></img>
+        <div className="w-full h-[278px] lg:w-[509px] lg:h-[378px]">
+          <img
+            src="/image/joinusbanner.svg"
+            alt="handyman"
+            className="w-full h-full"
+          ></img>
         </div>
         {/* container for text */}
         <div className="mx-6 my-8">
-          <h2 className="text-[32px] text-white font-medium">
+          <h2 className="text-[32px] text-white font-medium lg:text-[40px] lg:font-semibold lg:w-[402px]">
             มาร่วมเป็นพนักงานซ่อมกับ HomeServices
           </h2>
           <div className="my-6">
-            <p className="text-[16px] text-white font-medium">
+            <p className="text-[16px] text-white font-medium lg:text-[20px] lg:font-normal">
               เข้ารับการฝึกอบรมที่ได้มาตรฐาน ฟรี!
             </p>
-            <p className="text-[16px] text-white font-medium">
+            <p className="text-[16px] text-white font-medium lg:text-[20px] lg:font-normal">
               และยังได้รับค่าตอบแทนที่มากขึ้นกว่าเดิม
             </p>
           </div>
-          <div className="text-[20px] text-white font-medium">
+          <div className="text-[20px] text-white font-medium lg:text-[32px]">
             ติดต่อมาที่อีเมล: job@homeservices.co
           </div>
         </div>
