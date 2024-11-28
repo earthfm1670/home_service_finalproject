@@ -12,6 +12,16 @@ interface Service {
   }[];
 }
 
+interface DatabaseService {
+  service_id: number;
+  service_name: string;
+  sub_services: {
+    service_id: number;
+    description: string;
+    unit: string;
+    unit_price: number;
+  }[];
+}
 type ServiceResponse = {
   data: Service | null;
   error?: string;
@@ -56,7 +66,20 @@ export default async function getServiceById(
       return res.status(404).json({ data: null, error: "Service not found" });
     }
 
-    return res.status(200).json({ data: data as Service });
+    const databaseService = data as DatabaseService;
+
+    const formattedService: Service = {
+      service_id: databaseService.service_id,
+      service_name: databaseService.service_name,
+      sub_services: databaseService.sub_services.map((sub) => ({
+        sub_service_id: sub.service_id,
+        description: sub.description,
+        unit: sub.unit,
+        unit_price: sub.unit_price,
+      })),
+    };
+
+    return res.status(200).json({ data: formattedService });
   } catch (error) {
     console.error("Unexpected error:", error);
     return res

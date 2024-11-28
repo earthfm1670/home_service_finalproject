@@ -9,6 +9,16 @@ interface Service {
   service_pricing: string;
 }
 
+interface DatabaseService {
+  service_id: number;
+  service_name: string;
+  categories: {
+    category: string;
+  }[];
+  service_picture_url: string;
+  service_pricing: string;
+}
+
 type ServicesResponse = {
   data: Service[] | null;
   error?: string;
@@ -55,14 +65,30 @@ export default async function getAllServices(
       return res.status(404).json({ data: null, error: "No services found" });
     }
 
-    const formattedData = data.map((item) => ({
-      ...item,
-      catagory: item.categories.category,
-      categories: undefined,
-    }));
+    const formattedData: Service[] = (data as DatabaseService[]).map((item) => {
+      let category = "";
+      if (Array.isArray(item.categories) && item.categories.length > 0) {
+        category = item.categories[0].category || "";
+      } else if (
+        typeof item.categories === "object" &&
+        item.categories !== null &&
+        "category" in item.categories
+      ) {
+        category = (item.categories as { category: string }).category || "";
+      }
+
+      return {
+        service_id: item.service_id,
+        service_name: item.service_name,
+        category: category,
+        service_picture_url: item.service_picture_url,
+        service_pricing: item.service_pricing,
+      };
+    });
+
     return res.status(200).json({
-      data: formattedData as Service[],
-      totalCount: count,
+      data: formattedData,
+      totalCount: count ?? undefined,
       currentPage: page,
       totalPages: Math.ceil((count || 0) / limit),
     });
