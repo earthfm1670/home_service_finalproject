@@ -1,3 +1,4 @@
+import HomeFooter from "@/components/homefooter";
 import HomeHero from "@/components/homehero";
 import HomeJoinUs from "@/components/homejoinus";
 import HomeService from "@/components/homeservice";
@@ -10,6 +11,7 @@ export default function Home() {
       <HomeHero />
       <HomeService />
       <HomeJoinUs />
+      <HomeFooter />
     </>
   );
 }
