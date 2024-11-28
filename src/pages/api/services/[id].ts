@@ -4,9 +4,12 @@ import { NextApiRequest, NextApiResponse } from "next";
 interface Service {
   service_id: number;
   service_name: string;
-  category_id: number;
-  service_picture_url: string;
-  service_pricing: string;
+  sub_services: {
+    sub_service_id: number;
+    description: string;
+    unit: string;
+    unit_price: number;
+  }[];
 }
 
 type ServiceResponse = {
@@ -28,7 +31,16 @@ export default async function getServiceById(
     const { data, error } = await supabase
       .from("services")
       .select(
-        "service_id, service_name, category_id, service_picture_url, service_pricing"
+        `
+        service_id,
+        service_name,
+        sub_services (
+          service_id,
+          description,
+          unit,
+          unit_price
+        )
+      `
       )
       .eq("service_id", id)
       .single();
