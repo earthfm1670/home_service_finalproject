@@ -6,7 +6,7 @@ export default function HomeFooter() {
       {/* Footer Container */}
       <footer>
         {/* top footer section */}
-        <div className="w-full h-[273px] py-4">
+        <div className="w-full h-[273px] lg:px-44 py-4 lg:h-[151px] lg:flex lg:flex-row lg:items-start">
           <div className="flex items-center m-4">
             <img
               src="/image/footerhouse.svg"
@@ -16,19 +16,22 @@ export default function HomeFooter() {
               HomeServices
             </div>
           </div>
-          <div className="my-4">
+          <div className="my-4 lg:mx-8">
             <h2 className="text-[18px] font-medium text-gray-950 mx-4 my-2">
               บริษัท โฮมเซอร์วิสเซส จำกัด
             </h2>
-            <p className="text-[14px] font-normal text-gray-800 mx-4">
+            <p className="text-[14px] font-normal text-gray-800 mx-4 lg:hidden">
               452 ซอยสุขุมวิท 79 แขวงพระโขนงเหนือ เขตวัฒนา
             </p>
-            <p className="text-[14px] font-normal text-gray-800 mx-4">
+            <p className="text-[14px] font-normal text-gray-800 mx-4 lg:hidden">
               กรุงเทพมหานคร 10260
             </p>
+            <p className="text-[14px] font-normal text-gray-800 mx-4 lg:block">
+              452 ซอยสุขุมวิท 79 แขวงพระโขนงเหนือ เขตวัฒนา กรุงเทพมหานคร 10260
+            </p>
           </div>
-          <div className="">
-            <div className="flex items-center">
+          <div className="lg:my-6">
+            <div className="flex items-center lg:pt-2">
               <div className="w-[20px] h-[20px] mr-2 mx-4">
                 <img
                   src="/image/phoneicon.svg"
