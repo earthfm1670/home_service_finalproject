@@ -6,7 +6,7 @@ export default function HomeFooter() {
       {/* Footer Container */}
       <footer>
         {/* top footer section */}
-        <div className="w-full h-[273px]">
+        <div className="w-full h-[273px] py-4">
           <div className="flex items-center m-4">
             <img
               src="/image/footerhouse.svg"
