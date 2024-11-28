@@ -1,4 +1,5 @@
 import HomeHero from "@/components/homehero";
+import HomeJoinUs from "@/components/homejoinus";
 import HomeService from "@/components/homeservice";
 import { Navbar } from "@/components/navbar";
 
@@ -8,6 +9,7 @@ export default function Home() {
       <Navbar />
       <HomeHero />
       <HomeService />
+      <HomeJoinUs />
     </>
   );
 }
