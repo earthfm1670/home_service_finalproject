@@ -8,7 +8,7 @@ import {
   validatePassword,
 } from "@/lib/auth-validate";
 
-//TODO register api: pass the test
+//TODO register api: pass the test : pass
 //FIXME database signature is missing FIX ASAP: fixed
 
 interface AdminRegistrationRequestBody {
@@ -34,7 +34,7 @@ export default async function adminRegister(
     password,
     agreementAccepted,
   }: AdminRegistrationRequestBody = req.body;
-
+  // Validate input
   if (!validateName) {
     return res.status(400).json({ error: "Invalid name format" });
   }
@@ -80,19 +80,29 @@ export default async function adminRegister(
       }
       return res.status(400).json({ error: error.message });
     }
-    // if supabase return data === register into auth database success
+    // if supabase return data === register into auth database successfull
     if (!data.user) {
       return res.status(500).json({ error: "Failed to create user" });
     }
 
     // Insert user data into users table
-    await connectionPool.query(
+    const insertResult = await connectionPool.query(
       `INSERT INTO users (user_id, name, email, phone_number, address, user_type)
-        VALUES ( $1,$2,$3,$4,$5,$6 )
-        `,
+      VALUES ( $1,$2,$3,$4,$5,$6 )
+      `,
       [data.user.id, name, email, phoneNumber, null, "admin"]
     );
-    return res.status(201).json({ message: "Register successfully" });
+    // If rowCount === 0 meannig insert fail return 500 and delete user from auth table
+    if (insertResult.rowCount === 0) {
+      await supabase.auth.admin.deleteUser(data.user.id);
+      return res
+        .status(500)
+        .json({ error: "Error occurred during insert data" });
+    }
+
+    return res
+      .status(201)
+      .json({ message: "Register successfully", detail: insertResult });
   } catch (err) {
     console.log("Unexpected error during registration:", err);
     return res.status(500).json({ error: "An unexpected error occurred" });
