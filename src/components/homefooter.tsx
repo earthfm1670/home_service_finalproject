@@ -7,11 +7,25 @@ export default function HomeFooter() {
       <footer>
         {/* top footer section */}
         <div className="w-full h-[273px]">
-          <div>Logo</div>
+          <div className="flex items-center">
+            <img
+              src="/image/footerhouse.svg"
+              className="w-[39px] h-[39px]"
+            ></img>
+            <div className="text-[29px] text-blue-600 font-medium">
+              HomeServices
+            </div>
+          </div>
           <div>
-            <h2>บริษัท โฮมเซอร์วิสเซส จำกัด</h2>
-            <p>452 ซอยสุขุมวิท 79 แขวงพระโขนงเหนือ เขตวัฒนา</p>
-            <p>กรุงเทพมหานคร 10260</p>
+            <h2 className="text-[18px] font-medium text-gray-950">
+              บริษัท โฮมเซอร์วิสเซส จำกัด
+            </h2>
+            <p className="text-[14px] font-normal text-gray-800">
+              452 ซอยสุขุมวิท 79 แขวงพระโขนงเหนือ เขตวัฒนา
+            </p>
+            <p className="text-[14px] font-normal text-gray-800">
+              กรุงเทพมหานคร 10260
+            </p>
           </div>
           <div>
             <div>080-540-6357</div>
