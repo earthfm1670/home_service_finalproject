@@ -1,5 +1,11 @@
 import { supabase } from "@/utils/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
+import {
+  validateName,
+  validateEmail,
+  validatePassword,
+  validatePhoneNumber,
+} from "@/lib/auth-validate";
 
 interface UserRegistrationRequestBody {
   name: string;
@@ -133,27 +139,4 @@ export default async function userRegister(
     console.error("Unexpected error during registration:", error);
     return res.status(500).json({ error: "An unexpected error occurred" });
   }
-}
-
-function validateName(name: string): boolean {
-  return /^[a-zA-Z]+([''-]?[a-zA-Z]+)*([ ]?[a-zA-Z]+)*$/.test(name);
-}
-
-function validatePhoneNumber(phoneNumber: string): boolean {
-  // Validate phone number format: 0XXXXXXXXX (10 digits starting with 0)
-  return /^0\d{9}$/.test(phoneNumber);
-}
-
-function validateEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.endsWith(".com");
-}
-// function validateEmail(email: string): boolean {
-//   // This regex pattern is more permissive and covers most valid email formats
-//   const emailRegex =
-//     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-//   return emailRegex.test(email);
-// }
-
-function validatePassword(password: string): boolean {
-  return password.length >= 12;
 }

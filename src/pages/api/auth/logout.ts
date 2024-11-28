@@ -23,8 +23,11 @@ export default async function userLogout(
     //ถ้า error จะรีเทิร์น 400
     if (error) {
       return res
-        .status(400)
-        .json({ message: "Logout failed", error: error.message });
+        .status(500)
+        .json({
+          message: "Logout failed",
+          error: `Internal sever error: ${error.message}`,
+        });
     }
 
     //ถ้าสำเร็จทุกอย่าง จะรีเทิร์น 200

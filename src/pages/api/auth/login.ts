@@ -15,15 +15,15 @@ export default async function userLogin(
     email,
     password,
   });
+
   if (error) {
     //check if credential invalid
-    console.log(error);
     if (
       error.code === "invalid_credential" ||
       error.message.includes("Invalid login credential")
     ) {
       return res
-        .status(400)
+        .status(401)
         .json({ error: "Your email or password is incorect" });
     }
     return res.status(400).json({ error: error.message });
