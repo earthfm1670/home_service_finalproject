@@ -7,7 +7,7 @@ export default function HomeFooter() {
       <footer>
         {/* top footer section */}
         <div className="w-full h-[273px] lg:px-44 py-4 lg:h-[151px] lg:flex lg:flex-row lg:items-start">
-          <div className="flex items-center m-4">
+          <div className="flex items-center m-4 lg:my-6">
             <img
               src="/image/footerhouse.svg"
               className="w-[39px] h-[39px]"
@@ -58,8 +58,8 @@ export default function HomeFooter() {
           </div>
         </div>
         {/* bottom footer section */}
-        <div className="w-full h-[116px] bg-gray-100">
-          <div className="mx-4 py-2">
+        <div className="w-full h-[116px] bg-gray-100 lg:h-[42px] lg:flex">
+          <div className="mx-4 py-2 lg:hidden">
             <div className="text-[14px] text-gray-700 font-normal my-2">
               เงื่อนไขและข้อตกลงการใช้งานเว็บไซต์
             </div>
@@ -67,8 +67,22 @@ export default function HomeFooter() {
               นโยบายความเป็นส่วนตัว
             </div>
           </div>
-          <div className="text-[12px] text-gray-500 font-normal mx-4">
+          <div className="text-[12px] text-gray-500 font-normal mx-4 lg:hidden">
             copyright © 2021 HomeServices.com All rights reserved
+          </div>
+          <div className="lg:w-full lg:flex lg:items-center lg:justify-around">
+            <div className="text-[12px] text-gray-500 font-normal mx-4 hidden lg:block">
+              copyright © 2021 HomeServices.com All rights reserved
+            </div>
+
+            <div className="flex gap-8">
+              <div className="text-[14px] text-gray-700 font-normal my-2 hidden lg:block">
+                เงื่อนไขและข้อตกลงการใช้งานเว็บไซต์
+              </div>
+              <div className="text-[14px] text-gray-700 font-normal my-2 hidden lg:block">
+                นโยบายความเป็นส่วนตัว
+              </div>
+            </div>
           </div>
         </div>
       </footer>
