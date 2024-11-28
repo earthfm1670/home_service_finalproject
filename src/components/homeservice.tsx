@@ -3,7 +3,7 @@ import React from "react";
 export default function HomeService() {
   return (
     <div className="h-[1316px]">
-      <h2 className="my-6 text-[20px] font-medium text-center">
+      <h2 className="my-8 text-[20px] font-medium text-center">
         บริการยอดฮิตของเรา
       </h2>
       {/* div for service box */}
@@ -95,7 +95,7 @@ export default function HomeService() {
               alt="pricetaglogo"
               className="w-[16px] h-[16px]"
             ></img>
-            ค่าบริการประมาณ 500.00 - 1,000.00 ฿
+            ค่าบริการประมาณ 500.00 ฿
           </div>
           <div className="my-3">
             <a className="text-[16px] font-semibold text-blue-600 underline">
@@ -105,7 +105,11 @@ export default function HomeService() {
         </div>
       </div>
       {/* end of service3 */}
-      <button>ดูบริการทั้งหมด</button>
+      <div className="flex justify-center">
+        <button className="my-2 w-[155px] h-[44px] bg-blue-600 rounded-lg text-[16px] font-medium text-white">
+          ดูบริการทั้งหมด
+        </button>
+      </div>
     </div>
   );
 }
