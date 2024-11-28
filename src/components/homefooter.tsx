@@ -27,9 +27,23 @@ export default function HomeFooter() {
               กรุงเทพมหานคร 10260
             </p>
           </div>
-          <div>
-            <div>080-540-6357</div>
-            <div>contact@homeservices.co</div>
+          <div className="">
+            <div className="flex items-center">
+              <div>
+                <img src="/image/phoneicon.svg" alt="phoneicon"></img>
+              </div>
+              <div className="text-[16px] font-normal text-gray-800">
+                080-540-6357
+              </div>
+            </div>
+            <div className="flex items-center">
+              <div>
+                <img src="/image/mailicon.svg" alt="mailicon"></img>
+              </div>
+              <div className="text-[16px] font-normal text-gray-800">
+                contact@homeservices.co
+              </div>
+            </div>
           </div>
         </div>
         {/* bottom footer section */}
