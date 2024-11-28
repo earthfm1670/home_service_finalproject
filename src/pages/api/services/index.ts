@@ -4,7 +4,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 interface Service {
   service_id: number;
   service_name: string;
-  category_id: number;
+  category: string;
   service_picture_url: string;
   service_pricing: string;
 }
@@ -33,7 +33,13 @@ export default async function getAllServices(
     const { data, error, count } = await supabase
       .from("services")
       .select(
-        "service_id, service_name, category_id, service_picture_url, service_pricing",
+        `
+        service_id, 
+        service_name, 
+        categories(category), 
+        service_picture_url, 
+        service_pricing
+      `,
         { count: "exact" }
       )
       .range(start, start + limit - 1);
@@ -49,8 +55,13 @@ export default async function getAllServices(
       return res.status(404).json({ data: null, error: "No services found" });
     }
 
+    const formattedData = data.map((item) => ({
+      ...item,
+      catagory: item.categories.category,
+      categories: undefined,
+    }));
     return res.status(200).json({
-      data: data as Service[],
+      data: formattedData as Service[],
       totalCount: count,
       currentPage: page,
       totalPages: Math.ceil((count || 0) / limit),
