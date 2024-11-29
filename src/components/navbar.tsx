@@ -1,9 +1,19 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/router";
 
 export function Navbar() {
+  const router = useRouter();
+
+  const redirectToHome = (): void => {
+    router.push("/");
+  };
+
   return (
-    <div className="flex justify-between items-center border shadow-lg p-2 bg-white lg:px-20">
+    <div
+      className="flex justify-between items-center border shadow-lg p-2 bg-white lg:px-20"
+      onClick={redirectToHome}
+    >
       <div className="flex gap-10">
         <img src="/image/homeservicelogo.svg"></img>
         <div className="hidden lg:block">บริการของเรา</div>
