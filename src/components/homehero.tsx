@@ -1,6 +1,12 @@
+import { useRouter } from "next/router";
 import React from "react";
 
 export default function HomeHero() {
+  const router = useRouter();
+
+  const redirectToServiceList = (): void => {
+    router.push("/servicelist");
+  };
   return (
     <>
       <div className="h-[704px] bg-blue-100 relative lg:h-[540px]">
@@ -23,7 +29,10 @@ export default function HomeHero() {
           <p className="w-full text-[18px] text-gray-700 font-medium lg:text-[24px]">
             โดยพนักงานแม่บ้าน และช่างมืออาชีพ
           </p>
-          <button className="mt-8 w-[191px] py-3 px-6 bg-blue-600 text-white text-[20px] font-semibold rounded-md hover:bg-blue-500 focus:bg-blue-800">
+          <button
+            className="mt-8 w-[191px] py-3 px-6 bg-blue-600 text-white text-[20px] font-semibold rounded-md hover:bg-blue-500 focus:bg-blue-800"
+            onClick={redirectToServiceList}
+          >
             เช็คราคาบริการ
           </button>
 
