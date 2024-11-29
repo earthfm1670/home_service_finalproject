@@ -1,70 +1,95 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Navbar } from "@/components/navbar";
 import facebooklogo from "../../../public/image/facebooklogo.svg";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { useState, ChangeEvent, FormEvent } from "react";
+import axios from "axios";
 
 export default function Login() {
+  // เก็บค่าข้อมูลที่กรอก
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const [emailError, setEmailError] = useState<string | null>(null);
-  const [passwordError, setPasswordError] = useState<string | null>(null);
+  // เก็บค่าข้อมูลที่กรอกเพื่อแสดง error ว่ากรอกข้อมูลไม่ถูกต้อง
+  const [emailError, setEmailError] = useState<boolean>(false);
+  const [passwordError, setPasswordError] = useState<boolean>(false);
 
+  // เก็บค่าข้อมูลที่กรอกเพื่อแสดง error ว่างไม่ได้กรอกข้อมูล
+  const [emailEmpty, setEmailEmpty] = useState<boolean>(false);
+  const [passwordEmpty, setPasswordEmpty] = useState<boolean>(false);
+
+  // ควบคุมการแสดง popup email or password invalidate
+  const [showPopup, setShowPopup] = useState<boolean>(false);
+
+  // ตรวจสอบการเปลี่ยนแปลงใน input email
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
-    setEmailError(null);
+    setEmailError(false);
+    setEmailEmpty(false);
   };
 
+  // ตรวจสอบการเปลี่ยนแปลงใน input password
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
-    setPasswordError(null);
+    setPasswordError(false);
+    setPasswordEmpty(false);
   };
 
   const router = useRouter();
 
-  const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const email = form.email.value;
-    const password = form.password.value;
 
-    // ตรวจสอบข้อมูลที่กรอก
-    if (!email || !password) {
-      alert("กรุณากรอกอีเมลและรหัสผ่าน")
-      return
+    let isValid = true;
+
+    // ตรวจสอบ email ที่กรอก
+    if (!email) {
+      setEmailEmpty(true);
+      isValid = false;
+    } else {
+      setEmailEmpty(false);
+      if (!email.includes("@") || !email.includes(".com")) {
+        setEmailError(true);
+        isValid = false;
+      } else {
+        setEmailError(false);
+      }
     }
-    try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        // ใช้เพื่อขอให้ server ส่งข้อมูล token เข้ามาหลังจาก login
-        headers: { "Content-Type": "application/json","Authorization": `Bearer ${localStorage.getItem("token")}` },
-        body: JSON.stringify({ email, password }),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        // ใช้เพื่อหลังจากที่ขอ login success จะทำการส่ง token กลับมาไว้ใน storage 
-        localStorage.setItem("token", data.access_token);
-        // นำทางไปที่หน้าเพจที่เราต้องการ
-        router.push("/");
-      } else {
-        const errorData = await response.text();
-        alert(`Login ไม่สำเร็จ: ${errorData || "Unknow error"}`);
-        return;
-      }
-    } catch (error: unknown) {
-      console.error("Error:", error);
 
-      // ตรวจสอบว่า error เป็น object และมี property 'message'
-      if (error instanceof Error) {
-        alert(`Something went wrong: ${error.message}`);
-      } else {
-        alert(`Something went wrong: ${JSON.stringify(error)}`);
-      }
+    // ตรวจสอบ password ที่กรอก
+    if (!password) {
+      setPasswordEmpty(true);
+      isValid = false;
+    } else {
+      setPasswordEmpty(false);
+    }
+    if (!isValid) {
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "/api/auth/login",
+        { email, password },
+        {
+          // ใช้เพื่อขอให้ server ส่งข้อมูล token เข้ามาหลังจาก login
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      // ใช้เพื่อหลังจากที่ขอ login success จะทำการส่ง token กลับมาไว้ใน storage
+      localStorage.setItem("token", response.data.access_token);
+
+      // นำทางไปที่หน้าเพจที่เราต้องการ
+      // router.push("/");
+    } catch (error: any) {
+      console.error("Error:", error);
+      setShowPopup(true);
     }
   };
-
   return (
     <>
       <div className="bg-gray-100 min-h-screen">
@@ -72,7 +97,7 @@ export default function Login() {
         {/* div login form */}
         <div className="flex items-center justify-center">
           <div className="my-10 mx-2 rounded-lg border bg-white border-gray-300 max-w-[614px] w-[343px] lg:w-screen px-4 py-7">
-            <form onSubmit={handleLogin}>
+            <form onSubmit={handleSubmit}>
               {/* head title */}
               <h1 className="mb-7 text-center text-2xl text-[#001C59] font-medium">
                 เข้าสู่ระบบ
@@ -83,14 +108,33 @@ export default function Login() {
                 <div className="flex flex-col gap-1">
                   <h1>อีเมล</h1>
                   <input
-                    type="email"
+                    type="text"
                     id="email"
-                    name="email"
+
                     placeholder="กรุณากรอกอีเมล"
                     required
                     onChange={handleEmailChange}
-                    className="w-full border border-gray-300 px-4 py-2 rounded-lg"
+                    // ป้องกันการแสดงข้อความผิดพลาดเริ่มต้นของเบราว์เซอร์
+                    onInvalid={(e) => e.preventDefault()}
+                    className={`w-full border px-4 py-2 rounded-lg 
+                      ${
+                        emailEmpty
+                          ? "border-red-500"
+                          : emailError
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
                   />
+                  <div className="h-3">
+                    {emailEmpty && (
+                      <p className="text-red-500 text-sm">กรุณากรอกอีเมล</p>
+                    )}
+                    {emailError && (
+                      <p className="text-red-500 text-sm">
+                        อีเมลต้องมี @ และ .com
+                      </p>
+                    )}
+                  </div>
                 </div>
                 {/* password form */}
                 <div className="flex flex-col gap-1">
@@ -102,8 +146,14 @@ export default function Login() {
                     placeholder="กรุณากรอกรหัสผ่าน"
                     required
                     onChange={handlePasswordChange}
-                    className="w-full border border-gray-300 px-4 py-2 rounded-lg"
+                    className={`w-full border border-gray-300 px-4 py-2 rounded-lg
+                      ${passwordError ? "border-red-500" : "border-gray-300"}`}
                   />
+                  <div className="h-3">
+                    {passwordError && (
+                      <p className="text-red-500 text-sm">{passwordError}</p>
+                    )}
+                  </div>
                 </div>
                 {/* button for login */}
                 <button className="bg-defaultColor hover:bg-hoverColor text-white rounded-lg px-4 py-2 font-medium active:bg-pressedColor">
@@ -127,12 +177,12 @@ export default function Login() {
                 </button>
                 <h1 className="text-center text-gray-500">
                   ยังไม่มีบัญชีผู้ใช้ HomeService?{" "}
-                  <a
-                    href="#"
-                    className="text-defaultColor font-medium underline hover:text-hoverColor"
+                  <span
+                    onClick={() => router.push("/register")}
+                    className="cursor-pointer text-defaultColor font-medium underline hover:text-hoverColor"
                   >
                     ลงทะเบียน
-                  </a>
+                  </span>
                 </h1>
               </div>
             </form>
