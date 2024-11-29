@@ -1,13 +1,23 @@
+import { useRouter } from "next/router";
 import React from "react";
 
 export default function HomeFooter() {
+  const router = useRouter();
+
+  const redirectToHome = (): void => {
+    router.push("/");
+  };
+
   return (
     <>
       {/* Footer Container */}
       <footer>
         {/* top footer section */}
         <div className="w-full h-[273px] lg:px-44 lg:py-4 lg:h-[151px] lg:flex lg:flex-row lg:items-start">
-          <div className="flex items-center m-4 my-6 lg:my-6">
+          <div
+            className="flex items-center m-4 my-6 lg:my-6"
+            onClick={redirectToHome}
+          >
             <img
               src="/image/footerhouse.svg"
               className="w-[39px] h-[39px]"
