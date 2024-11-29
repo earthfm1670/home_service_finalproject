@@ -6,6 +6,10 @@
 @layer base {
   :root {
     --radius: 0.5rem;
+    --defaultColor: #336DF2;
+    --hoverColor:#4C7FF4;
+    --pressedColor:#0E3FB0;
+    --disableColor:#CCD0D7;
   }
 }
 
