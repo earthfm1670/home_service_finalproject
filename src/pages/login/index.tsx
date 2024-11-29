@@ -15,7 +15,7 @@ export default function Login() {
   const [emailError, setEmailError] = useState<boolean>(false);
   const [passwordError, setPasswordError] = useState<boolean>(false);
 
-  // เก็บค่าข้อมูลที่กรอกเพื่อแสดง error ว่างไม่ได้กรอกข้อมูล
+  // เก็บค่าข้อมูลที่กรอกเพื่อแสดง error ว่าไม่ได้กรอกข้อมูล
   const [emailEmpty, setEmailEmpty] = useState<boolean>(false);
   const [passwordEmpty, setPasswordEmpty] = useState<boolean>(false);
 
@@ -40,9 +40,6 @@ export default function Login() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    console.log(emailEmpty);
-    console.log(emailError);
 
     let isValid = true;
 
@@ -106,7 +103,12 @@ export default function Login() {
               <div className="flex flex-col gap-5">
                 {/* email form */}
                 <div className="flex flex-col gap-1">
-                  <h1>อีเมล</h1>
+                  <div className="flex flex-row">
+                    <h1>อีเมล</h1>
+                    {emailEmpty && (
+                      <p className="text-red-500 text-sm">{`*`}</p>
+                    )}
+                  </div>
                   <input
                     type="text"
                     id="email"
@@ -122,9 +124,6 @@ export default function Login() {
                       }`}
                   />
                   <div className="h-3">
-                    {emailEmpty && (
-                      <p className="text-red-500 text-sm">กรุณากรอกอีเมล</p>
-                    )}
                     {emailError && (
                       <p className="text-red-500 text-sm">
                         อีเมลต้องมี @ และ .com
@@ -134,14 +133,17 @@ export default function Login() {
                 </div>
                 {/* password form */}
                 <div className="flex flex-col gap-1">
-                  <h1>รหัสผ่าน</h1>
+                  <div className="flex flex-row">
+                    <h1>รหัสผ่าน</h1>
+                    {passwordEmpty && <p className="text-red-500 text-sm">*</p>}
+                  </div>
                   <input
                     type="password"
                     id="password"
                     name="password"
                     placeholder="กรุณากรอกรหัสผ่าน"
                     onChange={handlePasswordChange}
-                    className={`w-full border border-gray-300 px-4 py-2 rounded-lg
+                    className={`w-full border px-4 py-2 rounded-lg
                       ${
                         passwordEmpty
                           ? "border-red-500"
@@ -151,9 +153,6 @@ export default function Login() {
                       }`}
                   />
                   <div className="h-3">
-                    {passwordEmpty && (
-                      <p className="text-red-500 text-sm">กรุณากรอกพาสเวิร์ด</p>
-                    )}
                     {passwordError && (
                       <p className="text-red-500 text-sm">
                         พาสเวิร์ดต้องมีอย่างน้อย 12 ตัว
@@ -191,26 +190,26 @@ export default function Login() {
                   </span>
                 </h1>
               </div>
+              {/* Popup */}
+              {showPopup && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                  <div className="bg-white p-5 rounded-lg shadow-lg max-w-sm mx-auto">
+                    <p className="mb-4 text-center text-gray-800">
+                      อีเมลหรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง
+                    </p>
+                    <button
+                      onClick={() => setShowPopup(false)}
+                      className="bg-defaultColor hover:bg-hoverColor text-white rounded-lg px-4 py-2 font-medium w-full"
+                    >
+                      ปิด
+                    </button>
+                  </div>
+                </div>
+              )}
             </form>
           </div>
         </div>
       </div>
-      {/* Popup */}
-      {showPopup && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-5 rounded-lg shadow-lg max-w-sm mx-auto">
-            <p className="mb-4 text-center text-gray-800">
-              อีเมลหรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง
-            </p>
-            <button
-              onClick={() => setShowPopup(false)}
-              className="bg-defaultColor hover:bg-hoverColor text-white rounded-lg px-4 py-2 font-medium w-full"
-            >
-              ปิด
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
 }
