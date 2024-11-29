@@ -13,6 +13,10 @@ export function Navbar() {
     router.push("/servicelist");
   };
 
+  const redirectToLogin = (): void => {
+    router.push("/login");
+  };
+
   return (
     <div
       className="flex justify-between items-center border shadow-lg p-2 bg-white lg:px-20"
@@ -28,7 +32,7 @@ export function Navbar() {
         <div className="lg:hidden" onClick={redirectToServiceList}>
           บริการของเรา
         </div>
-        <div>
+        <div onClick={redirectToLogin}>
           <ButtonLogin />
         </div>
       </div>
