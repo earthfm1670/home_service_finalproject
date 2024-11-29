@@ -41,29 +41,29 @@ export default function Login() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    console.log(emailEmpty);
+    console.log(emailError);
+
     let isValid = true;
 
     // ตรวจสอบ email ที่กรอก
     if (!email) {
       setEmailEmpty(true);
       isValid = false;
-    } else {
-      setEmailEmpty(false);
-      if (!email.includes("@") || !email.includes(".com")) {
-        setEmailError(true);
-        isValid = false;
-      } else {
-        setEmailError(false);
-      }
+    } else if (!email.includes("@") || !email.includes(".com")) {
+      setEmailError(true);
+      isValid = false;
     }
 
     // ตรวจสอบ password ที่กรอก
     if (!password) {
       setPasswordEmpty(true);
       isValid = false;
-    } else {
-      setPasswordEmpty(false);
+    } else if (password.length <= 11) {
+      setPasswordError(true);
+      isValid = false;
     }
+
     if (!isValid) {
       return;
     }
@@ -82,11 +82,11 @@ export default function Login() {
       );
       // ใช้เพื่อหลังจากที่ขอ login success จะทำการส่ง token กลับมาไว้ใน storage
       localStorage.setItem("token", response.data.access_token);
-
       // นำทางไปที่หน้าเพจที่เราต้องการ
-      // router.push("/");
+      router.push("/");
     } catch (error: any) {
-      console.error("Error:", error);
+      // ไม่พบข้อมูล email || password ในฐานข้อมูล
+      console.error("Invalid email or password");
       setShowPopup(true);
     }
   };
@@ -110,12 +110,8 @@ export default function Login() {
                   <input
                     type="text"
                     id="email"
-
                     placeholder="กรุณากรอกอีเมล"
-                    required
                     onChange={handleEmailChange}
-                    // ป้องกันการแสดงข้อความผิดพลาดเริ่มต้นของเบราว์เซอร์
-                    onInvalid={(e) => e.preventDefault()}
                     className={`w-full border px-4 py-2 rounded-lg 
                       ${
                         emailEmpty
@@ -144,14 +140,24 @@ export default function Login() {
                     id="password"
                     name="password"
                     placeholder="กรุณากรอกรหัสผ่าน"
-                    required
                     onChange={handlePasswordChange}
                     className={`w-full border border-gray-300 px-4 py-2 rounded-lg
-                      ${passwordError ? "border-red-500" : "border-gray-300"}`}
+                      ${
+                        passwordEmpty
+                          ? "border-red-500"
+                          : passwordError
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
                   />
                   <div className="h-3">
+                    {passwordEmpty && (
+                      <p className="text-red-500 text-sm">กรุณากรอกพาสเวิร์ด</p>
+                    )}
                     {passwordError && (
-                      <p className="text-red-500 text-sm">{passwordError}</p>
+                      <p className="text-red-500 text-sm">
+                        พาสเวิร์ดต้องมีอย่างน้อย 12 ตัว
+                      </p>
                     )}
                   </div>
                 </div>
@@ -189,6 +195,22 @@ export default function Login() {
           </div>
         </div>
       </div>
+      {/* Popup */}
+      {showPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-5 rounded-lg shadow-lg max-w-sm mx-auto">
+            <p className="mb-4 text-center text-gray-800">
+              อีเมลหรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง
+            </p>
+            <button
+              onClick={() => setShowPopup(false)}
+              className="bg-defaultColor hover:bg-hoverColor text-white rounded-lg px-4 py-2 font-medium w-full"
+            >
+              ปิด
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
