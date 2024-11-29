@@ -19,7 +19,10 @@ export default function HomeService() {
       </h2>
       <div className="flex flex-col gap-6 lg:flex-row lg:justify-center">
         {/* div for service box */}
-        <div className="border h-[350px] mx-3 rounded-lg lg:h-[365px] lg:w-[349px]">
+        <div
+          className="border h-[350px] mx-3 rounded-lg lg:h-[365px] lg:w-[349px]"
+          onClick={redirectToServiceDetail}
+        >
           <div className="h-[200px]">
             <img
               src="/image/service1.svg"
@@ -52,7 +55,10 @@ export default function HomeService() {
         </div>
         {/* end of service box div */}
         {/* start of service2 */}
-        <div className="border h-[350px] mx-3 rounded-lg lg:h-[365px] lg:w-[349px]">
+        <div
+          className="border h-[350px] mx-3 rounded-lg lg:h-[365px] lg:w-[349px]"
+          onClick={redirectToServiceDetail}
+        >
           <div className="h-[200px]">
             <img
               src="/image/service2.svg"
@@ -85,7 +91,10 @@ export default function HomeService() {
         </div>
         {/* end of service2 */}
         {/* start of service3 */}
-        <div className="border h-[350px] mx-3 rounded-lg lg:h-[365px] lg:w-[349px]">
+        <div
+          className="border h-[350px] mx-3 rounded-lg lg:h-[365px] lg:w-[349px]"
+          onClick={redirectToServiceDetail}
+        >
           <div className="h-[200px]">
             <img
               src="/image/service3.svg"
