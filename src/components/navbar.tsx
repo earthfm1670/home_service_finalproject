@@ -9,6 +9,10 @@ export function Navbar() {
     router.push("/");
   };
 
+  const redirectToServiceList = (): void => {
+    router.push("/servicelist");
+  };
+
   return (
     <div
       className="flex justify-between items-center border shadow-lg p-2 bg-white lg:px-20"
@@ -16,10 +20,14 @@ export function Navbar() {
     >
       <div className="flex gap-10">
         <img src="/image/homeservicelogo.svg"></img>
-        <div className="hidden lg:block">บริการของเรา</div>
+        <div className="hidden lg:block" onClick={redirectToServiceList}>
+          บริการของเรา
+        </div>
       </div>
       <div className="flex items-center gap-2">
-        <div className="lg:hidden">บริการของเรา</div>
+        <div className="lg:hidden" onClick={redirectToServiceList}>
+          บริการของเรา
+        </div>
         <div>
           <ButtonLogin />
         </div>
