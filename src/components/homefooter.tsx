@@ -6,7 +6,7 @@ export default function HomeFooter() {
       {/* Footer Container */}
       <footer>
         {/* top footer section */}
-        <div className="w-full h-[273px] lg:px-44 lg:h-[151px] lg:flex lg:flex-row lg:items-start">
+        <div className="w-full h-[273px] lg:px-44 lg:py-4 lg:h-[151px] lg:flex lg:flex-row lg:items-start">
           <div className="flex items-center m-4 my-6 lg:my-6">
             <img
               src="/image/footerhouse.svg"
