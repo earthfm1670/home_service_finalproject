@@ -4,6 +4,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 interface Service {
   service_id: number;
   service_name: string;
+  service_picture_url: string;
   sub_services: {
     sub_service_id: number;
     description: string;
@@ -15,6 +16,7 @@ interface Service {
 interface DatabaseService {
   service_id: number;
   service_name: string;
+  service_picture_url: string;
   sub_services: {
     service_id: number;
     description: string;
@@ -22,6 +24,7 @@ interface DatabaseService {
     unit_price: number;
   }[];
 }
+
 type ServiceResponse = {
   data: Service | null;
   error?: string;
@@ -44,6 +47,7 @@ export default async function getServiceById(
         `
         service_id,
         service_name,
+        service_picture_url,
         sub_services (
           service_id,
           description,
@@ -71,6 +75,7 @@ export default async function getServiceById(
     const formattedService: Service = {
       service_id: databaseService.service_id,
       service_name: databaseService.service_name,
+      service_picture_url: databaseService.service_picture_url,
       sub_services: databaseService.sub_services.map((sub) => ({
         sub_service_id: sub.service_id,
         description: sub.description,
