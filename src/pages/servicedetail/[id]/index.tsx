@@ -11,6 +11,7 @@ import {
   ChevronUp,
   Minus,
   Plus,
+  Tag,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -42,11 +43,17 @@ interface ServiceDetailPageProps {
   initialService: Service | null;
 }
 
+interface ServiceQuantity {
+  quantity: number;
+}
+
 const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
   const router = useRouter();
   const { id } = router.query;
   const [service, setService] = useState<Service | null>(initialService);
-  const [quantities, setQuantities] = useState<Record<number, number>>({});
+  const [quantities, setQuantities] = useState<Record<number, ServiceQuantity>>(
+    {}
+  );
   const [isOrderSummaryOpen, setIsOrderSummaryOpen] = useState(false);
   const [canProceed, setCanProceed] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
@@ -57,23 +64,14 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
       getService(serviceId).then((result) => {
         if (result.data) {
           setService(result.data);
-          const initialQuantities = result.data.sub_services.reduce(
-            (acc, subService) => {
-              acc[subService.sub_service_id] = 0;
-              return acc;
-            },
-            {} as Record<number, number>
-          );
-          setQuantities(initialQuantities);
         }
       });
     }
   }, [id, service]);
 
-  // Check if any services are selected
   useEffect(() => {
     const hasSelectedServices = Object.values(quantities).some(
-      (quantity) => quantity > 0
+      (item) => item.quantity > 0
     );
     setCanProceed(hasSelectedServices);
   }, [quantities]);
@@ -83,39 +81,51 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
   }
 
   const handleQuantityChange = (subServiceId: number, change: number) => {
-    setQuantities((prev) => ({
-      ...prev,
-      [subServiceId]: Math.max(0, (prev[subServiceId] || 0) + change),
-    }));
+    setQuantities((prev) => {
+      const currentQuantity = (prev[subServiceId]?.quantity || 0) + change;
+
+      if (currentQuantity <= 0) {
+        const { [subServiceId]: _, ...rest } = prev;
+        return rest;
+      }
+
+      return {
+        ...prev,
+        [subServiceId]: { quantity: currentQuantity },
+      };
+    });
   };
 
   const calculateTotal = () => {
     return service.sub_services.reduce((total, subService) => {
-      return (
-        total +
-        (quantities[subService.sub_service_id] || 0) * subService.unit_price
-      );
+      const quantity = quantities[subService.sub_service_id]?.quantity || 0;
+      return total + quantity * subService.unit_price;
     }, 0);
   };
 
   const getSelectedServices = () => {
     return service.sub_services.filter(
-      (subService) => quantities[subService.sub_service_id] > 0
+      (subService) => (quantities[subService.sub_service_id]?.quantity || 0) > 0
     );
+  };
+
+  const getQuantityDisplay = (subServiceId: number) => {
+    return quantities[subServiceId]?.quantity || 0;
   };
 
   const handleProceed = () => {
     if (canProceed) {
-      // Store selected services in session storage for next page
       const selectedServicesData = {
         serviceId: id,
         serviceName: service.service_name,
         selections: getSelectedServices().map((subService) => ({
           id: subService.sub_service_id,
           description: subService.description,
-          quantity: quantities[subService.sub_service_id],
+          quantity: quantities[subService.sub_service_id].quantity,
           unitPrice: subService.unit_price,
-          total: subService.unit_price * quantities[subService.sub_service_id],
+          total:
+            subService.unit_price *
+            quantities[subService.sub_service_id].quantity,
         })),
         totalAmount: calculateTotal(),
       };
@@ -126,7 +136,6 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
       router.push(`/servicedetail/${id}/info`);
     }
   };
-
   return (
     <div className="min-h-screen bg-gray-100 pb-32">
       <Navbar />
@@ -142,10 +151,10 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
           <div className="max-w-7xl mx-auto px-4 pt-16 ">
             {/* Breadcrumb */}
             <div className="mb-4">
-              <div className="bg-white rounded-md py-2 px-4 inline-flex items-center space-x-2">
+              <div className="bg-white rounded-md py-2 px-4 inline-flex items-center space-x-2 lg:p-5">
                 <Link
                   href="/services"
-                  className="text-gray-700 hover:text-blue-600 text-sm"
+                  className="text-gray-500 hover:text-blue-600 text-sm"
                 >
                   บริการของเรา
                 </Link>
@@ -157,11 +166,11 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
             </div>
 
             {/* Progress Steps */}
-            <Card className="p-4 mt-4 lg:p-6 lg:mt-16">
+            <Card className="p-4 mt-4 lg:p-6 lg:mt-12">
               <div className="relative">
                 {/* Progress Line */}
                 <div className="absolute top-5 left-[15%] right-[15%] h-0.5 bg-gray-200" />
-                {/* Blue Progress Line - Adjust width based on currentStep */}
+                {/* Blue Progress Line */}
                 <div
                   className="absolute top-5 left-[15%] h-0.5 bg-blue-600 transition-all duration-300"
                   style={{ width: `${((currentStep - 1) / 2) * 70}%` }}
@@ -210,50 +219,56 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
           {/* Service List */}
           <div className="lg:col-span-2">
             <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-6">
+              <h2 className="text-xl text-gray-500 mb-6">
                 เลือกรายการบริการ{service.service_name}
               </h2>
               <div className="space-y-6">
                 {service.sub_services.map((subService) => (
                   <div
                     key={subService.sub_service_id}
-                    className="flex items-center justify-between pb-6 border-b last:border-b-0"
+                    className="flex items-start justify-between pb-6 border-b last:border-b-0"
                   >
-                    <div>
+                    <div className="flex flex-col">
                       <h3 className="font-medium">{subService.description}</h3>
-                      <p className="text-gray-500 text-sm">
-                        {subService.unit_price.toFixed(2)} ฿ / {subService.unit}
-                      </p>
+                      <div className="flex items-center gap-1 text-gray-500">
+                        <Tag className="w-3 h-3" />
+                        <p className="text-sm">
+                          {subService.unit_price.toFixed(2)} ฿ /{" "}
+                          {subService.unit}
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-4 pt-1">
                       <Button
                         variant="outline"
                         size="icon"
                         className={`h-8 w-8 ${
-                          quantities[subService.sub_service_id] > 0
+                          getQuantityDisplay(subService.sub_service_id) > 0
                             ? "border-blue-600 text-blue-600"
                             : ""
                         }`}
-                        onClick={() =>
-                          handleQuantityChange(subService.sub_service_id, -1)
-                        }
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleQuantityChange(subService.sub_service_id, -1);
+                        }}
                       >
                         <Minus className="h-4 w-4" />
                       </Button>
                       <span className="w-8 text-center">
-                        {quantities[subService.sub_service_id] || 0}
+                        {getQuantityDisplay(subService.sub_service_id)}
                       </span>
                       <Button
                         variant="outline"
                         size="icon"
                         className={`h-8 w-8 ${
-                          quantities[subService.sub_service_id] > 0
+                          getQuantityDisplay(subService.sub_service_id) > 0
                             ? "border-blue-600 text-blue-600"
                             : ""
                         }`}
-                        onClick={() =>
-                          handleQuantityChange(subService.sub_service_id, 1)
-                        }
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleQuantityChange(subService.sub_service_id, 1);
+                        }}
                       >
                         <Plus className="h-4 w-4" />
                       </Button>
@@ -267,7 +282,7 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
           {/* Desktop Summary */}
           <div className="hidden lg:block">
             <Card className="p-6 sticky top-4">
-              <h2 className="text-lg font-semibold mb-4">สรุปรายการ</h2>
+              <h2 className="text-lg text-gray-500 mb-4">สรุปรายการ</h2>
               <div className="space-y-4">
                 {getSelectedServices().map((subService) => (
                   <div
@@ -276,12 +291,12 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
                   >
                     <span>
                       {subService.description} x{" "}
-                      {quantities[subService.sub_service_id]}
+                      {getQuantityDisplay(subService.sub_service_id)}
                     </span>
                     <span>
                       {(
                         subService.unit_price *
-                        quantities[subService.sub_service_id]
+                        getQuantityDisplay(subService.sub_service_id)
                       ).toFixed(2)}{" "}
                       ฿
                     </span>
@@ -298,101 +313,119 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
       </div>
 
       {/* Mobile Bottom Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t lg:hidden">
+      <div className="fixed bottom-0 left-0 right-0 lg:hidden">
         {/* Mobile Summary */}
-        <Collapsible
-          open={isOrderSummaryOpen}
-          onOpenChange={setIsOrderSummaryOpen}
-        >
-          <CollapsibleTrigger asChild>
-            <div className="w-full bg-white cursor-pointer px-4 py-3">
-              {getSelectedServices().length === 0 ? (
-                // Default state
-                <>
+        <div className="rounded-t-lg bg-white shadow-sm">
+          <Collapsible
+            open={isOrderSummaryOpen}
+            onOpenChange={setIsOrderSummaryOpen}
+          >
+            <CollapsibleTrigger asChild>
+              <div className="w-full bg-white rounded-t-2xl cursor-pointer">
+                <div className="px-4 py-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-base text-gray-900">สรุปรายการ</span>
-                    <ChevronDown className="h-4 w-4 text-gray-500" />
+                    <span className="text-base text-gray-500">สรุปรายการ</span>
+                    {isOrderSummaryOpen ? (
+                      <ChevronUp className="h-4 w-4 text-blue-500" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-blue-500" />
+                    )}
                   </div>
-                  <div className="flex justify-between items-center mt-2">
-                    <span className="text-sm text-gray-600">รวม</span>
-                    <span className="text-base font-semibold">0.00 ฿</span>
-                  </div>
-                </>
-              ) : !isOrderSummaryOpen ? (
-                // With items, collapsed state
-                <>
-                  <div className="flex justify-between items-center">
-                    <span className="text-base text-gray-900">สรุปรายการ</span>
-                    <ChevronDown className="h-4 w-4 text-gray-500" />
-                  </div>
-                  <div className="flex justify-between items-center mt-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm">
-                        {getSelectedServices()[0]?.description}
+                  {!isOrderSummaryOpen && (
+                    <div className="flex justify-between items-center mt-2">
+                      <span className="text-sm text-gray-600">รวม</span>
+                      <span className="text-base font-semibold">
+                        {calculateTotal().toFixed(2)} ฿
                       </span>
-                      <span className="text-sm text-blue-600">
-                        {getSelectedServices().length} รายการ
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CollapsibleTrigger>
+
+            <CollapsibleContent>
+              <div className="px-4 py-3 bg-white border-t">
+                {getSelectedServices().length > 0 ? (
+                  <div className="flex flex-col gap-2">
+                    {getSelectedServices().map((subService) => (
+                      <div
+                        key={subService.sub_service_id}
+                        className="flex justify-between items-center"
+                      >
+                        <span className="text-sm">
+                          {subService.description}
+                        </span>
+                        <span className="text-sm text-blue-600">
+                          {getSelectedServices().length} รายการ
+                        </span>
+                      </div>
+                    ))}
+                    <div className="flex justify-between items-center mt-2 pt-2 border-t">
+                      <span className="text-sm text-gray-600">รวม</span>
+                      <span className="text-base font-semibold">
+                        {calculateTotal().toFixed(2)} ฿
                       </span>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center mt-2">
-                    <span className="text-sm text-gray-600">รวม</span>
-                    <span className="text-base font-semibold">
-                      {calculateTotal().toFixed(2)} ฿
-                    </span>
-                  </div>
-                </>
-              ) : (
-                // Expanded state
-                <div className="flex justify-between items-center">
-                  <span className="text-base text-gray-900">สรุปรายการ</span>
-                  <ChevronDown className="h-4 w-4 text-gray-500" />
-                </div>
-              )}
-            </div>
-          </CollapsibleTrigger>
-
-          <CollapsibleContent>
-            <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
-              {getSelectedServices().length > 0 ? (
-                <>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">
-                      {getSelectedServices()[0]?.description}
-                    </span>
-                    <span className="text-sm text-blue-600">
-                      {getSelectedServices().length} รายการ
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center mt-2">
-                    <span className="text-sm text-gray-600">รวม</span>
-                    <span className="text-base font-semibold">
-                      {calculateTotal().toFixed(2)} ฿
-                    </span>
-                  </div>
-                </>
-              ) : (
-                <div className="text-sm text-gray-500 text-center py-2">
-                  ไม่มีรายการที่เลือก
-                </div>
-              )}
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
+                ) : (
+                  <>
+                    <div className="text-sm text-gray-500 text-center">
+                      ไม่มีรายการที่เลือก
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">รวม</span>
+                      <span className="text-base font-semibold">
+                        {calculateTotal().toFixed(2)} ฿
+                      </span>
+                    </div>
+                  </>
+                )}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        </div>
 
         {/* Navigation Buttons */}
-        <div className="p-4">
+        <div className="p-4 bg-white border-t">
           <div className="flex gap-4">
             <Button
               variant="outline"
-              className="flex-1"
+              className="flex-1 border-blue-500 text-blue-500"
               onClick={() => router.back()}
             >
-              <ChevronLeft className="h-4 w-4 mr-2" />
+              <ChevronLeft className="h-4 w-4 mr-2 text-blue-500" />
               ย้อนกลับ
             </Button>
             <Button
-              className="flex-1"
+              className={`flex-1 ${
+                canProceed ? "bg-blue-500 text-white" : "bg-gray-300"
+              }`}
+              disabled={!canProceed}
+              onClick={handleProceed}
+            >
+              ดำเนินการต่อ
+              <ChevronRight className="h-4 w-4 ml-2" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop Navigation */}
+      <div className="hidden lg:block fixed bottom-0 left-0 right-0 bg-white border-t">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex justify-between">
+            <Button
+              variant="outline"
+              className="px-8 border-blue-500 text-blue-500"
+              onClick={() => router.back()}
+            >
+              <ChevronLeft className="h-4 w-4 mr-2 text-blue-500" />
+              ย้อนกลับ
+            </Button>
+            <Button
+              className={`px-8 ${
+                canProceed ? "bg-blue-500 text-white" : "bg-gray-300"
+              }`}
               disabled={!canProceed}
               onClick={handleProceed}
             >
