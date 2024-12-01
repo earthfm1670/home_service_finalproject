@@ -80,40 +80,32 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
     return <div>Loading...</div>;
   }
 
-const handleQuantityChange = (subServiceId: number, change: number) => {
-  setQuantities((prev) => {
-    const currentQuantity = (prev[subServiceId]?.quantity || 0) + change;
+  const handleQuantityChange = (subServiceId: number, change: number) => {
+    setQuantities((prev) => {
+      const currentQuantity = (prev[subServiceId]?.quantity || 0) + change;
 
-    // Debug
-    console.log(
-      "Current Quantity:",
-      currentQuantity,
-      "SubService ID:",
-      subServiceId
-    );
+      if (currentQuantity <= 0) {
+        const { [subServiceId]: _, ...rest } = prev;
+        return rest;
+      }
 
-    if (currentQuantity <= 0) {
-      const { [subServiceId]: _, ...rest } = prev;
-      return rest;
-    }
-
-    return {
-      ...prev,
-      [subServiceId]: { quantity: currentQuantity },
-    };
-  });
-};
+      return {
+        ...prev,
+        [subServiceId]: { quantity: currentQuantity },
+      };
+    });
+  };
 
   const calculateTotal = () => {
     return service.sub_services.reduce((total, subService) => {
-      const quantity = quantities[subService.sub_service_id]?.quantity || 0;
+      const quantity = quantities[subService.id]?.quantity || 0;
       return total + quantity * subService.unit_price;
     }, 0);
   };
 
   const getSelectedServices = () => {
     return service.sub_services.filter(
-      (subService) => (quantities[subService.sub_service_id]?.quantity || 0) > 0
+      (subService) => (quantities[subService.id]?.quantity || 0) > 0
     );
   };
 
@@ -127,13 +119,11 @@ const handleQuantityChange = (subServiceId: number, change: number) => {
         serviceId: id,
         serviceName: service.service_name,
         selections: getSelectedServices().map((subService) => ({
-          id: subService.sub_service_id,
+          id: subService.id,
           description: subService.description,
-          quantity: quantities[subService.sub_service_id].quantity,
+          quantity: quantities[subService.id].quantity,
           unitPrice: subService.unit_price,
-          total:
-            subService.unit_price *
-            quantities[subService.sub_service_id].quantity,
+          total: subService.unit_price * quantities[subService.id].quantity,
         })),
         totalAmount: calculateTotal(),
       };
@@ -233,7 +223,7 @@ const handleQuantityChange = (subServiceId: number, change: number) => {
               <div className="space-y-6">
                 {service.sub_services.map((subService) => (
                   <div
-                    key={subService.sub_service_id}
+                    key={subService.id}
                     className="flex items-start justify-between pb-6 border-b last:border-b-0"
                   >
                     <div className="flex flex-col">
@@ -251,31 +241,31 @@ const handleQuantityChange = (subServiceId: number, change: number) => {
                         variant="outline"
                         size="icon"
                         className={`h-8 w-8 ${
-                          getQuantityDisplay(subService.sub_service_id) > 0
+                          getQuantityDisplay(subService.id) > 0
                             ? "border-blue-600 text-blue-600"
                             : ""
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleQuantityChange(subService.sub_service_id, -1);
+                          handleQuantityChange(subService.id, -1);
                         }}
                       >
                         <Minus className="h-4 w-4" />
                       </Button>
                       <span className="w-8 text-center">
-                        {getQuantityDisplay(subService.sub_service_id)}
+                        {getQuantityDisplay(subService.id)}
                       </span>
                       <Button
                         variant="outline"
                         size="icon"
                         className={`h-8 w-8 ${
-                          getQuantityDisplay(subService.sub_service_id) > 0
+                          getQuantityDisplay(subService.id) > 0
                             ? "border-blue-600 text-blue-600"
                             : ""
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleQuantityChange(subService.sub_service_id, 1);
+                          handleQuantityChange(subService.id, 1);
                         }}
                       >
                         <Plus className="h-4 w-4" />
@@ -294,17 +284,17 @@ const handleQuantityChange = (subServiceId: number, change: number) => {
               <div className="space-y-4">
                 {getSelectedServices().map((subService) => (
                   <div
-                    key={subService.sub_service_id}
+                    key={subService.id}
                     className="flex justify-between text-sm"
                   >
                     <span>
                       {subService.description} x{" "}
-                      {getQuantityDisplay(subService.sub_service_id)}
+                      {getQuantityDisplay(subService.id)}
                     </span>
                     <span>
                       {(
                         subService.unit_price *
-                        getQuantityDisplay(subService.sub_service_id)
+                        getQuantityDisplay(subService.id)
                       ).toFixed(2)}{" "}
                       ฿
                     </span>
@@ -357,14 +347,14 @@ const handleQuantityChange = (subServiceId: number, change: number) => {
                   <div className="flex flex-col gap-2">
                     {getSelectedServices().map((subService) => (
                       <div
-                        key={subService.sub_service_id}
+                        key={subService.id}
                         className="flex justify-between items-center"
                       >
                         <span className="text-sm">
                           {subService.description}
                         </span>
                         <span className="text-sm text-blue-600">
-                          {getSelectedServices().length} รายการ
+                          {getQuantityDisplay(subService.id)} รายการ
                         </span>
                       </div>
                     ))}
