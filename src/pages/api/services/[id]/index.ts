@@ -6,7 +6,8 @@ interface Service {
   service_name: string;
   service_picture_url: string;
   sub_services: {
-    sub_service_id: number;
+    id: number;
+    service_id: number;
     description: string;
     unit: string;
     unit_price: number;
@@ -18,6 +19,7 @@ interface DatabaseService {
   service_name: string;
   service_picture_url: string;
   sub_services: {
+    id: number;
     service_id: number;
     description: string;
     unit: string;
@@ -40,6 +42,10 @@ export default async function getServiceById(
 
   const { id } = req.query;
 
+  if (!id || Array.isArray(id)) {
+    return res.status(400).json({ data: null, error: "Invalid service ID" });
+  }
+
   try {
     const { data, error } = await supabase
       .from("services")
@@ -49,6 +55,7 @@ export default async function getServiceById(
         service_name,
         service_picture_url,
         sub_services (
+          id,
           service_id,
           description,
           unit,
@@ -63,7 +70,7 @@ export default async function getServiceById(
       console.error("Error fetching service:", error);
       return res
         .status(500)
-        .json({ data: null, error: "An unexpected error occurred" });
+        .json({ data: null, error: `Database error: ${error.message}` });
     }
 
     if (!data) {
@@ -72,12 +79,21 @@ export default async function getServiceById(
 
     const databaseService = data as DatabaseService;
 
+    // Validate the structure of the fetched data
+    if (!Array.isArray(databaseService.sub_services)) {
+      console.error("Invalid sub_services data:", databaseService.sub_services);
+      return res
+        .status(500)
+        .json({ data: null, error: "Invalid data structure" });
+    }
+
     const formattedService: Service = {
       service_id: databaseService.service_id,
       service_name: databaseService.service_name,
       service_picture_url: databaseService.service_picture_url,
       sub_services: databaseService.sub_services.map((sub) => ({
-        sub_service_id: sub.service_id,
+        id: sub.id,
+        service_id: sub.service_id,
         description: sub.description,
         unit: sub.unit,
         unit_price: sub.unit_price,

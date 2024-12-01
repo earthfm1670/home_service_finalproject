@@ -80,21 +80,29 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
     return <div>Loading...</div>;
   }
 
-  const handleQuantityChange = (subServiceId: number, change: number) => {
-    setQuantities((prev) => {
-      const currentQuantity = (prev[subServiceId]?.quantity || 0) + change;
+const handleQuantityChange = (subServiceId: number, change: number) => {
+  setQuantities((prev) => {
+    const currentQuantity = (prev[subServiceId]?.quantity || 0) + change;
 
-      if (currentQuantity <= 0) {
-        const { [subServiceId]: _, ...rest } = prev;
-        return rest;
-      }
+    // Debug
+    console.log(
+      "Current Quantity:",
+      currentQuantity,
+      "SubService ID:",
+      subServiceId
+    );
 
-      return {
-        ...prev,
-        [subServiceId]: { quantity: currentQuantity },
-      };
-    });
-  };
+    if (currentQuantity <= 0) {
+      const { [subServiceId]: _, ...rest } = prev;
+      return rest;
+    }
+
+    return {
+      ...prev,
+      [subServiceId]: { quantity: currentQuantity },
+    };
+  });
+};
 
   const calculateTotal = () => {
     return service.sub_services.reduce((total, subService) => {
@@ -315,13 +323,13 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
       {/* Mobile Bottom Bar */}
       <div className="fixed bottom-0 left-0 right-0 lg:hidden">
         {/* Mobile Summary */}
-        <div className="rounded-t-lg bg-white shadow-sm">
+        <div className="rounded-t-2xl bg-white shadow-sm">
           <Collapsible
             open={isOrderSummaryOpen}
             onOpenChange={setIsOrderSummaryOpen}
           >
             <CollapsibleTrigger asChild>
-              <div className="w-full bg-white rounded-t-2xl cursor-pointer">
+              <div className="w-full bg-white rounded-t-2xl cursor-pointer  border">
                 <div className="px-4 py-3">
                   <div className="flex justify-between items-center">
                     <span className="text-base text-gray-500">สรุปรายการ</span>
