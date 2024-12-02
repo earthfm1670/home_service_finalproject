@@ -13,20 +13,22 @@ export default function HomeFooter() {
       {/* Footer Container */}
       <footer>
         {/* top footer section */}
-        <div className="w-full h-[273px] lg:px-44 lg:py-4 lg:h-[151px] lg:flex lg:flex-row lg:items-start">
+        <div className="w-full h-[273px] lg:px-36 lg:py-4 lg:h-[151px] lg:flex lg:flex-row lg:items-start">
           <div
             className="flex items-center m-4 my-6 lg:my-6"
             onClick={redirectToHome}
           >
-            <img
-              src="/image/footerhouse.svg"
-              className="w-[39px] h-[39px]"
-            ></img>
-            <div className="text-[29px] text-blue-600 font-medium">
-              HomeServices
+            <div className="flex gap-2">
+              <img
+                src="/image/footerhouse.svg"
+                className="w-[39px] h-[39px]"
+              ></img>
+              <div className="text-[29px] text-blue-600 font-medium">
+                HomeServices
+              </div>
             </div>
           </div>
-          <div className="my-6 lg:mx-8">
+          <div className="my-6 lg:mx-14">
             <h2 className="text-[18px] font-medium text-gray-950 mx-4 my-2">
               บริษัท โฮมเซอร์วิสเซส จำกัด
             </h2>
