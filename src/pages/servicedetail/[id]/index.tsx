@@ -23,7 +23,6 @@ import {
 import { Navbar } from "@/components/navbar";
 import type { Service } from "@/types/service";
 import { GetServerSidePropsContext } from "next";
-import Image from "next/image";
 
 async function getService(
   id: string
@@ -86,7 +85,8 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
       const currentQuantity = (prev[subServiceId]?.quantity || 0) + change;
 
       if (currentQuantity <= 0) {
-        const { [subServiceId]: _removed, ...rest } = prev;
+        const { [subServiceId]: ignored, ...rest } = prev;
+        void ignored;
         return rest as Record<number, ServiceQuantity>;
       }
 
@@ -135,18 +135,16 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
       router.push(`/servicedetail/${id}/info`);
     }
   };
-
   return (
     <div className="min-h-screen bg-gray-100 pb-32">
       {/* Navbar */}
       <Navbar />
+
       {/* Hero Section */}
       <div className="relative h-[168px] w-full lg:h-56">
-        <Image
+        <img
           src={service.service_picture_url}
           alt={service.service_name}
-          width={1440}
-          height={240}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-[#163C9366]">
