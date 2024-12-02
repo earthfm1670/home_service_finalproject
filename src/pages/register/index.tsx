@@ -35,7 +35,9 @@ function Registration() {
             <form>
               <h2 className="text-[20px] text-center my-5">ลงทะเบียน</h2>
               <div className="flex flex-col mx-2 my-5 lg:w-3/4 lg:mx-auto">
-                <label>ชื่อ - นามสกุล</label>
+                <label>
+                  ชื่อ - นามสกุล<span className="text-[#C82438]">*</span>
+                </label>
                 <input
                   type="text"
                   id="name"
@@ -48,7 +50,9 @@ function Registration() {
                 ></input>
               </div>
               <div className="flex flex-col mx-2 my-5 lg:w-3/4 lg:mx-auto">
-                <label>เบอร์โทรศัพท์</label>
+                <label>
+                  เบอร์โทรศัพท์<span className="text-[#C82438]">*</span>
+                </label>
                 <input
                   type="tel"
                   id="phone"
@@ -61,7 +65,9 @@ function Registration() {
                 ></input>
               </div>
               <div className="flex flex-col mx-2 my-5 lg:w-3/4 lg:mx-auto">
-                <label>อีเมล</label>
+                <label>
+                  อีเมล<span className="text-[#C82438]">*</span>
+                </label>
                 <input
                   type="email"
                   id="email"
@@ -74,7 +80,9 @@ function Registration() {
                 ></input>
               </div>
               <div className="flex flex-col mx-2 my-5 lg:w-3/4 lg:mx-auto">
-                <label>รหัสผ่าน</label>
+                <label>
+                  รหัสผ่าน<span className="text-[#C82438]">*</span>
+                </label>
                 <input
                   type="password"
                   id="password"
