@@ -23,6 +23,7 @@ import {
 import { Navbar } from "@/components/navbar";
 import type { Service } from "@/types/service";
 import { GetServerSidePropsContext } from "next";
+import Image from "next/image";
 
 async function getService(
   id: string
@@ -134,39 +135,18 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
       router.push(`/servicedetail/${id}/info`);
     }
   };
-  // function ButtonLogin() {
-  //   return (
-  //     <Button className="text-[#336DF2] bg-white border border-blue-600 px-2">
-  //       เข้าสู่ระบบ
-  //     </Button>
-  //   );
-  // }
+
   return (
     <div className="min-h-screen bg-gray-100 pb-32">
       {/* Navbar */}
-      {/* <div className="fixed top-0 left-0 right-0 z-50">
-        <div className="flex justify-between items-center border shadow-lg p-2 bg-white">
-          <div className="container mx-auto max-w-7xl px-4 flex justify-between items-center">
-            <div className="flex gap-10">
-              <img src="/image/homeservicelogo.svg" alt="logo" />
-              <div className="hidden lg:block">บริการของเรา</div>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="lg:hidden">บริการของเรา</div>
-              <div>
-                <ButtonLogin />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> */}
       <Navbar />
-
       {/* Hero Section */}
       <div className="relative h-[168px] w-full lg:h-56">
-        <img
+        <Image
           src={service.service_picture_url}
           alt={service.service_name}
+          width={1440}
+          height={240}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-[#163C9366]">
