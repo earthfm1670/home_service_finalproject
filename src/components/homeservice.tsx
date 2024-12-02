@@ -20,7 +20,7 @@ export default function HomeService() {
       <div className="flex flex-col gap-6 lg:flex-row lg:justify-center">
         {/* div for service box */}
         <div
-          className="border h-[350px] mx-3 rounded-lg lg:h-[365px] lg:w-[349px]"
+          className="border h-[350px] mx-4 rounded-lg lg:h-[365px] lg:w-[349px]"
           onClick={redirectToServiceDetail}
         >
           <div className="h-[200px]">
@@ -56,7 +56,7 @@ export default function HomeService() {
         {/* end of service box div */}
         {/* start of service2 */}
         <div
-          className="border h-[350px] mx-3 rounded-lg lg:h-[365px] lg:w-[349px]"
+          className="border h-[350px] mx-4 rounded-lg lg:h-[365px] lg:w-[349px]"
           onClick={redirectToServiceDetail}
         >
           <div className="h-[200px]">
@@ -92,7 +92,7 @@ export default function HomeService() {
         {/* end of service2 */}
         {/* start of service3 */}
         <div
-          className="border h-[350px] mx-3 rounded-lg lg:h-[365px] lg:w-[349px]"
+          className="border h-[350px] mx-4 rounded-lg lg:h-[365px] lg:w-[349px]"
           onClick={redirectToServiceDetail}
         >
           <div className="h-[200px]">
