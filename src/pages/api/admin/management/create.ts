@@ -11,7 +11,7 @@ interface PostRequestBody {
   title: string;
   category_id: number;
   image: string;
-  subService: Array<SubServiceFromAdmin>;
+  subService: Array<SubServiceFromAdmin>; //[{}, {}, {}];
   created_at?: string;
   updated_at?: string;
 }
@@ -25,7 +25,7 @@ export default async function adminCreate(
     return res.status(403).json({ error: "Method not allow." });
   }
   // check credential
-
+  
   // create data chunk
   const newServices: PostRequestBody = {
     ...req.body,
