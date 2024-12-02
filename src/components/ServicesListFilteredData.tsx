@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createContext, useContext } from "react";
 import { Range } from "react-range";
 import { Search } from "lucide-react";
+import axios from "axios";
+import { useServices } from "./ServicesContext";
 import {
   Select,
   SelectContent,
@@ -15,6 +17,11 @@ const ServicesListFilteredData: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([200, 1800]);
   const [placeholder, setPlaceholder] = useState<string>("ตามตัวอัก...");
+  const { servicesData, getServicesData } = useServices(); // ดึงข้อมูลจาก Context
+
+  useEffect(() => {
+    getServicesData(); // ดึงข้อมูลเมื่อ component ถูก mount
+  }, [getServicesData]);
 
   // update ค่า setPlaceholder Dispay size มีการเปลี่ยนแปลงมากหรือน้อยกว่า 1024px
   useEffect(() => {
