@@ -5,5 +5,5 @@ export function protectAdmin(req: NextApiRequest, res: NextApiResponse) {
     return res.status(403).json({ error: "Token has invalid format" });
   }
   const tokenWithoutBearer = token.split(" ")[1];
-  return true;
+  //jwt.verify(tokenWitoutBearer, porcess.env.SECRET_KEY, (error, payload))
 }
