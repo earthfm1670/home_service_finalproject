@@ -33,18 +33,13 @@ export function Navbar() {
         <div className="lg:hidden" onClick={redirectToServiceList}>
           บริการของเรา
         </div>
-        <div onClick={redirectToLogin}>
-          <ButtonLogin />
+        <div
+          onClick={redirectToLogin}
+          className="flex justify-center items-center w-[90px] h-[37px] text-[14px] font-medium text-blue-600 bg-white border border-blue-600 px-2 hover:text-blue-400 hover:border-blue-400 rounded-lg"
+        >
+          <button>เข้าสู่ระบบ</button>
         </div>
       </div>
     </div>
-  );
-}
-
-export function ButtonLogin() {
-  return (
-    <Button className="text-[#336DF2] bg-white border border-blue-600 px-2">
-      เข้าสู่ระบบ
-    </Button>
   );
 }
