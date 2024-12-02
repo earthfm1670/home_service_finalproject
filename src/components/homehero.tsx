@@ -14,7 +14,7 @@ export default function HomeHero() {
           <h1 className="w-full text-[40px] text-blue-700 font-semibold leading-tight lg:text-[64px] lg:font-bold">
             เรื่องบ้าน...ให้เราช่วยดูแลคุณ
           </h1>
-          <h2 className="w-full my-6 text-[20px] text-black font-medium lg:text-[42px]">
+          <h2 className="w-full my-4 text-[20px] text-black font-medium lg:text-[42px] lg:mb-12">
             "สะดวก ราคาคุ้มค่า เชื่อถือได้"
           </h2>
           <p className="mt-8 w-full text-[18px] text-gray-700 font-medium lg:hidden">

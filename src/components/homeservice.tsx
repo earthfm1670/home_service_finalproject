@@ -27,7 +27,7 @@ export default function HomeService() {
             <img
               src="/image/service1.svg"
               alt="cleaningservice"
-              className="w-full h-full rounded-t-md"
+              className="w-full h-full rounded-t-md object-cover"
             ></img>
           </div>
           <div className="my-1 px-4 py-4">
@@ -63,7 +63,7 @@ export default function HomeService() {
             <img
               src="/image/service2.svg"
               alt="cleaningservice"
-              className="w-full h-full rounded-t-md"
+              className="w-full h-full rounded-t-md object-cover"
             ></img>
           </div>
           <div className="my-1 px-4 py-4">
@@ -99,7 +99,7 @@ export default function HomeService() {
             <img
               src="/image/service3.svg"
               alt="cleaningservice"
-              className="w-full h-full rounded-t-md"
+              className="w-full h-full rounded-t-md object-cover"
             ></img>
           </div>
           <div className="my-1 px-4 py-4">
