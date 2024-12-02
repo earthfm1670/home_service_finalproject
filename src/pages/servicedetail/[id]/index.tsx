@@ -56,7 +56,7 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
   );
   const [isOrderSummaryOpen, setIsOrderSummaryOpen] = useState(false);
   const [canProceed, setCanProceed] = useState(false);
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep] = useState(1);
 
   useEffect(() => {
     if (id && !service) {
@@ -85,8 +85,8 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
       const currentQuantity = (prev[subServiceId]?.quantity || 0) + change;
 
       if (currentQuantity <= 0) {
-        const { [subServiceId]: _, ...rest } = prev;
-        return rest;
+        const { [subServiceId]: _removed, ...rest } = prev;
+        return rest as Record<number, ServiceQuantity>;
       }
 
       return {
@@ -134,8 +134,32 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
       router.push(`/servicedetail/${id}/info`);
     }
   };
+  // function ButtonLogin() {
+  //   return (
+  //     <Button className="text-[#336DF2] bg-white border border-blue-600 px-2">
+  //       เข้าสู่ระบบ
+  //     </Button>
+  //   );
+  // }
   return (
     <div className="min-h-screen bg-gray-100 pb-32">
+      {/* Navbar */}
+      {/* <div className="fixed top-0 left-0 right-0 z-50">
+        <div className="flex justify-between items-center border shadow-lg p-2 bg-white">
+          <div className="container mx-auto max-w-7xl px-4 flex justify-between items-center">
+            <div className="flex gap-10">
+              <img src="/image/homeservicelogo.svg" alt="logo" />
+              <div className="hidden lg:block">บริการของเรา</div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="lg:hidden">บริการของเรา</div>
+              <div>
+                <ButtonLogin />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> */}
       <Navbar />
 
       {/* Hero Section */}
@@ -243,7 +267,7 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
                         className={`h-8 w-8 ${
                           getQuantityDisplay(subService.id) > 0
                             ? "border-blue-600 text-blue-600"
-                            : ""
+                            : "border-blue-600 text-blue-600"
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -261,7 +285,7 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
                         className={`h-8 w-8 ${
                           getQuantityDisplay(subService.id) > 0
                             ? "border-blue-600 text-blue-600"
-                            : ""
+                            : "border-blue-600 text-blue-600"
                         }`}
                         onClick={(e) => {
                           e.stopPropagation();
