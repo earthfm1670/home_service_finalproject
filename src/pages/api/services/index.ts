@@ -7,6 +7,9 @@ interface Service {
   category: string;
   service_picture_url: string;
   service_pricing: string;
+  is_recommended: boolean;
+  is_popular: boolean;
+  popularity_score: number;
 }
 
 interface DatabaseService {
@@ -17,6 +20,9 @@ interface DatabaseService {
   }[];
   service_picture_url: string;
   service_pricing: string;
+  is_recommended: boolean;
+  is_popular: boolean;
+  popularity_score: number;
 }
 
 type ServicesResponse = {
@@ -39,20 +45,43 @@ export default async function getAllServices(
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const start = (page - 1) * limit;
+    const sortBy = (req.query.sortBy as string) || "default";
 
-    const { data, error, count } = await supabase
-      .from("services")
-      .select(
-        `
+    let query = supabase.from("services").select(
+      `
         service_id, 
         service_name, 
         categories(category), 
         service_picture_url, 
-        service_pricing
+        service_pricing,
+        is_recommended,
+        is_popular,
+        popularity_score
       `,
-        { count: "exact" }
-      )
-      .range(start, start + limit - 1);
+      { count: "exact" }
+    );
+
+    // Apply filters and sorting based on sortBy parameter
+    if (sortBy === "recommended") {
+      query = query.eq("is_recommended", true);
+    } else if (sortBy === "popular") {
+      query = query.eq("is_popular", true);
+    }
+
+    // Apply ordering
+    if (sortBy === "asc" || sortBy === "recommended") {
+      query = query.order("service_name", { ascending: true });
+    } else if (sortBy === "desc") {
+      query = query.order("service_name", { ascending: false });
+    } else if (sortBy === "popular") {
+      query = query.order("popularity_score", { ascending: false });
+    } else {
+      // Default ordering
+      query = query.order("service_id");
+    }
+
+    // Apply pagination
+    const { data, error, count } = await query.range(start, start + limit - 1);
 
     if (error) {
       console.error("Error fetching services:", error);
@@ -83,6 +112,9 @@ export default async function getAllServices(
         category: category,
         service_picture_url: item.service_picture_url,
         service_pricing: item.service_pricing,
+        is_recommended: item.is_recommended,
+        is_popular: item.is_popular,
+        popularity_score: item.popularity_score,
       };
     });
 
