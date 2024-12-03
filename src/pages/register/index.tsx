@@ -26,6 +26,30 @@ function Registration() {
     setIsChecked((prevState) => !prevState);
   };
 
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    password: "",
+    terms: false,
+  });
+
+  const [errors, setErrors] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    password: "",
+    terms: "",
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
   return (
     <>
       <div className="bg-gray-100 min-h-screen">
