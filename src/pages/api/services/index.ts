@@ -45,12 +45,17 @@ export default async function getAllServices(
     const start = (page - 1) * limit;
     const category = req.query.category as string | undefined;
     const sortBy = req.query.sortBy as string | undefined;
+    const search = req.query.search as string;
+    const minPrice = parseInt(req.query.min_price as string);
+    const maxPrice = parseInt(req.query.max_price as string);
+    const isRecommended = req.query.is_recommended === "true";
+    const isPopular = req.query.is_popular === "true";
 
     // สร้าง query
     let query = supabase.from("services").select(
       `
           service_id, 
-          service_name, 
+          service_name,
           categories!inner(category),
           service_picture_url, 
           service_pricing,
@@ -63,6 +68,28 @@ export default async function getAllServices(
     if (category) {
       query = query.eq("categories.category", category);
     }
+
+    // ค้นหาตามชื่อบริการ
+    if (search) {
+      query = query.ilike("service_name", `%${search}%`);
+    }
+
+    // กรองตามช่วงราคา
+    if (!isNaN(minPrice)) {
+      query = query.gte("service_pricing", minPrice);
+    }
+    if (!isNaN(maxPrice)) {
+      query = query.lte("service_pricing", maxPrice);
+    }
+
+    // กรองตามแท็ก recommended/popular
+    if (isRecommended) {
+      query = query.is("is_recommended", true);
+    }
+    if (isPopular) {
+      query = query.is("is_popular", true);
+    }
+
     // เพิ่มการเรียงลำดับตาม service_name
     if (sortBy === "asc" || sortBy === "desc") {
       query = query.order("service_name", { ascending: sortBy === "asc" });
