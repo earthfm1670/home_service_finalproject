@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 export function Navbar() {
   return (
     <div className="flex justify-between items-center border shadow-lg p-2 bg-white lg:px-20">
-      <div className="flex gap-10">
+      <div className="flex gap-10 ">
         <img src="/image/homeservicelogo.svg"></img>
         <div className="hidden lg:block">บริการของเรา</div>
       </div>
