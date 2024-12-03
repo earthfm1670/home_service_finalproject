@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { connectionPool } from "@/utils/db";
 
-export default async function edit(req: NextApiRequest, res: NextApiResponse) {
+export default async function adminEdit(req: NextApiRequest, res: NextApiResponse) {
   // protect admin
 
   // access body
