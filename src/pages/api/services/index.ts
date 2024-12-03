@@ -12,6 +12,17 @@ interface Service {
   popularity_score: number;
 }
 
+interface RawServiceData {
+  service_id: number;
+  service_name: string;
+  categories: {
+    category: string;
+  }[];
+  service_picture_url: string;
+  service_pricing: string;
+  popularity_score: number;
+}
+
 type ServicesResponse = {
   data: Service[] | null;
   error?: string;
@@ -32,22 +43,33 @@ export default async function getAllServices(
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const start = (page - 1) * limit;
+    const category = req.query.category as string | undefined;
+    const sortBy = req.query.sortBy as string | undefined;
 
-    // Fetch data from Supabase
-    const { data, error, count } = await supabase
-      .from("services")
-      .select(
-        `
+    // สร้าง query
+    let query = supabase.from("services").select(
+      `
           service_id, 
           service_name, 
-          categories(category), 
+          categories!inner(category),
           service_picture_url, 
           service_pricing,
           popularity_score
         `,
-        { count: "exact" }
-      )
-      .range(start, start + limit - 1);
+      { count: "exact" }
+    );
+
+    // ถ้ามีการระบุ category ให้เพิ่มเงื่อนไขในการค้นหา
+    if (category) {
+      query = query.eq("categories.category", category);
+    }
+    // เพิ่มการเรียงลำดับตาม service_name
+    if (sortBy === "asc" || sortBy === "desc") {
+      query = query.order("service_name", { ascending: sortBy === "asc" });
+    }
+
+    // ดึงข้อมูลจาก Supabase
+    const { data, error, count } = await query.range(start, start + limit - 1);
 
     if (error) {
       console.error("Error fetching services:", error);
@@ -61,19 +83,29 @@ export default async function getAllServices(
     }
 
     // คำนวณค่า is_recommended และ is_popular ในโค้ด
-    const formattedData: Service[] = data.map((item) => {
-      const isRecommended = item.popularity_score >= 60; // Threshold for "recommended"
-      const isPopular = item.popularity_score >= 80; // Threshold for "popular"
+    const formattedData: Service[] = (data as RawServiceData[]).map((item) => {
+      const isRecommended = item.popularity_score >= 60;
+      const isPopular = item.popularity_score >= 80;
+
+      let category = "";
+      if (Array.isArray(item.categories) && item.categories.length > 0) {
+        category = item.categories[0].category;
+      } else if (
+        typeof item.categories === "object" &&
+        item.categories !== null &&
+        "category" in item.categories
+      ) {
+        category = (item.categories as { category: string }).category;
+      }
 
       return {
         service_id: item.service_id,
         service_name: item.service_name,
-        category:
-          item.categories?.length > 0 ? item.categories[0].category : "",
+        category: category,
         service_picture_url: item.service_picture_url,
         service_pricing: item.service_pricing,
-        is_recommended: isRecommended, // คำนวณจาก popularity_score
-        is_popular: isPopular, // คำนวณจาก popularity_score
+        is_recommended: isRecommended,
+        is_popular: isPopular,
         popularity_score: item.popularity_score,
       };
     });
