@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import axios from "axios";
 
 function Registration() {
   const [isTermsOpen, setIsTermsOpen] = useState<boolean>(false);
@@ -22,8 +23,100 @@ function Registration() {
     setIsPrivacyOpen(false);
   };
 
-  const handleCheckboxChange = (): void => {
-    setIsChecked((prevState) => !prevState);
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { checked } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      agreementAccepted: checked,
+    }));
+    setIsChecked(checked);
+  };
+
+  const [formData, setFormData] = useState({
+    name: "",
+    phoneNumber: "",
+    email: "",
+    password: "",
+    agreementAccepted: false,
+  });
+
+  const [errors, setErrors] = useState({
+    name: "",
+    phoneNumber: "",
+    email: "",
+    password: "",
+    agreementAccepted: "",
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const validateForm = () => {
+    const newErrors: any = {};
+    // Validate Name (only allow alphabetic characters, spaces, and dashes)
+    if (!formData.name.match(/^[A-Za-z\s-]*$/)) {
+      newErrors.name = "กรุณากรอกตัวอักษรภาษาอังกฤษ, เว้นวรรค หรือ - เท่านั้น";
+    }
+
+    // Validate Phone (must match a Thai phone number pattern)
+    if (!formData.phoneNumber.match(/^0\d{9}$/)) {
+      newErrors.phoneNumber =
+        "กรุณากรอกเบอร์โทรศัพท์ที่เริ่มต้นด้วย 0 และมี 10 หลัก";
+    }
+
+    // Validate Email (basic email format)
+    if (
+      !formData.email.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+    ) {
+      newErrors.email = "กรุณากรอกอีเมลที่ถูกต้อง เช่น example@domain.com";
+    }
+
+    // Validate Password (must be at least 13 characters)
+    if (formData.password.length < 13) {
+      newErrors.password = "รหัสผ่านต้องมีมากกว่า 12 ตัวอักษร";
+    }
+
+    // Validate Terms (checkbox must be checked)
+    // if (!formData.agreementAccepted) {
+    //   newErrors.agreementAccepted = "กรุณายอมรับข้อตกลงและเงื่อนไข";
+    // }
+
+    setErrors(newErrors);
+
+    // Return whether the form is valid (i.e., no errors)
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validateForm()) {
+      try {
+        const response = await axios.post(
+          "http://localhost:3000/api/auth/register",
+          formData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log("Registration successful:", response.data);
+        alert("ลงทะเบียนสำเร็จ!");
+      } catch (error: any) {
+        console.error(
+          "Registration failed:",
+          error.response?.data || error.message
+        );
+        alert("เกิดข้อผิดพลาดในการลงทะเบียน กรุณาลองอีกครั้ง");
+      }
+    } else {
+      console.log("Form has errors");
+    }
   };
 
   return (
@@ -32,74 +125,110 @@ function Registration() {
         <Navbar />
         <div className="flex justify-center">
           <div className="mx-4 my-10 border border-gray-300 justify-center rounded-lg bg-white lg:w-[614px] lg:mx-auto">
-            <form>
+            <form onSubmit={handleSubmit}>
               <h2 className="text-[20px] text-center my-5">ลงทะเบียน</h2>
               <div className="flex flex-col mx-2 my-5 lg:w-3/4 lg:mx-auto">
-                <label>ชื่อ - นามสกุล</label>
+                <label>
+                  ชื่อ - นามสกุล<span className="text-[#C82438]">*</span>
+                </label>
                 <input
                   type="text"
                   id="name"
                   name="name"
                   placeholder="กรุณากรอกชื่อ นามสกุล"
                   required
+                  value={formData.name}
+                  onChange={handleInputChange}
                   className="border border-gray-300 rounded-md h-10 pl-3"
-                  pattern="^[A-Za-z\s-]*$"
-                  title="กรุณากรอกตัวอักษรภาษาอังกฤษ, เว้นวรรค หรือ - เท่านั้น"
+                  // pattern="^[A-Za-z\s-]*$"
+                  // title="กรุณากรอกตัวอักษรภาษาอังกฤษ, เว้นวรรค หรือ - เท่านั้น"
                 ></input>
+                {errors.name && (
+                  <div className="text-[#C82438] text-sm mt-1">
+                    {errors.name}
+                  </div>
+                )}
               </div>
               <div className="flex flex-col mx-2 my-5 lg:w-3/4 lg:mx-auto">
-                <label>เบอร์โทรศัพท์</label>
+                <label>
+                  เบอร์โทรศัพท์<span className="text-[#C82438]">*</span>
+                </label>
                 <input
                   type="tel"
-                  id="phone"
-                  name="phone"
+                  id="phoneNumber"
+                  name="phoneNumber"
                   placeholder="กรุณากรอกเบอร์โทรศัพท์"
                   required
+                  value={formData.phoneNumber}
+                  onChange={handleInputChange}
                   className="border border-gray-300 rounded-md h-10 pl-3"
-                  pattern="^0\d{9}$"
-                  title="กรุณากรอกเบอร์โทรศัพท์ที่เริ่มต้นด้วย 0 และมี 10 หลัก"
+                  // pattern="^0\d{9}$"
+                  // title="กรุณากรอกเบอร์โทรศัพท์ที่เริ่มต้นด้วย 0 และมี 10 หลัก"
                 ></input>
+                {errors.phoneNumber && (
+                  <div className="text-[#C82438] text-sm mt-1">
+                    {errors.phoneNumber}
+                  </div>
+                )}
               </div>
               <div className="flex flex-col mx-2 my-5 lg:w-3/4 lg:mx-auto">
-                <label>อีเมล</label>
+                <label>
+                  อีเมล<span className="text-[#C82438]">*</span>
+                </label>
                 <input
-                  type="email"
+                  // type="email"
                   id="email"
                   name="email"
                   placeholder="กรุณากรอกอีเมล"
                   required
+                  value={formData.email}
+                  onChange={handleInputChange}
                   className="border border-gray-300 rounded-md h-10 pl-3"
-                  pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-                  title="กรุณากรอกอีเมลที่ถูกต้อง เช่น example@domain.com"
+                  // pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                  // title="กรุณากรอกอีเมลที่ถูกต้อง เช่น example@domain.com"
                 ></input>
+                {errors.email && (
+                  <div className="text-[#C82438] text-sm mt-1">
+                    {errors.email}
+                  </div>
+                )}
               </div>
               <div className="flex flex-col mx-2 my-5 lg:w-3/4 lg:mx-auto">
-                <label>รหัสผ่าน</label>
+                <label>
+                  รหัสผ่าน<span className="text-[#C82438]">*</span>
+                </label>
                 <input
                   type="password"
                   id="password"
                   name="password"
                   placeholder="กรุณากรอกรหัสผ่าน"
                   required
+                  value={formData.password}
+                  onChange={handleInputChange}
                   className="border border-gray-300 rounded-md h-10 pl-3"
-                  minLength={13}
-                  title="รหัสผ่านต้องมีมากกว่า 12 ตัวอักษร"
+                  // minLength={13}
+                  // title="รหัสผ่านต้องมีมากกว่า 12 ตัวอักษร"
                 ></input>
+                {errors.password && (
+                  <div className="text-[#C82438] text-sm mt-1">
+                    {errors.password}
+                  </div>
+                )}
               </div>
               <div className="flex flex-row items-baseline mx-2 my-5 lg:w-3/4 lg:mx-auto">
                 <input
                   type="checkbox"
-                  id="terms"
-                  name="terms"
+                  id="agreementAccepted"
+                  name="agreementAccepted"
                   required
+                  checked={formData.agreementAccepted}
                   onChange={handleCheckboxChange}
-                  checked={isChecked}
                   className={`w-5 h-5 translate-y-1 ${
-                    isChecked ? "opacity-100" : "opacity-40"
+                    formData.agreementAccepted ? "opacity-100" : "opacity-40"
                   }`}
                 />
                 <label
-                  htmlFor="terms"
+                  htmlFor="agreementAccepted"
                   className="ml-4 text-[16px] text-gray-600 w-5/6"
                 >
                   ยอมรับ{" "}
@@ -126,6 +255,11 @@ function Registration() {
                   </a>
                   .
                 </label>
+                {errors.agreementAccepted && (
+                  <div className="text[#C82438] text-sm mt-1">
+                    {errors.agreementAccepted}
+                  </div>
+                )}
               </div>
               <div className="mx-3 lg:w-3/4 lg:mx-auto">
                 <button
