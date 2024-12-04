@@ -2,7 +2,7 @@ import homeservicelogo from "../../public/image/homeservicelogo.svg";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
-export default function Adminsidebar() {
+export default function AdminSidebar() {
 
     const router = useRouter()
 
