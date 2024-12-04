@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import axios from "axios";
 
 function Registration() {
   const [isTermsOpen, setIsTermsOpen] = useState<boolean>(false);
@@ -22,24 +23,29 @@ function Registration() {
     setIsPrivacyOpen(false);
   };
 
-  const handleCheckboxChange = (): void => {
-    setIsChecked((prevState) => !prevState);
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { checked } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      agreementAccepted: checked,
+    }));
+    setIsChecked(checked);
   };
 
   const [formData, setFormData] = useState({
     name: "",
-    phone: "",
+    phoneNumber: "",
     email: "",
     password: "",
-    terms: false,
+    agreementAccepted: false,
   });
 
   const [errors, setErrors] = useState({
     name: "",
-    phone: "",
+    phoneNumber: "",
     email: "",
     password: "",
-    terms: "",
+    agreementAccepted: "",
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,8 +64,9 @@ function Registration() {
     }
 
     // Validate Phone (must match a Thai phone number pattern)
-    if (!formData.phone.match(/^0\d{9}$/)) {
-      newErrors.phone = "กรุณากรอกเบอร์โทรศัพท์ที่เริ่มต้นด้วย 0 และมี 10 หลัก";
+    if (!formData.phoneNumber.match(/^0\d{9}$/)) {
+      newErrors.phoneNumber =
+        "กรุณากรอกเบอร์โทรศัพท์ที่เริ่มต้นด้วย 0 และมี 10 หลัก";
     }
 
     // Validate Email (basic email format)
@@ -74,9 +81,9 @@ function Registration() {
       newErrors.password = "รหัสผ่านต้องมีมากกว่า 12 ตัวอักษร";
     }
 
-    // // Validate Terms (checkbox must be checked)
-    // if (!formData.terms) {
-    //   newErrors.terms = "กรุณายอมรับข้อตกลงและเงื่อนไข";
+    // Validate Terms (checkbox must be checked)
+    // if (!formData.agreementAccepted) {
+    //   newErrors.agreementAccepted = "กรุณายอมรับข้อตกลงและเงื่อนไข";
     // }
 
     setErrors(newErrors);
@@ -85,12 +92,30 @@ function Registration() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log("Form submitted:", formData);
+      try {
+        const response = await axios.post(
+          "http://localhost:3000/api/auth/register",
+          formData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log("Registration successful:", response.data);
+        alert("ลงทะเบียนสำเร็จ!");
+      } catch (error: any) {
+        console.error(
+          "Registration failed:",
+          error.response?.data || error.message
+        );
+        alert("เกิดข้อผิดพลาดในการลงทะเบียน กรุณาลองอีกครั้ง");
+      }
     } else {
-      console.log("Form has error");
+      console.log("Form has errors");
     }
   };
 
@@ -130,19 +155,19 @@ function Registration() {
                 </label>
                 <input
                   type="tel"
-                  id="phone"
-                  name="phone"
+                  id="phoneNumber"
+                  name="phoneNumber"
                   placeholder="กรุณากรอกเบอร์โทรศัพท์"
                   required
-                  value={formData.phone}
+                  value={formData.phoneNumber}
                   onChange={handleInputChange}
                   className="border border-gray-300 rounded-md h-10 pl-3"
                   // pattern="^0\d{9}$"
                   // title="กรุณากรอกเบอร์โทรศัพท์ที่เริ่มต้นด้วย 0 และมี 10 หลัก"
                 ></input>
-                {errors.phone && (
+                {errors.phoneNumber && (
                   <div className="text-[#C82438] text-sm mt-1">
-                    {errors.phone}
+                    {errors.phoneNumber}
                   </div>
                 )}
               </div>
@@ -193,17 +218,17 @@ function Registration() {
               <div className="flex flex-row items-baseline mx-2 my-5 lg:w-3/4 lg:mx-auto">
                 <input
                   type="checkbox"
-                  id="terms"
-                  name="terms"
+                  id="agreementAccepted"
+                  name="agreementAccepted"
                   required
-                  checked={isChecked}
+                  checked={formData.agreementAccepted}
                   onChange={handleCheckboxChange}
                   className={`w-5 h-5 translate-y-1 ${
-                    isChecked ? "opacity-100" : "opacity-40"
+                    formData.agreementAccepted ? "opacity-100" : "opacity-40"
                   }`}
                 />
                 <label
-                  htmlFor="terms"
+                  htmlFor="agreementAccepted"
                   className="ml-4 text-[16px] text-gray-600 w-5/6"
                 >
                   ยอมรับ{" "}
@@ -230,9 +255,9 @@ function Registration() {
                   </a>
                   .
                 </label>
-                {errors.terms && (
+                {errors.agreementAccepted && (
                   <div className="text[#C82438] text-sm mt-1">
-                    {errors.terms}
+                    {errors.agreementAccepted}
                   </div>
                 )}
               </div>
