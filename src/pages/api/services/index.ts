@@ -1,152 +1,174 @@
-import { supabase } from "@/utils/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
+import { supabase } from "@/utils/supabase";
+import type { Service, ServicesResponse } from "@/types/service";
 
-interface Service {
-  service_id: number;
-  service_name: string;
-  category: string;
-  service_picture_url: string;
-  service_pricing: string;
-  is_recommended: boolean;
-  is_popular: boolean;
-  popularity_score: number;
-}
-
-interface RawServiceData {
-  service_id: number;
-  service_name: string;
-  categories: {
-    category: string;
-  }[];
-  service_picture_url: string;
-  service_pricing: string;
-  popularity_score: number;
-}
-
-type ServicesResponse = {
-  data: Service[] | null;
-  error?: string;
-  totalCount?: number;
-  currentPage?: number;
-  totalPages?: number;
-};
-
-export default async function getAllServices(
+export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ServicesResponse>
+  res: NextApiResponse
 ) {
-  if (req.method !== "GET") {
-    return res.status(405).json({ data: null, error: "Method Not Allowed" });
-  }
+  if (req.method === "GET") {
+    try {
+      const { query } = req;
 
-  try {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
-    const start = (page - 1) * limit;
-    const category = req.query.category as string | undefined;
-    const sortBy = req.query.sortBy as string | undefined;
-    const search = req.query.search as string;
-    const minPrice = parseInt(req.query.min_price as string);
-    const maxPrice = parseInt(req.query.max_price as string);
-    const isRecommended = req.query.is_recommended === "true";
-    const isPopular = req.query.is_popular === "true";
+      // Pagination params
+      const page = parseInt((query.page as string) || "1");
+      const limit = parseInt((query.limit as string) || "13");
+      const start = (page - 1) * limit;
 
-    // สร้าง query
-    let query = supabase.from("services").select(
-      `
-          service_id, 
+      // Filter params
+      const search = (query.search as string) || "";
+      const category = query.category as string;
+      const minPrice = parseFloat((query.min_price as string) || "NaN");
+      const maxPrice = parseFloat((query.max_price as string) || "NaN");
+      const isRecommended = query.is_recommended === "true";
+      const isPopular = query.is_popular === "true";
+      const sortBy = query.sortBy as "asc" | "desc" | undefined;
+
+      // Fetch all popularity scores
+      const { data: popularityScores, error: popularityScoreError } =
+        await supabase.from("services").select("popularity_score");
+
+      if (popularityScoreError) throw popularityScoreError;
+
+      // Calculate average popularity score
+      const avgPopularityScore =
+        popularityScores.reduce(
+          (sum, service) => sum + (service.popularity_score || 0),
+          0
+        ) / popularityScores.length;
+      const recommendedThreshold = avgPopularityScore * 0.6;
+      const popularThreshold = avgPopularityScore * 0.8;
+
+      // Base query
+      let dbQuery = supabase
+        .from("services")
+        .select(
+          `
+          service_id,
           service_name,
+          category_id,
           categories!inner(category),
-          service_picture_url, 
-          service_pricing,
+          service_picture_url,
+          sub_services (
+            unit_price
+          ),
           popularity_score
         `,
-      { count: "exact" }
-    );
+          { count: "exact" }
+        )
+        // .order("service_id", { ascending: true })
+        .range(start, start + limit - 1);
 
-    // ถ้ามีการระบุ category ให้เพิ่มเงื่อนไขในการค้นหา
-    if (category) {
-      query = query.eq("categories.category", category);
-    }
-
-    // ค้นหาตามชื่อบริการ
-    if (search) {
-      query = query.ilike("service_name", `%${search}%`);
-    }
-
-    // กรองตามช่วงราคา
-    if (!isNaN(minPrice)) {
-      query = query.gte("service_pricing", minPrice);
-    }
-    if (!isNaN(maxPrice)) {
-      query = query.lte("service_pricing", maxPrice);
-    }
-
-    // กรองตามแท็ก recommended/popular
-    if (isRecommended) {
-      query = query.is("is_recommended", true);
-    }
-    if (isPopular) {
-      query = query.is("is_popular", true);
-    }
-
-    // เพิ่มการเรียงลำดับตาม service_name
-    if (sortBy === "asc" || sortBy === "desc") {
-      query = query.order("service_name", { ascending: sortBy === "asc" });
-    }
-
-    // ดึงข้อมูลจาก Supabase
-    const { data, error, count } = await query.range(start, start + limit - 1);
-
-    if (error) {
-      console.error("Error fetching services:", error);
-      return res
-        .status(500)
-        .json({ data: null, error: "An unexpected error occurred" });
-    }
-
-    if (!data || data.length === 0) {
-      return res.status(404).json({ data: null, error: "No services found" });
-    }
-
-    // คำนวณค่า is_recommended และ is_popular ในโค้ด
-    const formattedData: Service[] = (data as RawServiceData[]).map((item) => {
-      const isRecommended = item.popularity_score >= 60;
-      const isPopular = item.popularity_score >= 80;
-
-      let category = "";
-      if (Array.isArray(item.categories) && item.categories.length > 0) {
-        category = item.categories[0].category;
-      } else if (
-        typeof item.categories === "object" &&
-        item.categories !== null &&
-        "category" in item.categories
-      ) {
-        category = (item.categories as { category: string }).category;
+      // Apply filters
+      if (search) {
+        dbQuery = dbQuery.ilike("service_name", `%${search}%`);
       }
 
-      return {
-        service_id: item.service_id,
-        service_name: item.service_name,
-        category: category,
-        service_picture_url: item.service_picture_url,
-        service_pricing: item.service_pricing,
-        is_recommended: isRecommended,
-        is_popular: isPopular,
-        popularity_score: item.popularity_score,
-      };
-    });
+      if (category) {
+        dbQuery = dbQuery.ilike("categories.category", `%${category}%`);
+      }
 
-    return res.status(200).json({
-      data: formattedData,
-      totalCount: count ?? undefined,
-      currentPage: page,
-      totalPages: Math.ceil((count || 0) / limit),
-    });
-  } catch (error) {
-    console.error("Unexpected error:", error);
-    return res
-      .status(500)
-      .json({ data: null, error: "An unexpected error occurred" });
+      if (isRecommended) {
+        dbQuery = dbQuery.gte("popularity_score", recommendedThreshold);
+      }
+
+      if (isPopular) {
+        dbQuery = dbQuery.gte("popularity_score", popularThreshold);
+      }
+
+      if (sortBy) {
+        dbQuery = dbQuery.order("service_name", {
+          ascending: sortBy === "asc",
+        });
+      }
+
+      const { data: services, error, count } = await dbQuery;
+
+      if (error) throw error;
+
+      // Process and filter services
+      let processedServices: Service[] = (services || []).map(
+        (service: any) => {
+          const subServices = service.sub_services || [];
+          const prices = subServices.map((s: any) => s.unit_price);
+
+          let pricing = "";
+          if (prices.length > 0) {
+            const minPrice = Math.min(...prices);
+            const maxPrice = Math.max(...prices);
+
+            const formatPrice = (price: number) => {
+              return price >= 1000
+                ? price.toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
+                : price.toFixed(2);
+            };
+            pricing =
+              minPrice === maxPrice
+                ? `${formatPrice(minPrice)} ฿`
+                : `${formatPrice(minPrice)} - ${formatPrice(maxPrice)} ฿`;
+          }
+
+          return {
+            service_id: service.service_id,
+            service_name: service.service_name,
+            category: service.categories?.category || "",
+            service_picture_url: service.service_picture_url,
+            service_pricing: pricing,
+            is_recommended: service.popularity_score >= recommendedThreshold,
+            is_popular: service.popularity_score >= popularThreshold,
+            popularity_score: service.popularity_score,
+          };
+        }
+      );
+
+      // Apply price filtering
+      if (!isNaN(minPrice) || !isNaN(maxPrice)) {
+        processedServices = processedServices.filter((service) => {
+          const servicePrice = service.service_pricing.replace(/[^\d.-]/g, "");
+          const [servicePriceMin, servicePriceMax] = servicePrice
+            .split("-")
+            .map(Number);
+
+          if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+            return (
+              (servicePriceMin >= minPrice && servicePriceMin <= maxPrice) ||
+              (servicePriceMax >= minPrice && servicePriceMax <= maxPrice) ||
+              (servicePriceMin <= minPrice && servicePriceMax >= maxPrice)
+            );
+          } else if (!isNaN(minPrice)) {
+            return servicePriceMax >= minPrice || servicePriceMin >= minPrice;
+          } else if (!isNaN(maxPrice)) {
+            return servicePriceMin <= maxPrice || servicePriceMax <= maxPrice;
+          }
+          return true;
+        });
+      }
+
+      const filteredCount = processedServices.length;
+      const totalPages = Math.ceil(filteredCount / limit);
+      const response: ServicesResponse = {
+        data: processedServices.slice(0, limit), // Apply limit to filtered results
+        totalCount: filteredCount,
+        currentPage: page,
+        totalPages: totalPages,
+      };
+
+      res.status(200).json(response);
+    } catch (error) {
+      console.error("API Error:", error);
+      res.status(500).json({
+        data: null,
+        totalCount: 0,
+        currentPage: 1,
+        totalPages: 0,
+        error: "Internal Server Error",
+      } as ServicesResponse);
+    }
+  } else {
+    res.setHeader("Allow", ["GET"]);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
