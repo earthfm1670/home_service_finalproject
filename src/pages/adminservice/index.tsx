@@ -2,10 +2,52 @@ import Adminsidebar from "@/components/adminsidebar";
 import { supabase } from "@/utils/supabase";
 import { useEffect, useState } from "react";
 import { useServices } from "@/components/ServicesContext";
-import { ServicesProvider } from "@/components/ServicesContext";
-import AdminNavbar from "@/components/adminnavbar";
+import axios from "axios";
+// import AdminNavbar from "@/components/adminnavbar";
 
-const Adminservice: React.FC = () => {
+export default function AdminNavbar() {
+  const [input, setInput] = useState("");
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(event.target.value);
+  };
+  console.log(input);
+
+  return (
+    <>
+      <div className="flex flex-row w-full">
+        <div>
+          <Adminsidebar />
+        </div>
+        <div className="w-full flex flex-col">
+          {/* navbar for admin page */}
+          <div className="flex flex-row items-center justify-between bg-white sticky top-0 h-20 px-10 py-5 min-w-[1200px] border-b  border-gray-300">
+            <div className="text-xl">บริการ</div>
+            <div className="h-full flex flex-row items-center gap-6 relative">
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 ">
+                <IconFinding />
+              </div>
+              <input
+                type="text"
+                placeholder="ค้นหาบริการ..."
+                onChange={handleInputChange}
+                className="border border-gray-300 h-full rounded-lg w-80 pl-10"
+              />
+              <button className=" bg-defaultColor text-white text-base h-full px-7 flex items-center gap-3 rounded-lg">
+                เพิ่มบริการ
+                <span>
+                  <IconPlus />
+                </span>
+              </button>
+            </div>
+          </div>
+          <AdminserviceIndex input={input} />
+        </div>
+      </div>
+    </>
+  );
+}
+
+export const AdminserviceIndex = ({ input }: { input: string | null }) => {
   // ดึงข้อมูลจาก Context
   // สร้าง state เพื่อมารับข้อมูล service
   const { getServicesData, servicesData } = useServices();
@@ -13,7 +55,6 @@ const Adminservice: React.FC = () => {
   // เรียกข้อมูลเมื่อเกิดการ refresh window
   useEffect(() => {
     getServicesData();
-    console.log(servicesData); // ตรวจสอบข้อมูลใน servicesData
   }, []);
 
   // style text category
@@ -23,15 +64,25 @@ const Adminservice: React.FC = () => {
     บริการห้องน้ำ: "text-green-900 bg-green-100 inline-block px-2 py-1",
   };
 
+  // async function fetchServiceData() {
+  //   try {
+  //     const result = await axios.get(
+  //       `api/services?limit=9&sortBy=${sortBy}`
+  //     )
+  //   } catch {
+
+  //   }
+  // }
+
   return (
     <>
       <div className="">
         <div className="flex flex-row w-full">
           {/* sidebar admin */}
-          <Adminsidebar />
+          {/* <Adminsidebar /> */}
           {/* work space for admin page */}
           <div className="w-full flex flex-col">
-            <AdminNavbar />
+            {/* <AdminNavbar /> */}
             {/* list detail for admin page */}
             <div className="min-h-screen w-full flex justify-center items-start py-10 min-w-[1200px]  bg-gray-100">
               <div className="flex w-[1120px] border border-gray-300 rounded-lg overflow-x-auto">
@@ -62,7 +113,7 @@ const Adminservice: React.FC = () => {
                   <tbody>
                     {servicesData.map((service, index) => (
                       <tr
-                        key={index}
+                        key={service.id}
                         className="border-t bg-white h-20 text-black"
                       >
                         <td className="px-auto text-center active:bg-gray-600">
@@ -97,16 +148,6 @@ const Adminservice: React.FC = () => {
     </>
   );
 };
-
-const App: React.FC = () => {
-  return (
-    <ServicesProvider>
-      <Adminservice />
-    </ServicesProvider>
-  );
-};
-
-export default App;
 
 function IconDrag() {
   // change color icon when active
@@ -215,6 +256,48 @@ function IconEdit() {
       <path
         d="M8 3.99992H3C2.46957 3.99992 1.96086 4.21063 1.58579 4.5857C1.21071 4.96078 1 5.46948 1 5.99992V16.9999C1 17.5304 1.21071 18.0391 1.58579 18.4141C1.96086 18.7892 2.46957 18.9999 3 18.9999H14C14.5304 18.9999 15.0391 18.7892 15.4142 18.4141C15.7893 18.0391 16 17.5304 16 16.9999V11.9999M14.586 2.58592C14.7705 2.3949 14.9912 2.24253 15.2352 2.13772C15.4792 2.0329 15.7416 1.97772 16.0072 1.97542C16.2728 1.97311 16.5361 2.02371 16.7819 2.12427C17.0277 2.22484 17.251 2.37334 17.4388 2.56113C17.6266 2.74891 17.7751 2.97222 17.8756 3.21801C17.9762 3.4638 18.0268 3.72716 18.0245 3.99272C18.0222 4.25828 17.967 4.52072 17.8622 4.76473C17.7574 5.00874 17.605 5.22942 17.414 5.41392L8.828 13.9999H6V11.1719L14.586 2.58592Z"
         stroke={active ? "#0E3FB0" : "#336DF2"}
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+}
+
+// navbar ----------------------------------------------------------------------------------------
+// : React.FC
+
+function IconPlus() {
+  return (
+    <svg
+      width="10"
+      height="10"
+      viewBox="0 0 10 10"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M5 0C5.26522 0 5.51957 0.105357 5.70711 0.292893C5.89464 0.48043 6 0.734784 6 1V4H9C9.26522 4 9.51957 4.10536 9.70711 4.29289C9.89464 4.48043 10 4.73478 10 5C10 5.26522 9.89464 5.51957 9.70711 5.70711C9.51957 5.89464 9.26522 6 9 6H6V9C6 9.26522 5.89464 9.51957 5.70711 9.70711C5.51957 9.89464 5.26522 10 5 10C4.73478 10 4.48043 9.89464 4.29289 9.70711C4.10536 9.51957 4 9.26522 4 9V6H1C0.734784 6 0.48043 5.89464 0.292893 5.70711C0.105357 5.51957 0 5.26522 0 5C0 4.73478 0.105357 4.48043 0.292893 4.29289C0.48043 4.10536 0.734784 4 1 4H4V1C4 0.734784 4.10536 0.48043 4.29289 0.292893C4.48043 0.105357 4.73478 0 5 0Z"
+        fill="white"
+      />
+    </svg>
+  );
+}
+
+function IconFinding() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M19 19L13 13L19 19ZM15 8C15 8.91925 14.8189 9.82951 14.4672 10.6788C14.1154 11.5281 13.5998 12.2997 12.9497 12.9497C12.2997 13.5998 11.5281 14.1154 10.6788 14.4672C9.82951 14.8189 8.91925 15 8 15C7.08075 15 6.1705 14.8189 5.32122 14.4672C4.47194 14.1154 3.70026 13.5998 3.05025 12.9497C2.40024 12.2997 1.88463 11.5281 1.53284 10.6788C1.18106 9.82951 1 8.91925 1 8C1 6.14348 1.7375 4.36301 3.05025 3.05025C4.36301 1.7375 6.14348 1 8 1C9.85652 1 11.637 1.7375 12.9497 3.05025C14.2625 4.36301 15 6.14348 15 8Z"
+        stroke="#CCD0D7"
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
