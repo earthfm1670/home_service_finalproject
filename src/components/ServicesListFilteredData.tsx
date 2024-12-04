@@ -1,7 +1,6 @@
-import React, { useState, useEffect, createContext, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { Range } from "react-range";
 import { Search } from "lucide-react";
-import axios from "axios";
 import { useServices } from "./ServicesContext";
 import {
   Select,
@@ -17,11 +16,39 @@ const ServicesListFilteredData: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([200, 1800]);
   const [placeholder, setPlaceholder] = useState<string>("ตามตัวอัก...");
-  const { servicesData, getServicesData } = useServices(); // ดึงข้อมูลจาก Context
+  const [selecttedCategory, setSelecttedCategory] = useState<string>("");
+  const [sortByChange, setSortByChange] = useState<string>("");
+  const [searchText, setsearchText] = useState<string>("");
+  const { getServicesData } = useServices(); // ดึงข้อมูลจาก Context
 
+  const handleCategoryChange = (value: string) => {
+    setSelecttedCategory(value);
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setsearchText(event.target.value);
+  };
+
+  const handleSortByChange = (value: string) => {
+    setSortByChange(value);
+  };
+
+  // ส่ง parameter ไปยัง context เมื่อกด button ค้นหา
+  const handleSearchSummit = () => {
+    getServicesData(selecttedCategory, sortByChange, priceRange, searchText);
+  };
+
+  // เรียกใช้ handleSearchSummit เมื่อกด enter on input field
+  const handelKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      handleSearchSummit();
+    }
+  };
+
+  // ส่ง parameter ไปยัง getServicesData() ที่ ServicesContext.tsx เพื่อ request data
   useEffect(() => {
-    getServicesData(); // ดึงข้อมูลเมื่อ component ถูก mount
-  }, [getServicesData]);
+    getServicesData(selecttedCategory, sortByChange, priceRange);
+  }, [selecttedCategory, sortByChange, priceRange]);
 
   // update ค่า setPlaceholder Dispay size มีการเปลี่ยนแปลงมากหรือน้อยกว่า 1024px
   useEffect(() => {
@@ -34,6 +61,7 @@ const ServicesListFilteredData: React.FC = () => {
         setPlaceholder("ตามตัวอัก...");
       }
     };
+
     // updatePlaceholder() จะถูก excute ทุกครั้งที่ Dispay มีการเปลี่ยนแปลงขนาด
     // และ return () ทำหน้าที่ cleanup (ลบค่า event listener) เมื่อ component ถูกเลิกใช้งาน
     updatePlaceholder();
@@ -75,13 +103,20 @@ const ServicesListFilteredData: React.FC = () => {
           <Search
             size={20}
             className="absolute left-8 cursor-pointer text-[#b3afa8] lg:left-5 z-10"
+            onClick={handleSearchSummit}
           />
           <input
             type="text"
             placeholder="ค้นหาบริการ..."
             className="w-[241px] h-11 rounded-lg py-2 pl-12 pr-4 border focus:outline-slate-300 focus:drop-shadow-sm lg:w-[350px]"
+            value={searchText}
+            onChange={handleInputChange}
+            onKeyDown={handelKeyDown}
           />
-          <button className="w-[86px] h-11 cursor-pointer rounded-lg text-white bg-blue-600 hover:scale-105 lg:absolute lg:left-[1043px]">
+          <button
+            className="w-[86px] h-11 cursor-pointer rounded-lg text-white bg-blue-600 hover:scale-105 lg:absolute lg:left-[1043px]"
+            onClick={handleSearchSummit}
+          >
             ค้นหา
           </button>
         </div>
@@ -90,7 +125,7 @@ const ServicesListFilteredData: React.FC = () => {
             <p className=" text-xs font-normal  text-gray-700 lg:w-[120px]">
               หมวดหมู่บริการ
             </p>
-            <Select>
+            <Select onValueChange={handleCategoryChange}>
               <SelectTrigger className="py-0 px-0 h-auto border-none shadow-none text-base font-medium focus:ring-0 text-gray-950 lg:text-base lg:font-medium">
                 <SelectValue placeholder="บริการทั้งหมด" />
               </SelectTrigger>
@@ -99,13 +134,13 @@ const ServicesListFilteredData: React.FC = () => {
                   <SelectLabel className="text-blue-700">
                     บริการทั้งหมด
                   </SelectLabel>
-                  <SelectItem className="text-gray-700" value="apple">
+                  <SelectItem className="text-gray-700" value="บริการทั่วไป">
                     บริการทั่วไป
                   </SelectItem>
-                  <SelectItem className="text-gray-700" value="banana">
+                  <SelectItem className="text-gray-700" value="บริการห้องครัว">
                     บริการห้องครัว
                   </SelectItem>
-                  <SelectItem className="text-gray-700" value="blueberry">
+                  <SelectItem className="text-gray-700" value="บริการห้องน้ำ">
                     บริการห้องน้ำ
                   </SelectItem>
                 </SelectGroup>
@@ -177,7 +212,7 @@ const ServicesListFilteredData: React.FC = () => {
             <p className="text-xs font-normal text-gray-700 lg:max-w-[215px]">
               เรียงตาม
             </p>
-            <Select>
+            <Select onValueChange={handleSortByChange}>
               <SelectTrigger className="py-0 px-0 h-auto border-none shadow-none text-base font-medium focus:ring-0 gap-3 text-gray-950 lg:gap-2">
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>
@@ -186,13 +221,13 @@ const ServicesListFilteredData: React.FC = () => {
                   <SelectLabel className="text-blue-700">
                     บริการแนะนำ
                   </SelectLabel>
-                  <SelectItem className="text-gray-700" value="apple">
+                  <SelectItem className="text-gray-700" value="popular">
                     บริการยอดนิยม
                   </SelectItem>
-                  <SelectItem className="text-gray-700" value="banana">
+                  <SelectItem className="text-gray-700" value="asc">
                     ตามตัวอักษร (Ascending)
                   </SelectItem>
-                  <SelectItem className="text-gray-700" value="blueberry">
+                  <SelectItem className="text-gray-700" value="desc">
                     ตามตัวอักษร (Descending)
                   </SelectItem>
                 </SelectGroup>
