@@ -6,7 +6,6 @@ import axios from "axios";
 // import AdminNavbar from "@/components/adminnavbar";
 import { useRouter } from "next/router";
 
-const router = useRouter()
 
 export default function AdminNavbar() {
   const [input, setInput] = useState("");
@@ -14,6 +13,8 @@ export default function AdminNavbar() {
     setInput(event.target.value);
   };
   console.log(input);
+
+  const router = useRouter()
 
   return (
     <>
@@ -54,6 +55,7 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
   // ดึงข้อมูลจาก Context
   // สร้าง state เพื่อมารับข้อมูล service
   const { getServicesData, servicesData } = useServices();
+  console.log(servicesData,1)
 
   // เรียกข้อมูลเมื่อเกิดการ refresh window
   useEffect(() => {
@@ -87,7 +89,7 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
           <div className="w-full flex flex-col">
             {/* <AdminNavbar /> */}
             {/* list detail for admin page */}
-            <div className="min-h-screen w-full flex justify-center items-start py-10 min-w-[1200px]  bg-gray-100">
+            <div className="min-h-screen w-full flex justify-center items-start py-12 min-w-[1200px]  bg-gray-100">
               <div className="flex w-[1120px] border border-gray-300 rounded-lg overflow-x-auto">
                 <table className="w-full text-gray-500">
                   <thead>
@@ -137,7 +139,7 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
                         <td className="px-6 ">{service.update_at}</td>
                         <td className="flex flex-row items-center justify-between px-6 py-7 ">
                           <IconTrash />
-                          <IconEdit />
+                          <IconEdit id={service.service_id}/>
                         </td>
                       </tr>
                     ))}
@@ -231,7 +233,7 @@ function IconTrash() {
   );
 }
 
-function IconEdit() {
+function IconEdit(id:any) {
   // change color icon when active
   const [active, setActive] = useState<boolean>(false);
 
@@ -245,6 +247,8 @@ function IconEdit() {
     setActive(false);
   };
 
+  const router = useRouter()
+
   return (
     <svg
       className="cursor-pointer"
@@ -255,6 +259,7 @@ function IconEdit() {
       xmlns="http://www.w3.org/2000/svg"
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
+      onClick={() => router.push(`/adminservice/edit/${id.id}`)}
     >
       <path
         d="M8 3.99992H3C2.46957 3.99992 1.96086 4.21063 1.58579 4.5857C1.21071 4.96078 1 5.46948 1 5.99992V16.9999C1 17.5304 1.21071 18.0391 1.58579 18.4141C1.96086 18.7892 2.46957 18.9999 3 18.9999H14C14.5304 18.9999 15.0391 18.7892 15.4142 18.4141C15.7893 18.0391 16 17.5304 16 16.9999V11.9999M14.586 2.58592C14.7705 2.3949 14.9912 2.24253 15.2352 2.13772C15.4792 2.0329 15.7416 1.97772 16.0072 1.97542C16.2728 1.97311 16.5361 2.02371 16.7819 2.12427C17.0277 2.22484 17.251 2.37334 17.4388 2.56113C17.6266 2.74891 17.7751 2.97222 17.8756 3.21801C17.9762 3.4638 18.0268 3.72716 18.0245 3.99272C18.0222 4.25828 17.967 4.52072 17.8622 4.76473C17.7574 5.00874 17.605 5.22942 17.414 5.41392L8.828 13.9999H6V11.1719L14.586 2.58592Z"
@@ -270,7 +275,7 @@ function IconEdit() {
 // navbar ----------------------------------------------------------------------------------------
 // : React.FC
 
-function IconPlus() {
+export function IconPlus() {
   return (
     <svg
       width="10"

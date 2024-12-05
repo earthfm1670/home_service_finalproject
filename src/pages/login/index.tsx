@@ -83,7 +83,7 @@ export default function Login() {
       // router.push("/");
     } catch (error: any) {
       // ไม่พบข้อมูล email || password ในฐานข้อมูล
-      console.error("Invalid email or password");
+      console.log("Invalid email or password");
       setShowPopup(true);
     }
   };
