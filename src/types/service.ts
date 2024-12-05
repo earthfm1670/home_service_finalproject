@@ -8,17 +8,12 @@ export interface SubService {
 
 export interface Service {
   service_id: number;
-  id: number;
-  service_name: string;
-  service_picture_url: string;
-  sub_services: SubService[];
-}
-export interface Service {
-  service_id: number;
   service_name: string;
   category: string;
   service_picture_url: string;
   service_pricing: string;
+  minPrice: number;
+  maxPrice: number;
   is_recommended: boolean;
   is_popular: boolean;
   popularity_score: number;
