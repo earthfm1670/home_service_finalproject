@@ -1,9 +1,12 @@
-import Adminsidebar from "@/components/adminsidebar";
+import Adminsidebar from "@/components/admin/adminsidebar";
 import { supabase } from "@/utils/supabase";
 import { useEffect, useState } from "react";
 import { useServices } from "@/components/ServicesContext";
 import axios from "axios";
 // import AdminNavbar from "@/components/adminnavbar";
+import { useRouter } from "next/router";
+
+const router = useRouter()
 
 export default function AdminNavbar() {
   const [input, setInput] = useState("");
@@ -32,7 +35,7 @@ export default function AdminNavbar() {
                 onChange={handleInputChange}
                 className="border border-gray-300 h-full rounded-lg w-80 pl-10"
               />
-              <button className=" bg-defaultColor text-white text-base h-full px-7 flex items-center gap-3 rounded-lg">
+              <button className=" bg-defaultColor text-white text-base h-full px-7 flex items-center gap-3 rounded-lg" onClick={() => router.push("/adminservice/add")}>
                 เพิ่มบริการ
                 <span>
                   <IconPlus />
