@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Tag } from "lucide-react";
 import { useServices } from "./ServicesContext";
 
@@ -9,7 +9,13 @@ const categoryBgClassMap: Record<string, string> = {
 };
 
 const ServicesListRendering: React.FC = () => {
-  const { servicesData } = useServices(); // ดึงข้อมูลจาก Context
+  const { servicesData, getServicesData } = useServices(); // รับ - ส่ง ข้อมูลจาก Context
+
+  // ส่ง category ที่คลิกไปที่ context เพื่อ requet category ตามที่คลิกเลือกมาแสดง
+  const selectCategory = (value: string) => {
+    console.log(`Render with ${value}`);
+    // getServicesData(value);
+  };
 
   return (
     <div className="flex flex-col items-center">
@@ -30,7 +36,10 @@ const ServicesListRendering: React.FC = () => {
                 />
                 <div className="flex flex-col items-start justify-between p-4 gap-2 w-full h-[165px]">
                   <p
-                    className={`w-fit h-fit px-3 py-1 flex items-center justify-center rounded-lg text-xs font-normal text-blue-800 ${colorCategoryClass}`}
+                    className={`w-fit h-fit px-3 py-1 flex items-center justify-center rounded-lg text-xs font-normal cursor-pointer text-blue-800 ${colorCategoryClass}`}
+                    onClick={() => {
+                      selectCategory(service.category);
+                    }}
                   >
                     {service.category}
                   </p>
