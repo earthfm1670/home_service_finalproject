@@ -28,7 +28,7 @@ export default async function handler(
       const maxPrice = parseFloat((query.max_price as string) || "Infinity");
       const isRecommended = query.is_recommended === "true";
       const isPopular = query.is_popular === "true";
-      const sortBy = query.sortBy as "asc" | "desc" | undefined;
+      const sortBy = query.sort_by as "asc" | "desc" | undefined;
 
       // Fetch all popularity scores
       const { data: popularityScores, error: popularityScoreError } =
@@ -47,18 +47,14 @@ export default async function handler(
       // Base query
       let dbQuery = supabase.from("services").select(
         `
-          service_id,
-          service_name,
-          category_id,
-          categories (
-            category
-          ),
-          service_picture_url,
-          sub_services (
-            unit_price
-          ),
-          popularity_score
-        `,
+        service_id,
+        service_name,
+        category_id,
+        categories!inner(category),
+        service_picture_url,
+        sub_services(unit_price),
+        popularity_score
+      `,
         { count: "exact" }
       );
 
@@ -95,7 +91,7 @@ export default async function handler(
           service_id: number;
           service_name: string;
           category_id: number;
-          categories: { category: string };
+          categories: { category: string } | { category: string }[]; // รองรับ object หรือ array
           service_picture_url: string;
           sub_services: { unit_price: number }[];
           popularity_score: string | number | null;
@@ -122,10 +118,18 @@ export default async function handler(
             pricing = "ราคายังไม่ระบุ";
           }
 
+          // ตรวจสอบว่า categories เป็น array หรือ object เดี่ยว
+          const category =
+            Array.isArray(service.categories) && service.categories.length > 0
+              ? service.categories[0].category
+              : "category" in service.categories
+              ? service.categories.category
+              : "ไม่มีหมวดหมู่";
+
           return {
             service_id: service.service_id,
             service_name: service.service_name,
-            category: service.categories?.category || "",
+            category,
             service_picture_url: service.service_picture_url,
             service_pricing: pricing,
             minPrice,
@@ -136,17 +140,21 @@ export default async function handler(
           };
         }
       );
-
       // เรียงลำดับตาม service_id
       processedServices.sort((a, b) => a.service_id - b.service_id);
 
-      // Apply filters (if needed)
       if (minPrice > 0 || maxPrice < Infinity) {
-        processedServices = processedServices.filter(
-          (service) =>
-            (minPrice > 0 ? service.minPrice <= minPrice : true) &&
-            (maxPrice < Infinity ? service.maxPrice <= maxPrice : true)
-        );
+        processedServices = processedServices.filter((service) => {
+          const serviceMinPrice = service.minPrice;
+          const serviceMaxPrice = service.maxPrice;
+
+          const minPriceCondition =
+            minPrice <= 0 || serviceMinPrice <= maxPrice;
+          const maxPriceCondition =
+            maxPrice >= Infinity || serviceMaxPrice >= minPrice;
+
+          return minPriceCondition && maxPriceCondition;
+        });
       }
 
       // Apply pagination
