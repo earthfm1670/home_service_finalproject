@@ -58,7 +58,7 @@ export default function HomeService() {
                 </div>
 
                 <div className="text-[14px] text-gray-700 flex gap-2 items-center font-normal">
-                  <Tag size={16} color="#7f7676" />
+                  {/* <Tag size={16} color="#7f7676" /> */}
                   <img
                     src="/image/pricetag.svg"
                     alt="pricetaglogo"
