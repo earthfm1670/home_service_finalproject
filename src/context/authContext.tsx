@@ -1,23 +1,44 @@
 "use client";
 import React, { useState, useEffect, useContext, createContext } from "react";
 //define user structure
-interface User {
-  userId: string;
-  name: string;
+interface UserMetadata {
   email: string;
-  profileImage: string;
-  address?: string;
-  phoneNumber?: string;
-  role: string;
+  email_verified: boolean;
+  phone_verified: boolean;
+  sub: string;
 }
-
+interface AppMetadata {
+  provider: string;
+  providers: string[];
+}
+interface AMR {
+  method: string;
+  timestamp: number;
+}
+interface UserPayload {
+  iss: string;
+  sub: string;
+  aud: string;
+  exp: number;
+  iat: number;
+  email: string;
+  phone: string;
+  app_metadata: AppMetadata;
+  user_metadata: UserMetadata;
+  role: string;
+  aal: string;
+  amr: AMR[];
+  session_id: string;
+  is_anonymous: boolean;
+}
+//define context interface
 interface AuthContextType {
-  user: User | null;
+  user: UserPayload | null;
   token: string | null;
   isAdmin: boolean;
-  login: (user: User, token: string) => void;
+  login: (user: UserPayload, token: string) => void;
   logout: () => void;
-  test: boolean;
+  contextTest: boolean;
 }
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -34,7 +55,7 @@ interface AuthProviderProps {
  * -->target component
  * 5.import AuthContext into target component (navbar&profile)
  * 6.declare new variable and pass useAuth to get value inside context
- * 7.shuld look like this >>> const userInfo = useAuth
+ * 7.shuld look like this >>> const userInfo = useAuth();
  */
 
 // create context which will be main context provider.
@@ -42,13 +63,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 //creat provider which will be render as **WRAPPER for whole app.
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserPayload | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [test, setTest] = useState<boolean>(false);
-  //fetch user data using useEffect
+  const [contextTest, setTest] = useState<boolean>(false);
+
+  //check localstorage for token
+  //FIXME double check the savedUser process, JSON.parse? getItem('user') from where?
   useEffect(() => {
-    //check localstorage for token
     const savedToken = localStorage.getItem("token");
     const savedUser = savedToken
       ? JSON.parse(localStorage.getItem("user") || "{}")
@@ -57,14 +79,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setToken(savedToken);
       setUser(savedUser);
     }
-    if (savedUser.role === "admin") {
-      setIsAdmin(true);
-    }
+    // if (savedUser.role === "admin") {
+    //   setIsAdmin(true);
+    // }
     setTest(true);
   }, []);
 
   //define login function which will use to store userdata and token.
-  const login = (userInfo: User, authToken: string) => {
+  const login = (userInfo: UserPayload, authToken: string) => {
     localStorage.setItem("user", JSON.stringify(userInfo));
     localStorage.setItem("token", authToken);
     setUser(userInfo);
@@ -80,17 +102,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, isAdmin, login, logout, test }}>
+    <AuthContext.Provider
+      value={{ user, token, isAdmin, login, logout, contextTest }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-//create custom hook which will be call in target component.
+//to access the value inside context => create custom hook which will be call in target component.
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error("useAuth() must be used within an AuthProvider");
   }
   return context;
 };
