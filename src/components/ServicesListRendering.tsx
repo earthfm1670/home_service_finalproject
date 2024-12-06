@@ -38,7 +38,12 @@ const ServicesListRendering: React.FC = () => {
                     {service.service_name}
                   </h1>
                   <h2 className="flex gap-2 text-sm font-normal text-gray-700">
-                    <Tag size={16} color="#7f7676" />
+                    {/* <Tag size={16} color="#7f7676" /> */}
+                    <img
+                      src="/image/pricetag.svg"
+                      alt="pricetaglogo"
+                      className="w-[16px] h-[16px]"
+                    ></img>
                     {service.service_pricing}
                   </h2>
                   <button className="text-base font-semibold underline underline-offset-1 text-blue-600 hover:scale-105">
