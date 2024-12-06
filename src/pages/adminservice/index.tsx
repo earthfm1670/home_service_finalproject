@@ -3,9 +3,9 @@ import { supabase } from "@/utils/supabase";
 import { useEffect, useState } from "react";
 import { useServices } from "@/components/ServicesContext";
 import axios from "axios";
-// import AdminNavbar from "@/components/adminnavbar";
 import { useRouter } from "next/router";
-
+import IconWarning from "@/components/ui/Iconwarning";
+import IconX from "@/components/ui/IconX";
 
 export default function AdminNavbar() {
   const [input, setInput] = useState("");
@@ -14,7 +14,7 @@ export default function AdminNavbar() {
   };
   console.log(input);
 
-  const router = useRouter()
+  const router = useRouter();
 
   return (
     <>
@@ -36,7 +36,10 @@ export default function AdminNavbar() {
                 onChange={handleInputChange}
                 className="border border-gray-300 h-full rounded-lg w-80 pl-10"
               />
-              <button className=" bg-defaultColor text-white text-base h-full px-7 flex items-center gap-3 rounded-lg" onClick={() => router.push("/adminservice/add")}>
+              <button
+                className=" bg-defaultColor text-white text-base h-full px-7 flex items-center gap-3 rounded-lg"
+                onClick={() => router.push("/adminservice/add")}
+              >
                 เพิ่มบริการ
                 <span>
                   <IconPlus />
@@ -51,16 +54,32 @@ export default function AdminNavbar() {
   );
 }
 
+//---------------------------------------------------------------------------------------
+
 export const AdminserviceIndex = ({ input }: { input: string | null }) => {
+  interface Service {
+    id: string;
+    service_id: string;
+    service_name: string;
+    category: string;
+    created_at: string;
+    update_at: string;
+  }
+
   // ดึงข้อมูลจาก Context
   // สร้าง state เพื่อมารับข้อมูล service
   const { getServicesData, servicesData } = useServices();
-  console.log(servicesData,1)
+  // console.log(servicesData, 1);
+  const [serviceList, setServicesList] = useState<Service[]>(
+    servicesData || []
+  );
 
   // เรียกข้อมูลเมื่อเกิดการ refresh window
   useEffect(() => {
-    getServicesData();
-  }, []);
+    if (servicesData) {
+      setServicesList(servicesData);
+    }
+  }, [servicesData]);
 
   // style text category
   const categoryBgClassMap: Record<string, string> = {
@@ -68,16 +87,6 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
     บริการห้องครัว: "text-purple-900 bg-purple-100 inline-block px-2 py-1",
     บริการห้องน้ำ: "text-green-900 bg-green-100 inline-block px-2 py-1",
   };
-
-  // async function fetchServiceData() {
-  //   try {
-  //     const result = await axios.get(
-  //       `api/services?limit=9&sortBy=${sortBy}`
-  //     )
-  //   } catch {
-
-  //   }
-  // }
 
   return (
     <>
@@ -116,7 +125,7 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {servicesData.map((service, index) => (
+                    {serviceList.map((service: Service, index) => (
                       <tr
                         key={service.id}
                         className="border-t bg-white h-20 text-black"
@@ -138,8 +147,13 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
                         <td className="px-6 ">{service.created_at}</td>
                         <td className="px-6 ">{service.update_at}</td>
                         <td className="flex flex-row items-center justify-between px-6 py-7 ">
-                          <IconTrash />
-                          <IconEdit id={service.service_id}/>
+                          <IconTrash
+                            id={service.service_id}
+                            updateTable={serviceList}
+                            setUpdateTable={setServicesList}
+                            index={index}
+                          />
+                          <IconEdit id={service.service_id} />
                         </td>
                       </tr>
                     ))}
@@ -197,43 +211,159 @@ function IconDrag() {
   );
 }
 
-function IconTrash() {
-  // change color icon when active
+function IconTrash({ id, updateTable, setUpdateTable, index }: any) {
+  interface Service {
+    service_id: string;
+    // ฟิลด์อื่น ๆ ของ service
+  }
+  const [showPopup, setShowPopup] = useState<boolean>(false);
+  console.log(updateTable, "3");
+
+  type TableState = Service[];
+
   const [active, setActive] = useState<boolean>(false);
 
-  // เปลี่ยนสถานะเป็น active เมื่อกดค้าง
   const handleMouseDown = () => {
     setActive(true);
   };
 
-  // เปลี่ยนสถานะกลับเป็นไม่ active เมื่อปล่อยปุ่ม
+  // const handleDelete = async (serviceId: string) => {
+  //   if (window.confirm("คุณแน่ใจว่าต้องการลบบริการนี้?")) {
+  //     try {
+  //       const response = await axios.delete(
+  //         `/api/admin/management/deleteServices/${serviceId}`
+  //       );
+
+  //       if (response.status === 200) {
+  //         console.log(`Service with ID ${serviceId} has been deleted.`);
+  //         setUpdateTable((prevTable) =>
+  //           prevTable.filter((service) => service.service_id !== serviceId)
+  //         );
+  //       } else {
+  //         console.error("Failed to delete the service:", response.data.message);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error deleting the service:", error);
+  //     }
+  //   }
+  // };
+
+  const handleDelete = async (serviceId: string) => {
+    try {
+      const response = await axios.delete(
+        `/api/admin/management/deleteServices/${serviceId}`
+      );
+
+      if (response.status === 201) {
+        console.log(`Service with ID ${serviceId} has been deleted.`);
+
+        // อัปเดตตารางโดยการกรองข้อมูลที่ไม่ถูกลบออก
+        setUpdateTable(
+          (prevTable: TableState) =>
+            prevTable.filter((_, idx: number) => idx !== index) // ใช้ index เพื่อกรองเฉพาะ service ที่ไม่ถูกลบ
+        );
+        // setUpdateTable((prev) => !prev)
+      } else {
+        console.log("Failed to delete the service:", response.data.message);
+      }
+
+      console.log();
+    } catch (error) {
+      console.log("Error deleting the service:", error);
+    }
+  };
+
   const handleMouseUp = () => {
     setActive(false);
   };
 
   return (
-    <svg
-      className="cursor-pointer"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-    >
-      <path
-        d="M4 7H20M19 7L18.133 19.142C18.0971 19.6466 17.8713 20.1188 17.5011 20.4636C17.1309 20.8083 16.6439 21 16.138 21H7.862C7.35614 21 6.86907 20.8083 6.49889 20.4636C6.1287 20.1188 5.90292 19.6466 5.867 19.142L5 7H19ZM10 11V17V11ZM14 11V17V11ZM15 7V4C15 3.73478 14.8946 3.48043 14.7071 3.29289C14.5196 3.10536 14.2652 3 14 3H10C9.73478 3 9.48043 3.10536 9.29289 3.29289C9.10536 3.48043 9 3.73478 9 4V7H15Z"
-        stroke={active ? "#FF6347" : "#9AA1B0"}
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-    </svg>
+    <>
+      <svg
+        className="cursor-pointer"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        // onClick={() => handleDelete(id)}
+        onClick={() => setShowPopup(true)}
+      >
+        <path
+          d="M4 7H20M19 7L18.133 19.142C18.0971 19.6466 17.8713 20.1188 17.5011 20.4636C17.1309 20.8083 16.6439 21 16.138 21H7.862C7.35614 21 6.86907 20.8083 6.49889 20.4636C6.1287 20.1188 5.90292 19.6466 5.867 19.142L5 7H19ZM10 11V17V11ZM14 11V17V11ZM15 7V4C15 3.73478 14.8946 3.48043 14.7071 3.29289C14.5196 3.10536 14.2652 3 14 3H10C9.73478 3 9.48043 3.10536 9.29289 3.29289C9.10536 3.48043 9 3.73478 9 4V7H15Z"
+          stroke={active ? "#FF6347" : "#9AA1B0"}
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+
+      {/* Popup */}
+      {showPopup && (
+        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50">
+          {/* <div className="bg-white p-5 rounded-lg shadow-lg max-w-sm mx-auto">
+                    <div className="mb-4 text-center text-gray-800">
+                    ยืนยันการลบรายการ?
+                    </div>
+                    <div>คุณต้องการลบรายการ ‘ล้างแอร์’
+                    ใช่หรือไม่</div>
+
+                    <div className="flex flex-row">
+                    <button
+                      onClick={() => handleDelete(id)}
+                      className="bg-defaultColor hover:bg-hoverColor text-white rounded-lg px-4 py-2 font-medium w-full"
+                    >
+                      ลบรายการ
+                    </button>
+                    <button
+                      onClick={() => setShowPopup(false)}
+                      className="bg-defaultColor hover:bg-hoverColor text-white rounded-lg px-4 py-2 font-medium w-full"
+                    >
+                      ยกเลิก
+                    </button>
+                    </div>
+                  </div> */}
+          <div className="bg-white w-[360px] h-[270px] flex flex-col items-center rounded-xl p-4 gap-3">
+            <div className="w-full">
+              <div
+                className="w-full flex justify-end "
+                onClick={() => setShowPopup(false)}
+              >
+                <IconX />
+              </div>
+              <div className="flex justify-center">
+                <IconWarning />
+              </div>
+            </div>
+            <h1 className="font-medium text-xl ">ยืนยันการลบรายการ ?</h1>
+            <h1 className="text-center text-gray-500">
+              คุณต้องการลบรายการ ‘ล้างแอร์’ <br />
+              ใช่หรือไม่
+            </h1>
+            <div className="flex flex-row gap-3">
+              <button
+                className="bg-defaultColor text-white w-28 py-2 rounded-lg font-medium"
+                onClick={() => handleDelete(id)}
+              >
+                ลบรายการ
+              </button>
+              <button
+                className="bg-white text-defaultColor border-[1px] border-defaultColor w-28 py-2 rounded-lg font-medium"
+                onClick={() => setShowPopup(false)}
+              >
+                ยกเลิก
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
-function IconEdit(id:any) {
+function IconEdit(id: any) {
   // change color icon when active
   const [active, setActive] = useState<boolean>(false);
 
@@ -247,7 +377,7 @@ function IconEdit(id:any) {
     setActive(false);
   };
 
-  const router = useRouter()
+  const router = useRouter();
 
   return (
     <svg

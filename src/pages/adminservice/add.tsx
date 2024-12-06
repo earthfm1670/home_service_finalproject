@@ -9,11 +9,10 @@ import IconDrag from "@/components/ui/IconDragAddAdmin";
 import IconPlusDefaultColor from "@/components/ui/IconPluseDefaultColor";
 
 export default function AdminNavbar() {
-  const [input, setInput] = useState("");
+
   const [inputSubservice, setInputSubservice] = useState<any[]>([
     { description: "", unit: "", pricePerUnit: 0 },
   ]);
-
   const [inputTitle, setInputTitle] = useState("");
   const [inputCat, setInputCat] = useState("");
   const [inputImage, setInputImage] = useState("");
@@ -29,7 +28,7 @@ export default function AdminNavbar() {
   //   };
 
   const handleSubmit = async () => {
-    console.log(1);
+    console.log("create new category");
     let category_id = 0;
 
     if (inputCat === "general_service") {
@@ -49,24 +48,18 @@ export default function AdminNavbar() {
 
     try {
       await axios.post(`/api/admin/management/create`, newInputData);
+      router.push("/adminservice")
     } catch {}
 
     // คุณอาจใส่ logic เพิ่มเพื่อส่ง `newInputData` ผ่าน API
     console.log(newInputData); // ทดสอบการสร้างข้อมูล
   };
 
-  // {
-  //     "title": "คบเด็กสร้างบ้าน12",
-  //     "category_id": 4,
-  //     "image": "https://i.pinimg.com/736x/95/26/56/952656810ca4d6fe2848cb8a26ca891c.jpg",
-  //     "subService": [
-  //       {
-  //         "description": "สร้างบ้าน1",
-  //         "unit": "200",
-  //         "pricePerUnit": 200
-  //       }
-  //     ]
-  //   }
+//   useEffect(() => {
+// const refresh=() {
+//   await axios.
+// }
+//   },[])
 
   return (
     <>
@@ -338,7 +331,7 @@ export function AddSubService({
           <input
             type="number"
             id={`subservicePrice-${index}`}
-            value={subservice.pricePerUnit}
+            // value={subservice.pricePerUnit}
             onChange={(e) =>
               updateSubservice(index, "pricePerUnit", e.target.value)
             }
