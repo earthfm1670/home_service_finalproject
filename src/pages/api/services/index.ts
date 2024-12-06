@@ -17,9 +17,37 @@ export default async function handler(
     try {
       const { query } = req;
 
-      // Pagination params
-      const page = parseInt((query.page as string) || "1");
-      const limit = parseInt((query.limit as string) || "13");
+
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    // const limit = parseInt(req.query.limit as string) || 20;
+    const limit = parseInt(req.query.limit as string) || 100;
+    const start = (page - 1) * limit;
+    const category = req.query.category as string | undefined;
+    const sortBy = req.query.sortBy as string | undefined;
+
+    // สร้าง query
+    let query = supabase.from("services").select(
+      `
+          service_id, 
+          service_name, 
+          categories!inner(category),
+          service_picture_url, 
+          service_pricing,
+          popularity_score
+        `,
+      { count: "exact" }
+    );
+
+    // ถ้ามีการระบุ category ให้เพิ่มเงื่อนไขในการค้นหา
+    if (category) {
+      query = query.eq("categories.category", category);
+    }
+    // เพิ่มการเรียงลำดับตาม service_name
+    if (sortBy === "asc" || sortBy === "desc") {
+      query = query.order("service_name", { ascending: sortBy === "asc" });
+    }
+
 
       // Filter params
       const search = (query.search as string) || "";
