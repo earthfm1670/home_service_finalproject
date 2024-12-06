@@ -18,12 +18,9 @@ export function Navbar() {
   };
 
   return (
-    <div
-      className="flex justify-between items-center border shadow-lg p-2 px-4 bg-white lg:px-32 "
-      onClick={redirectToHome}
-    >
+    <div className="flex justify-between items-center border shadow-lg p-2 px-4 bg-white lg:px-32 ">
       <div className="flex gap-10 cursor-pointer">
-        <img src="/image/homeservicelogo.svg"></img>
+        <img src="/image/homeservicelogo.svg" onClick={redirectToHome}></img>
 
         <div className="hidden lg:block" onClick={redirectToServiceList}>
           บริการของเรา
