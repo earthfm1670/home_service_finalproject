@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useEffect, useContext, createContext } from "react";
+import { jwtDecode, JwtPayload } from "jwt-decode";
+import axios from "axios";
 //define user structure
 interface UserMetadata {
   email: string;
@@ -37,12 +39,17 @@ interface UserPayload {
 }
 //define context interface
 interface AuthContextType {
-  user: UserPayload | null;
-  token: string | null;
-  isAdmin: boolean;
-  login: (user: UserPayload, token: string) => void;
+  authState: AuthState;
+  login: (email: string, password: string) => void;
   logout: () => void;
   contextTest: boolean;
+}
+//defined authState
+interface AuthState {
+  user: JwtPayload | null;
+  // user: UserPayload | null;
+  token: string | null;
+  isAdmin: boolean;
 }
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -67,47 +74,68 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 //creat provider which will be render as **WRAPPER for whole app.
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<UserPayload | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [contextTest, setTest] = useState<boolean>(false);
-
-  //check localstorage for token
+  const [authState, setAuthState] = useState<AuthState>({
+    user: null,
+    token: null,
+    isAdmin: false,
+  });
+  //check localstorage for token/ if have one, set user state base on token payload
   //FIXME double check the savedUser process, JSON.parse? getItem('user') from where?
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
-    const savedUser = savedToken
+    const savedUser: UserPayload = savedToken
       ? JSON.parse(localStorage.getItem("user") || "{}")
       : null;
     if (savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(savedUser);
+      setAuthState({
+        user: savedUser,
+        token: savedToken,
+        isAdmin: false,
+      });
     }
-    if (savedUser.user_metadata.role === "admin") {
-      setIsAdmin(true);
-    }
+    // if (savedUser.user_metadata.role === "admin") {
+    //   setIsAdmin(true);
+    // }
     setTest(true);
   }, []);
 
   //define login function which will use to store userdata and token.
-  const login = (userInfo: UserPayload, authToken: string) => {
-    localStorage.setItem("user", JSON.stringify(userInfo));
-    localStorage.setItem("token", authToken);
-    setUser(userInfo);
-    setToken(authToken);
+  const login = async (email: string, password: string) => {
+    try {
+      const response = await axios.post("api/auth/login", { email, password });
+      //access token
+      const authToken = response.data.access_token;
+      //access userInfo
+      const userInfo = jwtDecode(authToken);
+      //store user info as string in local& store token
+      localStorage.setItem("user", JSON.stringify(userInfo));
+      localStorage.setItem("token", authToken);
+      //setauth state to store user / token
+      setAuthState({
+        user: userInfo,
+        token: authToken,
+        isAdmin: false, //ใส่เงื่อนไข
+      });
+    } catch (error) {
+      const err = error as Error;
+      console.log(err.message);
+      console.error("Invalid email or password");
+    }
   };
   //define logout function which will remove user and token
   const logout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    setUser(null);
-    setToken(null);
-    setIsAdmin(false);
+    setAuthState({
+      user: null,
+      token: null,
+      isAdmin: false,
+    });
   };
 
   return (
-    <AuthContext.Provider
-      value={{ user, token, isAdmin, login, logout, contextTest }}>
+    <AuthContext.Provider value={{ authState, login, logout, contextTest }}>
       {children}
     </AuthContext.Provider>
   );
@@ -121,3 +149,19 @@ export const useAuth = () => {
   }
   return context;
 };
+
+//ใน context นี้จะเป็นการ provide user data และ token ให้ทั้งเว็บ
+//ส่วนสำคัญคือ ฟังก์ชั่น login , useEffect เพื่อเช็ค token และ logout
+/**
+ * 1.login มีขั้นตอนดังนี้
+ * - axios post ส่ง credential
+ * - เก็บ token
+ * - decode user info
+ * - ตั้ง user ลง local ในรูปแบบ string
+ * - เซฟ user ลง state ในรูปแบบ json
+ *
+ * 2.useEffect เอาไว้เช็ค localstorage ว่ามี token ไหม
+ * - ถ้ามี token และ user ใน store
+ * - ดึง token ออกมาเก็บใน state
+ * - ดึง user ออกมา เปลี่ยนเป็น json แล้วเก็บใน state
+ */
