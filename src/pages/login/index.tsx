@@ -1,10 +1,10 @@
-import React, { useRef } from "react";
 import { Navbar } from "@/components/navbar";
 import facebooklogo from "../../../public/image/facebooklogo.svg";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { useState, ChangeEvent, FormEvent } from "react";
 import axios from "axios";
+import { useAuth } from "@/context/authContext";
 
 export default function Login() {
   // เก็บค่าข้อมูลที่กรอก
@@ -21,6 +21,9 @@ export default function Login() {
 
   // ควบคุมการแสดง popup email or password invalidate
   const [showPopup, setShowPopup] = useState<boolean>(false);
+
+  // เข้าถึง useAuth
+  const { authState, login, logout } = useAuth();
 
   // ตรวจสอบการเปลี่ยนแปลงใน input email
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -64,28 +67,29 @@ export default function Login() {
     if (!isValid) {
       return;
     }
-
-    try {
-      const response = await axios.post(
-        "/api/auth/login",
-        { email, password },
-        {
-          // ใช้เพื่อขอให้ server ส่งข้อมูล token เข้ามาหลังจาก login
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      // ใช้เพื่อหลังจากที่ขอ login success จะทำการส่ง token กลับมาไว้ใน storage
-      localStorage.setItem("token", response.data.access_token);
-      // นำทางไปที่หน้าเพจที่เราต้องการ
-      router.push("/");
-    } catch (error: any) {
-      // ไม่พบข้อมูล email || password ในฐานข้อมูล
-      console.error("Invalid email or password");
-      setShowPopup(true);
-    }
+    //---Change to useAuth--------------------------------------------------------------
+    // try {
+    //   const response = await axios.post(
+    //     "/api/auth/login",
+    //     { email, password },
+    //     {
+    //       // ใช้เพื่อขอให้ server ส่งข้อมูล token เข้ามาหลังจาก login
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //         Authorization: `Bearer ${localStorage.getItem("token")}`,
+    //       },
+    //     }
+    //   );
+    //   // ใช้เพื่อหลังจากที่ขอ login success จะทำการส่ง token กลับมาไว้ใน storage
+    //   localStorage.setItem("token", response.data.access_token);
+    //   // นำทางไปที่หน้าเพจที่เราต้องการ
+    //   router.push("/");
+    // } catch (error: any) {
+    //   // ไม่พบข้อมูล email || password ในฐานข้อมูล
+    //   console.error("Invalid email or password");
+    //   setShowPopup(true);
+    // }
+    //--------------------------------------------------------------------
   };
   return (
     <>
@@ -184,8 +188,7 @@ export default function Login() {
                   ยังไม่มีบัญชีผู้ใช้ HomeService?{" "}
                   <span
                     onClick={() => router.push("/register")}
-                    className="cursor-pointer text-defaultColor font-medium underline hover:text-hoverColor"
-                  >
+                    className="cursor-pointer text-defaultColor font-medium underline hover:text-hoverColor">
                     ลงทะเบียน
                   </span>
                 </h1>
@@ -199,8 +202,7 @@ export default function Login() {
                     </p>
                     <button
                       onClick={() => setShowPopup(false)}
-                      className="bg-defaultColor hover:bg-hoverColor text-white rounded-lg px-4 py-2 font-medium w-full"
-                    >
+                      className="bg-defaultColor hover:bg-hoverColor text-white rounded-lg px-4 py-2 font-medium w-full">
                       ปิด
                     </button>
                   </div>
