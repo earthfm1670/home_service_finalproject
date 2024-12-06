@@ -71,6 +71,13 @@ export default async function adminRegister(
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          name: name,
+          phone: phoneNumber,
+          role: "customer",
+        },
+      },
     });
     if (error) {
       if (error.message === "User already registered") {
