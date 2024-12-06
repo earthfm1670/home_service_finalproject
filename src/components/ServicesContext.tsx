@@ -45,7 +45,7 @@ export const ServicesProvider: React.FC<{ children: ReactNode }> = ({
         `Seleted = ${selectCategory}, Sort By = ${sortBy}, Price Range Min = ${priceRange[0]} Max= ${priceRange[1]} SearchText = ${searchValue}`
       );
       const response = await axios.get(
-        `api/services?limit=9&category=${selectCategory}&sortBy=${sortBy}`
+        `api/services?limit=100&category=${selectCategory}&sortBy=${sortBy}`
       );
       setServicesData(response.data.data);
       console.log("API response:", response.data.data);
