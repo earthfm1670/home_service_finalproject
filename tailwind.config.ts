@@ -12,10 +12,16 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        // for first button
         defaultColor: "var(--defaultColor)",
         hoverColor:"var(--hoverColor)",
         pressedColor:"var(--pressedColor)",
-        disableColor:"var(--disableColor)"
+        disableColor:"var(--disableColor)",
+        // for second button
+        defaultColor2: "var(--defaultColor2)",
+        hoverColor2:"var(--hoverColor2)",
+        pressedColor2:"var(--pressedColor2)",
+        disableColor2:"var(--disableColor2)"
       },
       borderRadius: {
         lg: "var(--radius)",

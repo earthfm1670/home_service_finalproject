@@ -46,12 +46,12 @@ export const ServicesProvider: React.FC<{ children: ReactNode }> = ({
       ); // log ดู parameter ที่ส่งเข้ามาผ่าน context เพื่อใช้ query data
 
       const response = await axios.get(
-        `api/services?limit=9&category=${selectCategory}&sortBy=${sortBy}`
+        `api/services?limit=100&category=${selectCategory}&sortBy=${sortBy}`
       );
       setServicesData(response.data.data);
       console.log("API response:", response.data.data); // log api response จาก database
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.log("Error fetching data:", error);
     }
   };
 

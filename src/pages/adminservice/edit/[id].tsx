@@ -1,4 +1,4 @@
-export default function testA() {
+export default function testB() {
     return(
         <div>ABC</div>
     )
