@@ -4,9 +4,13 @@ import React, { useState, useEffect, useContext, createContext } from "react";
 interface UserMetadata {
   email: string;
   email_verified: boolean;
+  name: string;
+  phone: string;
   phone_verified: boolean;
+  role: string;
   sub: string;
 }
+
 interface AppMetadata {
   provider: string;
   providers: string[];
@@ -79,9 +83,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setToken(savedToken);
       setUser(savedUser);
     }
-    // if (savedUser.role === "admin") {
-    //   setIsAdmin(true);
-    // }
+    if (savedUser.user_metadata.role === "admin") {
+      setIsAdmin(true);
+    }
     setTest(true);
   }, []);
 
