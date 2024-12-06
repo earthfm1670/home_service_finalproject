@@ -8,8 +8,21 @@ export interface SubService {
 
 export interface Service {
   service_id: number;
-  id: number;
   service_name: string;
+  category: string;
   service_picture_url: string;
-  sub_services: SubService[];
+  service_pricing: string;
+  minPrice: number;
+  maxPrice: number;
+  is_recommended: boolean;
+  is_popular: boolean;
+  popularity_score: number;
+}
+
+export interface ServicesResponse {
+  data: Service[] | null;
+  error?: string;
+  totalCount?: number;
+  currentPage?: number;
+  totalPages?: number;
 }
