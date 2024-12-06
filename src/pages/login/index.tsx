@@ -80,10 +80,10 @@ export default function Login() {
       // ใช้เพื่อหลังจากที่ขอ login success จะทำการส่ง token กลับมาไว้ใน storage
       localStorage.setItem("token", response.data.access_token);
       // นำทางไปที่หน้าเพจที่เราต้องการ
-      // router.push("/");
+      router.push("/");
     } catch (error: any) {
       // ไม่พบข้อมูล email || password ในฐานข้อมูล
-      console.error("Invalid email or password");
+      console.log("Invalid email or password");
       setShowPopup(true);
     }
   };

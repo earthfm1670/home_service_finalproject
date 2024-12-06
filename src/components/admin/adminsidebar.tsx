@@ -1,4 +1,4 @@
-import homeservicelogo from "../../public/image/homeservicelogo.svg";
+import homeservicelogo from "../../../public/image/homeservicelogo.svg";
 import Image from "next/image";
 import { useRouter } from "next/router";
 

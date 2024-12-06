@@ -41,7 +41,8 @@ export default async function getAllServices(
 
   try {
     const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
+    // const limit = parseInt(req.query.limit as string) || 20;
+    const limit = parseInt(req.query.limit as string) || 100;
     const start = (page - 1) * limit;
     const category = req.query.category as string | undefined;
     const sortBy = req.query.sortBy as string | undefined;
