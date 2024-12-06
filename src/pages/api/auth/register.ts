@@ -77,6 +77,13 @@ export default async function userRegister(
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          name: name,
+          phone: phoneNumber,
+          role: "customer",
+        },
+      },
     });
 
     if (error) {

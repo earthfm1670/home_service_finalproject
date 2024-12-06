@@ -1,43 +1,22 @@
-import { supabase } from "@/utils/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
+import { supabase } from "@/utils/supabase";
+import type { Service, ServicesResponse } from "@/types/service";
 
-interface Service {
-  service_id: number;
-  service_name: string;
-  category: string;
-  service_picture_url: string;
-  service_pricing: string;
-  is_recommended: boolean;
-  is_popular: boolean;
-  popularity_score: number;
-}
-
-interface RawServiceData {
-  service_id: number;
-  service_name: string;
-  categories: {
-    category: string;
-  }[];
-  service_picture_url: string;
-  service_pricing: string;
-  popularity_score: number;
-}
-
-type ServicesResponse = {
-  data: Service[] | null;
-  error?: string;
-  totalCount?: number;
-  currentPage?: number;
-  totalPages?: number;
+const formatPrice = (price: number): string => {
+  return price.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 };
 
-export default async function getAllServices(
+export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ServicesResponse>
+  res: NextApiResponse
 ) {
-  if (req.method !== "GET") {
-    return res.status(405).json({ data: null, error: "Method Not Allowed" });
-  }
+  if (req.method === "GET") {
+    try {
+      const { query } = req;
+
 
   try {
     const page = parseInt(req.query.page as string) || 1;
@@ -69,58 +48,169 @@ export default async function getAllServices(
       query = query.order("service_name", { ascending: sortBy === "asc" });
     }
 
-    // ดึงข้อมูลจาก Supabase
-    const { data, error, count } = await query.range(start, start + limit - 1);
 
-    if (error) {
-      console.error("Error fetching services:", error);
-      return res
-        .status(500)
-        .json({ data: null, error: "An unexpected error occurred" });
-    }
+      // Filter params
+      const search = (query.search as string) || "";
+      const category = query.category as string;
+      const minPrice = parseFloat((query.min_price as string) || "0");
+      const maxPrice = parseFloat((query.max_price as string) || "Infinity");
+      const isRecommended = query.is_recommended === "true";
+      const isPopular = query.is_popular === "true";
+      const sortBy = query.sort_by as "asc" | "desc" | undefined;
 
-    if (!data || data.length === 0) {
-      return res.status(404).json({ data: null, error: "No services found" });
-    }
+      // Fetch all popularity scores
+      const { data: popularityScores, error: popularityScoreError } =
+        await supabase.from("services").select("popularity_score");
 
-    // คำนวณค่า is_recommended และ is_popular ในโค้ด
-    const formattedData: Service[] = (data as RawServiceData[]).map((item) => {
-      const isRecommended = item.popularity_score >= 60;
-      const isPopular = item.popularity_score >= 80;
+      if (popularityScoreError) throw popularityScoreError;
 
-      let category = "";
-      if (Array.isArray(item.categories) && item.categories.length > 0) {
-        category = item.categories[0].category;
-      } else if (
-        typeof item.categories === "object" &&
-        item.categories !== null &&
-        "category" in item.categories
-      ) {
-        category = (item.categories as { category: string }).category;
+      const avgPopularityScore =
+        popularityScores.reduce((sum, service) => {
+          const score = parseFloat(service.popularity_score);
+          return sum + (isNaN(score) ? 0 : score);
+        }, 0) / popularityScores.length;
+      const recommendedThreshold = avgPopularityScore * 0.4;
+      const popularThreshold = avgPopularityScore * 0.9;
+
+      // Base query
+      let dbQuery = supabase.from("services").select(
+        `
+        service_id,
+        service_name,
+        category_id,
+        categories!inner(category),
+        service_picture_url,
+        sub_services(unit_price),
+        popularity_score
+      `,
+        { count: "exact" }
+      );
+
+      // Apply filters
+      if (search) {
+        dbQuery = dbQuery.ilike("service_name", `%${search}%`);
       }
 
-      return {
-        service_id: item.service_id,
-        service_name: item.service_name,
-        category: category,
-        service_picture_url: item.service_picture_url,
-        service_pricing: item.service_pricing,
-        is_recommended: isRecommended,
-        is_popular: isPopular,
-        popularity_score: item.popularity_score,
-      };
-    });
+      if (category) {
+        dbQuery = dbQuery.ilike("categories.category", `%${category}%`);
+      }
 
-    return res.status(200).json({
-      data: formattedData,
-      totalCount: count ?? undefined,
-      currentPage: page,
-      totalPages: Math.ceil((count || 0) / limit),
-    });
-  } catch (error) {
-    console.error("Unexpected error:", error);
-    return res
-      .status(500)
-      .json({ data: null, error: "An unexpected error occurred" });
+      if (isRecommended) {
+        dbQuery = dbQuery.gte("popularity_score", recommendedThreshold);
+      }
+
+      if (isPopular) {
+        dbQuery = dbQuery.gte("popularity_score", popularThreshold);
+      }
+
+      if (sortBy) {
+        dbQuery = dbQuery.order("service_name", {
+          ascending: sortBy === "asc",
+        });
+      }
+
+      const { data: services, error } = await dbQuery;
+
+      if (error) throw error;
+
+      // Process and filter services
+      let processedServices: Service[] = (services || []).map(
+        (service: {
+          service_id: number;
+          service_name: string;
+          category_id: number;
+          categories: { category: string } | { category: string }[]; // รองรับ object หรือ array
+          service_picture_url: string;
+          sub_services: { unit_price: number }[];
+          popularity_score: string | number | null;
+        }) => {
+          const subServices = service.sub_services || [];
+          const prices = subServices
+            .map((s) => s.unit_price)
+            .filter((price) => !isNaN(price));
+          const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+          const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
+          const popularityScore =
+            service.popularity_score != null &&
+            !isNaN(parseFloat(service.popularity_score.toString()))
+              ? parseFloat(service.popularity_score.toString())
+              : 0;
+
+          let pricing = "";
+          if (prices.length > 0) {
+            pricing =
+              minPrice === maxPrice
+                ? `${formatPrice(minPrice)} ฿`
+                : `${formatPrice(minPrice)} - ${formatPrice(maxPrice)} ฿`;
+          } else {
+            pricing = "ราคายังไม่ระบุ";
+          }
+
+          // ตรวจสอบว่า categories เป็น array หรือ object เดี่ยว
+          const category =
+            Array.isArray(service.categories) && service.categories.length > 0
+              ? service.categories[0].category
+              : "category" in service.categories
+              ? service.categories.category
+              : "ไม่มีหมวดหมู่";
+
+          return {
+            service_id: service.service_id,
+            service_name: service.service_name,
+            category,
+            service_picture_url: service.service_picture_url,
+            service_pricing: pricing,
+            minPrice,
+            maxPrice,
+            is_recommended: popularityScore >= recommendedThreshold,
+            is_popular: popularityScore >= popularThreshold,
+            popularity_score: popularityScore,
+          };
+        }
+      );
+      // เรียงลำดับตาม service_id
+      processedServices.sort((a, b) => a.service_id - b.service_id);
+
+      if (minPrice > 0 || maxPrice < Infinity) {
+        processedServices = processedServices.filter((service) => {
+          const serviceMinPrice = service.minPrice;
+          const serviceMaxPrice = service.maxPrice;
+
+          const minPriceCondition =
+            minPrice <= 0 || serviceMinPrice <= maxPrice;
+          const maxPriceCondition =
+            maxPrice >= Infinity || serviceMaxPrice >= minPrice;
+
+          return minPriceCondition && maxPriceCondition;
+        });
+      }
+
+      // Apply pagination
+      const startIndex = (page - 1) * limit;
+      const endIndex = page * limit;
+      const paginatedServices = processedServices.slice(startIndex, endIndex);
+
+      const totalCount = processedServices.length;
+      const totalPages = Math.ceil(totalCount / limit);
+
+      res.status(200).json({
+        data: paginatedServices,
+        totalCount,
+        currentPage: page,
+        totalPages,
+      });
+    } catch (error) {
+      console.error("API Error:", error);
+      res.status(500).json({
+        data: null,
+        totalCount: 0,
+        currentPage: 1,
+        totalPages: 0,
+        error: "Internal Server Error: " + (error as Error).message,
+      } as ServicesResponse);
+    }
+  } else {
+    res.setHeader("Allow", ["GET"]);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }

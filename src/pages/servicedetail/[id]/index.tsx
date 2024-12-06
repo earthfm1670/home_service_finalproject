@@ -120,9 +120,25 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
       router.push(`/servicedetail/${id}/info`);
     }
   };
-
   return (
     <div className="min-h-screen bg-gray-100 pb-32">
+      {/* Navbar */}
+      {/* <div className="fixed top-0 left-0 right-0 z-50">
+        <div className="flex justify-between items-center border shadow-lg p-2 bg-white">
+          <div className="container mx-auto max-w-7xl px-4 flex justify-between items-center">
+            <div className="flex gap-10">
+              <img src="/image/homeservicelogo.svg" alt="logo" />
+              <div className="hidden lg:block">บริการของเรา</div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="lg:hidden">บริการของเรา</div>
+              <div>
+                <ButtonLogin />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> */}
       <Navbar />
 
       {/* Hero Section */}
