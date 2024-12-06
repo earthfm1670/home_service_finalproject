@@ -6,10 +6,16 @@
 @layer base {
   :root {
     --radius: 0.5rem;
+    /* for first button */
     --defaultColor: #336DF2;
     --hoverColor:#4C7FF4;
     --pressedColor:#0E3FB0;
     --disableColor:#CCD0D7;
+    /* for second button */
+    --defaultColor2: #336DF2;
+    --hoverColor2:#4C7FF4;
+    --pressedColor2:#336DF2;
+    --disableColor2:#B3B8C4;
   }
 }
 
