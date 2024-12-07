@@ -69,7 +69,7 @@ export default function AdminNavbar() {
         </div>
         <div className="w-full flex flex-col">
           {/* navbar for admin page */}
-          <div className="flex flex-row items-center justify-between bg-white sticky top-0 h-20 px-10 py-5 min-w-[1200px] border-b  border-gray-300">
+          <div className="flex flex-row items-center justify-between bg-white sticky top-0 h-20 px-10 py-5 min-w-[1200px] border-b  border-gray-300 z-10">
             <div className="text-xl">เพิ่มบริการ</div>
             <div className="h-full flex flex-row items-center gap-6 relative">
               <button
@@ -107,6 +107,9 @@ export const AdminserviceIndex = ({
   inputimage,
 }: any) => {
   const router = useRouter();
+
+  // รับข้อมูลจาก params
+  const { userid } = router.query;
 
   // ดึงข้อมูลจาก Context
   // สร้าง state เพื่อมารับข้อมูล service
