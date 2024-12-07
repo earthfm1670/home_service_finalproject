@@ -380,6 +380,8 @@
 //   );
 // }
 
+//--------------------------------------------------------------------
+
 // import Adminsidebar from "@/components/admin/adminsidebar";
 // import { useEffect, useState } from "react";
 // import { useRouter } from "next/router";
@@ -719,7 +721,7 @@ export default function AdminNavbar() {
     };
 
     try {
-      await axios.post(`/api/admin/management/create`, newInputData);
+      await axios.post(`/api/admin/management/create${id}`);
       router.push("/adminservice")
     } catch {}
 
