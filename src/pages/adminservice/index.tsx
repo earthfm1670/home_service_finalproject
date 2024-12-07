@@ -217,7 +217,7 @@ function IconTrash({ id, updateTable, setUpdateTable, index }: any) {
     // ฟิลด์อื่น ๆ ของ service
   }
   const [showPopup, setShowPopup] = useState<boolean>(false);
-  console.log(updateTable, "3");
+  // console.log(updateTable, "3");
 
   type TableState = Service[];
 
@@ -227,26 +227,6 @@ function IconTrash({ id, updateTable, setUpdateTable, index }: any) {
     setActive(true);
   };
 
-  // const handleDelete = async (serviceId: string) => {
-  //   if (window.confirm("คุณแน่ใจว่าต้องการลบบริการนี้?")) {
-  //     try {
-  //       const response = await axios.delete(
-  //         `/api/admin/management/deleteServices/${serviceId}`
-  //       );
-
-  //       if (response.status === 200) {
-  //         console.log(`Service with ID ${serviceId} has been deleted.`);
-  //         setUpdateTable((prevTable) =>
-  //           prevTable.filter((service) => service.service_id !== serviceId)
-  //         );
-  //       } else {
-  //         console.error("Failed to delete the service:", response.data.message);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error deleting the service:", error);
-  //     }
-  //   }
-  // };
 
   const handleDelete = async (serviceId: string) => {
     try {
@@ -303,28 +283,6 @@ function IconTrash({ id, updateTable, setUpdateTable, index }: any) {
       {/* Popup */}
       {showPopup && (
         <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50">
-          {/* <div className="bg-white p-5 rounded-lg shadow-lg max-w-sm mx-auto">
-                    <div className="mb-4 text-center text-gray-800">
-                    ยืนยันการลบรายการ?
-                    </div>
-                    <div>คุณต้องการลบรายการ ‘ล้างแอร์’
-                    ใช่หรือไม่</div>
-
-                    <div className="flex flex-row">
-                    <button
-                      onClick={() => handleDelete(id)}
-                      className="bg-defaultColor hover:bg-hoverColor text-white rounded-lg px-4 py-2 font-medium w-full"
-                    >
-                      ลบรายการ
-                    </button>
-                    <button
-                      onClick={() => setShowPopup(false)}
-                      className="bg-defaultColor hover:bg-hoverColor text-white rounded-lg px-4 py-2 font-medium w-full"
-                    >
-                      ยกเลิก
-                    </button>
-                    </div>
-                  </div> */}
           <div className="bg-white w-[360px] h-[270px] flex flex-col items-center rounded-xl p-4 gap-3">
             <div className="w-full">
               <div
@@ -364,6 +322,9 @@ function IconTrash({ id, updateTable, setUpdateTable, index }: any) {
 }
 
 function IconEdit(id: any) {
+
+  // console.log(id)
+
   // change color icon when active
   const [active, setActive] = useState<boolean>(false);
 
