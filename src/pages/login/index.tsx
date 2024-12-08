@@ -3,7 +3,6 @@ import facebooklogo from "../../../public/image/facebooklogo.svg";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { useState, ChangeEvent, FormEvent } from "react";
-import axios from "axios";
 import { useAuth } from "@/context/authContext";
 
 export default function Login() {
@@ -23,7 +22,7 @@ export default function Login() {
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
   // เข้าถึง useAuth
-  const { authState, login, logout } = useAuth();
+  const { login } = useAuth();
 
   // ตรวจสอบการเปลี่ยนแปลงใน input email
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -67,29 +66,15 @@ export default function Login() {
     if (!isValid) {
       return;
     }
-    //---Change to useAuth--------------------------------------------------------------
-    // try {
-    //   const response = await axios.post(
-    //     "/api/auth/login",
-    //     { email, password },
-    //     {
-    //       // ใช้เพื่อขอให้ server ส่งข้อมูล token เข้ามาหลังจาก login
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         Authorization: `Bearer ${localStorage.getItem("token")}`,
-    //       },
-    //     }
-    //   );
-    //   // ใช้เพื่อหลังจากที่ขอ login success จะทำการส่ง token กลับมาไว้ใน storage
-    //   localStorage.setItem("token", response.data.access_token);
-    //   // นำทางไปที่หน้าเพจที่เราต้องการ
-    //   router.push("/");
-    // } catch (error: any) {
-    //   // ไม่พบข้อมูล email || password ในฐานข้อมูล
-    //   console.error("Invalid email or password");
-    //   setShowPopup(true);
-    // }
-    //--------------------------------------------------------------------
+    //---Change to login useAuth------------------------------------------
+    try {
+      login(email, password);
+      router.push("/");
+    } catch (error) {
+      const err = error as Error;
+      console.log(`error occore during login, see detail: ${err.message}`);
+      setShowPopup(true);
+    }
   };
   return (
     <>
