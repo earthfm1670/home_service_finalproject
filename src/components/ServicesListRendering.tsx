@@ -18,8 +18,8 @@ const ServicesListRendering: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <section className="min-w-[375px] w-full h-auto mt-6 pb-14  bg-slate-200 lg:max-w-[1440px] mx-auto">
+    <div className="flex flex-col items-center ">
+      <section className="min-w-[375px] w-full h-auto mt-6 pb-14  bg-slate-200 lg:max-w-[1440px] mx-auto flex justify-center">
         <div className="w-full grid grid-cols-1 gap-6 justify-self-center mt-6 sm:grid-cols-2 lg:max-w-[1121px] lg:grid-cols-3 lg:justify-self-center lg:grid-rows-3 lg:gap-[37px]">
           {servicesData.map((service, index) => {
             const colorCategoryClass =
