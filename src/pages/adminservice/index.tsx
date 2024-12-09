@@ -323,6 +323,7 @@ function IconTrash({ id, updateTable, setUpdateTable, index,serviceName }: any) 
 }
 
 function IconEdit(id: any) {
+  console.log(id,"id for params")
 
   // console.log(id)
 

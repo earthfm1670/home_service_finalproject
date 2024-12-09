@@ -1,6 +1,5 @@
 import Adminsidebar from "@/components/admin/adminsidebar";
 import { useEffect, useState } from "react";
-import { useServices } from "@/components/ServicesContext";
 import { useRouter } from "next/router";
 import { FormEvent } from "react";
 import axios from "axios";
@@ -10,7 +9,6 @@ import IconPlusDefaultColor from "@/components/ui/IconPluseDefaultColor";
 import type { Service } from "@/types/service";
 
 export default function AdminNavbar() {
-
   const [inputSubservice, setInputSubservice] = useState<any[]>([
     { description: "", unit: "", pricePerUnit: 0 },
   ]);
@@ -51,18 +49,12 @@ export default function AdminNavbar() {
 
     try {
       await axios.put(`/api/admin/management/edit/${id}`, newInputData);
-      router.push("/adminservice")
+      router.push("/adminservice");
     } catch {}
 
     // คุณอาจใส่ logic เพิ่มเพื่อส่ง `newInputData` ผ่าน API
     console.log(newInputData); // ทดสอบการสร้างข้อมูล
   };
-
-//   useEffect(() => {
-// const refresh=() {
-//   await axios.
-// }
-//   },[])
 
   return (
     <>
@@ -109,10 +101,7 @@ export const AdminserviceIndex = ({
   inputcat,
   inputimage,
 }: any) => {
-  const router = useRouter();
 
-  // ดึงข้อมูลจาก Context
-  // สร้าง state เพื่อมารับข้อมูล service
 
   // สร้าง state มาส่งข้อมูล
   const [title, setTitle] = useState<string>("");
@@ -152,6 +141,32 @@ export const AdminserviceIndex = ({
   //     getServicesData(); // โหลดข้อมูลจาก API หาก Context ยังไม่มีข้อมูล
   //   }
   // }, []);
+
+  const router = useRouter();
+
+  const { id } = router.query;
+  console.log(id, "id for user test");
+  const [user, setUser] = useState(null);
+
+  const fetchUser = async () => {
+    try {
+      const response = await axios.get(
+        `/api/admin/management/selectedit/${id}`
+      );
+      setUser(response.data);
+      console.log(response.data)
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchUser();
+    }
+  }, [])
+  // const { service_id,service_name,category_id } = user
+  // const { name, email, role, profile_image } = user;
 
   const deleteSubservice = (index: number) => {
     // ลบรายการตาม index
@@ -196,6 +211,7 @@ export const AdminserviceIndex = ({
               <input
                 type="text"
                 onChange={handleInputTitle}
+                // value={service_name}
                 className="border border-gray-300 h-11 rounded-lg w-[433px] pl-10"
               />
             </div>
