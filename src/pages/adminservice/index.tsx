@@ -69,7 +69,7 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
   // ดึงข้อมูลจาก Context
   // สร้าง state เพื่อมารับข้อมูล service
   const { getServicesData, servicesData } = useServices();
-  // console.log(servicesData, 1);
+  console.log(servicesData, 1);
   const [serviceList, setServicesList] = useState<Service[]>(
     servicesData || []
   );
@@ -152,6 +152,7 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
                             updateTable={serviceList}
                             setUpdateTable={setServicesList}
                             index={index}
+                            serviceName={service.service_name}
                           />
                           <IconEdit id={service.service_id} />
                         </td>
@@ -211,7 +212,7 @@ function IconDrag() {
   );
 }
 
-function IconTrash({ id, updateTable, setUpdateTable, index }: any) {
+function IconTrash({ id, updateTable, setUpdateTable, index,serviceName }: any) {
   interface Service {
     service_id: string;
     // ฟิลด์อื่น ๆ ของ service
@@ -297,7 +298,7 @@ function IconTrash({ id, updateTable, setUpdateTable, index }: any) {
             </div>
             <h1 className="font-medium text-xl ">ยืนยันการลบรายการ ?</h1>
             <h1 className="text-center text-gray-500">
-              คุณต้องการลบรายการ ‘ล้างแอร์’ <br />
+              คุณต้องการลบรายการ ‘{serviceName}’ <br />
               ใช่หรือไม่
             </h1>
             <div className="flex flex-row gap-3">
