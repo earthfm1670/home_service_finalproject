@@ -49,12 +49,18 @@ export default function AdminNavbar() {
 
     try {
       await axios.put(`/api/admin/management/edit/${id}`, newInputData);
-      router.push("/adminservice");
+      router.push("/adminservice")
     } catch {}
 
     // คุณอาจใส่ logic เพิ่มเพื่อส่ง `newInputData` ผ่าน API
     console.log(newInputData); // ทดสอบการสร้างข้อมูล
   };
+
+//   useEffect(() => {
+// const refresh=() {
+//   await axios.
+// }
+//   },[])
 
   return (
     <>
@@ -102,6 +108,8 @@ export const AdminserviceIndex = ({
   inputimage,
 }: any) => {
 
+  // ดึงข้อมูลจาก Context
+  // สร้าง state เพื่อมารับข้อมูล service
 
   // สร้าง state มาส่งข้อมูล
   const [title, setTitle] = useState<string>("");
