@@ -56,15 +56,12 @@ export default function AdminNavbar() {
     console.log(newInputData); // ทดสอบการสร้างข้อมูล
   };
 
-<<<<<<< HEAD
-=======
   //   useEffect(() => {
   // const refresh=() {
   //   await axios.
   // }
   //   },[])
 
->>>>>>> fix feature for create still in process
   return (
     <>
       <div className="flex flex-row w-full">
@@ -110,12 +107,8 @@ export const AdminserviceIndex = ({
   inputcat,
   inputimage,
 }: any) => {
-<<<<<<< HEAD
-
-=======
   // ดึงข้อมูลจาก Context
   // สร้าง state เพื่อมารับข้อมูล service
->>>>>>> fix feature for create still in process
 
   // สร้าง state มาส่งข้อมูล
   const [title, setTitle] = useState<string>("");
