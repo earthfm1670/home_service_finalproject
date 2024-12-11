@@ -123,22 +123,6 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
   return (
     <div className="min-h-screen bg-gray-100 pb-32">
       {/* Navbar */}
-      {/* <div className="fixed top-0 left-0 right-0 z-50">
-        <div className="flex justify-between items-center border shadow-lg p-2 bg-white">
-          <div className="container mx-auto max-w-7xl px-4 flex justify-between items-center">
-            <div className="flex gap-10">
-              <img src="/image/homeservicelogo.svg" alt="logo" />
-              <div className="hidden lg:block">บริการของเรา</div>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="lg:hidden">บริการของเรา</div>
-              <div>
-                <ButtonLogin />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> */}
       <Navbar />
 
       {/* Hero Section */}
@@ -149,9 +133,9 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-[#163C9366]">
-          <div className="max-w-7xl mx-auto px-4 pt-16 ">
+          <div className="px-4 pt-9 lg:px-32 lg:mt-5">
             {/* Breadcrumb */}
-            <div className="mb-4">
+            <div className="">
               <div className="bg-white rounded-md py-2 px-4 inline-flex items-center space-x-2 lg:p-5">
                 <Link
                   href="/services"
@@ -160,7 +144,7 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
                   บริการของเรา
                 </Link>
                 <span className="text-gray-500 text">&gt;</span>
-                <span className="text-blue-600 font-bold text-xl">
+                <span className="text-blue-600 font-bold text-3xl">
                   {service.service_name}
                 </span>
               </div>
@@ -172,7 +156,7 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 mt-10 lg:mt-16">
+      <div className="px-4 py-8 mt-4 lg:mt-16 lg:px-32">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <ServiceList
             service={service}

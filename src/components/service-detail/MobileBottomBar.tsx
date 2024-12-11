@@ -36,10 +36,10 @@ export const MobileBottomBar = ({
         <div className="flex gap-4">
           <Button
             variant="outline"
-            className="flex-1 border-blue-500 text-blue-500"
+            className="flex-1 border-grey-500 text-grey-500"
             onClick={() => router.back()}
           >
-            <ChevronLeft className="h-4 w-4 mr-2 text-blue-500" />
+            <ChevronLeft className="h-4 w-4 mr-2 text-grey-500" />
             ย้อนกลับ
           </Button>
           <Button
