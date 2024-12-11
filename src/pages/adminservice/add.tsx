@@ -177,7 +177,7 @@ export const AdminserviceIndex = ({
               <input
                 type="text"
                 onChange={handleInputTitle}
-                className="border border-gray-300 h-11 rounded-lg w-[433px] pl-10"
+                className="border border-gray-300 h-11 rounded-lg w-[433px] pl-5"
               />
             </div>
           </div>
@@ -217,8 +217,8 @@ export const AdminserviceIndex = ({
                   <IconPicture />
 
                   {/* ฟอร์มเลือกไฟล์ */}
-                  <div className="flex flex-col">
-                    <div className="flex flex-row gap-2">
+                  <div className="flex flex-col ">
+                    <div className="flex flex-row ' gap-2">
                       <label
                         htmlFor="file-upload"
                         className="cursor-pointer text-blue-500 hover:text-blue-700 underline"
@@ -251,7 +251,7 @@ export const AdminserviceIndex = ({
                 </div>
               </div>
             </div>
-            <div className="h-[1] w-full bg-gray-300"></div>
+            <div className="h-px w-full bg-gray-300"></div>
             {/* กล่องล่าง */}
             <div>
               <div className="">
@@ -269,7 +269,7 @@ export const AdminserviceIndex = ({
               <div className="">
                 <button
                   type="button"
-                  className=" bg-white text-defaultColor text-base h-10  flex items-center justify-center gap-3 rounded-lg border border-defaultColor px-7 "
+                  className=" bg-white text-defaultColor text-base h-10  flex items-center justify-center gap-3 rounded-lg border border-defaultColor px-7 mt-7"
                   onClick={addSubService}
                 >
                   เพิ่มรายการ
@@ -324,7 +324,7 @@ export function AddSubService({
             onChange={(e) =>
               updateSubservice(index, "description", e.target.value)
             }
-            className="border border-gray-300 h-11 rounded-lg w-[422px] pl-10"
+            className="border border-gray-300 h-11 rounded-lg w-[422px] pl-5"
           />
         </div>
         <div className="flex flex-col py-6">
@@ -338,7 +338,7 @@ export function AddSubService({
             onChange={(e) =>
               updateSubservice(index, "pricePerUnit", e.target.value)
             }
-            className="border border-gray-300 h-11 rounded-lg w-[240px] pl-10"
+            className="border border-gray-300 h-11 rounded-lg w-[240px] pl-5"
           />
         </div>
         <div className="flex flex-col py-6">
@@ -348,7 +348,7 @@ export function AddSubService({
             id={`subserviceUnit-${index}`}
             value={subservice.unit}
             onChange={(e) => updateSubservice(index, "unit", e.target.value)}
-            className="border border-gray-300 h-11 rounded-lg w-[240px] pl-10"
+            className="border border-gray-300 h-11 rounded-lg w-[240px] pl-5"
           />
         </div>
         <h1
