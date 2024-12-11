@@ -8,10 +8,10 @@ interface ProgressStepsProps {
 
 export const ProgressSteps = ({ currentStep }: ProgressStepsProps) => {
   return (
-    <Card className="p-4 mt-4 lg:p-6 lg:mt-12">
+    <Card className="p-4 mt-5 g:p-6 lg:mt-8 lg:p-8">
       <div className="relative">
         {/* Progress Line */}
-        <div className="absolute top-5 left-[15%] right-[15%] h-0.5 bg-gray-200" />
+        <div className="absolute top-5 left-[17%] right-[17%] h-0.5 bg-gray-200" />
         {/* Blue Progress Line */}
         <div
           className="absolute top-5 left-[15%] h-0.5 bg-blue-600 transition-all duration-300"
@@ -20,7 +20,7 @@ export const ProgressSteps = ({ currentStep }: ProgressStepsProps) => {
 
         <div className="relative flex justify-between max-w-none mx-auto">
           {/* Step 1 */}
-          <div className="flex flex-col items-center relative z-10 flex-1">
+          <div className="flex flex-col items-center relative z-10 flex-1 ">
             <div className="w-10 h-10 rounded-full bg-white border-2 bg-grey-200 border-blue-500 flex items-center justify-center">
               <ClipboardList className="w-5 h-5 text-blue-500" />
             </div>

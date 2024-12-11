@@ -16,14 +16,14 @@ export const NavigationButtons = ({
 
   return (
     <div className="hidden lg:block fixed bottom-0 left-0 right-0 bg-white border-t">
-      <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className="px-4 py-4 lg:px-32">
         <div className="flex justify-between">
           <Button
             variant="outline"
-            className="px-8 border-blue-500 text-blue-500"
+            className="px-8 border-grey-500 text-grey-500"
             onClick={() => router.back()}
           >
-            <ChevronLeft className="h-4 w-4 mr-2 text-blue-500" />
+            <ChevronLeft className="h-4 w-4 mr-2 text-grey-500" />
             ย้อนกลับ
           </Button>
           <Button
