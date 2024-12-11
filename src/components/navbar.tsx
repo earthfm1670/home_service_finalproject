@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/router";
 
 export function Navbar() {
   const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  useEffect(() => {
+    // Check is user is logged in or not and use the Boolean value to set state
+    const userLoggedIn: boolean = Boolean(localStorage.getItem("userToken"));
+    setIsLoggedIn(userLoggedIn);
+  });
 
   const redirectToHome = (): void => {
     router.push("/");
