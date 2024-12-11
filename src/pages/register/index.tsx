@@ -9,8 +9,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 function Registration() {
+  const router = useRouter();
+
   const [isTermsOpen, setIsTermsOpen] = useState<boolean>(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState<boolean>(false);
   const [isChecked, setIsChecked] = useState<boolean>(false);
@@ -107,6 +110,7 @@ function Registration() {
         );
         console.log("Registration successful:", response.data);
         alert("ลงทะเบียนสำเร็จ!");
+        router.push("/login");
       } catch (error: any) {
         console.error(
           "Registration failed:",
@@ -285,7 +289,12 @@ function Registration() {
                   เข้าสู่ระบบด้วย Facebook
                 </button>
               </div>
-              <div className="my-5 text-center">
+              <div
+                className="my-5 text-center"
+                onClick={() => {
+                  router.push("/login");
+                }}
+              >
                 <a className="text-blue-600 underline">กลับไปหน้าเข้าสู่ระบบ</a>
               </div>
             </form>
