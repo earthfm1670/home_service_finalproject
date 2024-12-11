@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/router";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Navbar() {
   const router = useRouter();
@@ -8,7 +16,7 @@ export function Navbar() {
 
   useEffect(() => {
     // Check is user is logged in or not and use the Boolean value to set state
-    const userLoggedIn: boolean = Boolean(localStorage.getItem("userToken"));
+    const userLoggedIn: boolean = Boolean(localStorage.getItem("token"));
     setIsLoggedIn(userLoggedIn);
   });
 
@@ -54,13 +62,25 @@ export function Navbar() {
               สมศรี จันทร์อังคารพุธ
             </p>
             <div className="w-[32px] h-[32px] lg:w-[40px] lg:h-[40px]">
-              <div className="w-[32px] h-[32px] lg:w-[40px] lg:h-[40px] rounded-full bg-gray-100 flex justify-center items-center">
-                <img
-                  src="/image/defaultprofile.svg"
-                  alt="notification bell"
-                  className="w-[14px] h-[14px] lg:w-[18px] lg:h-[18px]"
-                ></img>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <div className="w-[32px] h-[32px] lg:w-[40px] lg:h-[40px] rounded-full bg-gray-100 flex justify-center items-center">
+                    <img
+                      src="/image/defaultprofile.svg"
+                      alt="notification bell"
+                      className="w-[14px] h-[14px] lg:w-[18px] lg:h-[18px]"
+                    ></img>
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => router.push("/dashboard")}>
+                    Dashboard
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>Logout</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
             <div className="w-[32px] h-[32px] lg:w-[40px] lg:h-[40px]">
               <img
