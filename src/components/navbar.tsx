@@ -40,28 +40,37 @@ export function Navbar() {
         <div className="lg:hidden text-[14px]" onClick={redirectToServiceList}>
           บริการของเรา
         </div>
-        <div className="flex gap-2 items-center mr-20">
-          {/* still hard code */}
-          <p className="hidden lg:block lg:text-[14px] text-gray-700">
-            สมศรี จันทร์อังคารพุธ
-          </p>
-          <div className="w-[32px] h-[32px] lg:w-[40px] lg:h-[40px]">
-            <div className="w-[32px] h-[32px] lg:w-[40px] lg:h-[40px] rounded-full bg-gray-100 flex justify-center items-center">
+        {!isLoggedIn ? (
+          <div
+            onClick={redirectToLogin}
+            className="flex justify-center items-center w-[90px] h-[37px] text-[14px] font-medium text-blue-600 bg-white border border-blue-600 px-2 hover:text-blue-400 hover:border-blue-400 rounded-lg cursor-pointer"
+          >
+            <button>เข้าสู่ระบบ</button>
+          </div>
+        ) : (
+          <div className="flex gap-2 items-center lg:mr-20">
+            {/* still hard code */}
+            <p className="hidden lg:block lg:text-[14px] text-gray-700">
+              สมศรี จันทร์อังคารพุธ
+            </p>
+            <div className="w-[32px] h-[32px] lg:w-[40px] lg:h-[40px]">
+              <div className="w-[32px] h-[32px] lg:w-[40px] lg:h-[40px] rounded-full bg-gray-100 flex justify-center items-center">
+                <img
+                  src="/image/defaultprofile.svg"
+                  alt="notification bell"
+                  className="w-[14px] h-[14px] lg:w-[18px] lg:h-[18px]"
+                ></img>
+              </div>
+            </div>
+            <div className="w-[32px] h-[32px] lg:w-[40px] lg:h-[40px]">
               <img
-                src="/image/defaultprofile.svg"
+                src="/image/notibell.svg"
                 alt="notification bell"
-                className="w-[14px] h-[14px] lg:w-[18px] lg:h-[18px]"
+                className="w-full h-full"
               ></img>
             </div>
           </div>
-          <div className="w-[32px] h-[32px] lg:w-[40px] lg:h-[40px]">
-            <img
-              src="/image/notibell.svg"
-              alt="notification bell"
-              className="w-full h-full"
-            ></img>
-          </div>
-        </div>
+        )}
 
         {/* backup for not login */}
         {/* <div
