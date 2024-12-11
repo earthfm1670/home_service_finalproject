@@ -61,7 +61,7 @@ export function Navbar() {
         {!isLoggedIn ? (
           <div
             onClick={redirectToLogin}
-            className="flex justify-center items-center w-[90px] h-[37px] text-[14px] font-medium text-blue-600 bg-white border border-blue-600 px-2 hover:text-blue-400 hover:border-blue-400 rounded-lg cursor-pointer"
+            className="flex justify-center items-center lg:mr-16 w-[90px] h-[37px] text-[14px] font-medium text-blue-600 bg-white border border-blue-600 px-2 hover:text-blue-400 hover:border-blue-400 rounded-lg cursor-pointer"
           >
             <button>เข้าสู่ระบบ</button>
           </div>
