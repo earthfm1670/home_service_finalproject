@@ -15,9 +15,15 @@ export default async function handler(
     }
 
     try {
-      const { data: user, error } = await supabase
+      // Query ข้อมูลจาก table 'services' และ join กับ table 'sub_services'
+      const { data, error } = await supabase
         .from("services")
-        .select("*")
+        .select(
+          `
+          *, 
+          sub_services (*)  // นี่คือการ join ข้อมูลจาก sub_services
+        `
+        )
         .eq("service_id", Number(id)) // แปลง id เป็น number
         .single();
 
@@ -25,11 +31,11 @@ export default async function handler(
         return res.status(500).json({ error: error.message });
       }
 
-      if (!user) {
+      if (!data) {
         return res.status(404).json({ error: "User not found" });
       }
 
-      return res.status(200).json(user);
+      return res.status(200).json(data);
     } catch (error: any) {
       return res.status(500).json({ error: error.message });
     }
