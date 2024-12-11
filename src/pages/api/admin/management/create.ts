@@ -66,30 +66,33 @@ export default async function adminCreate(
     }
 
     //3.ลูปเพื่อใส่ sub service ใน table
-    const subInsert = [];
-    for (let i = 0; i < newServices.subService.length; i++) {
-      subInsert.push({
-        service_id: Number(serviceId?.service_id),
-        description: newServices.subService[i].description,
-        unit: newServices.subService[i].unit,
-        unit_price: newServices.subService[i].pricePerUnit,
-        created_at: newServices.created_at,
-        updated_at: newServices.updated_at,
-      });
-    }
+    if (newServices.subService.length > 0) {
+      const subInsert = [];
+      for (let i = 0; i < newServices.subService.length; i++) {
+        subInsert.push({
+          service_id: Number(serviceId?.service_id),
+          description: newServices.subService[i].description,
+          unit: newServices.subService[i].unit,
+          unit_price: newServices.subService[i].pricePerUnit,
+          created_at: newServices.created_at,
+          updated_at: newServices.updated_at,
+        });
+      }
 
-    const { data: subInsertedData, error: subInsertedError } =
-      await adminSupabase.from("sub_services").insert(subInsert).select();
-    if (subInsertedError) {
-      console.log(subInsertedError);
-      return res.status(400).json({
-        message: "Error occur during insert sub services",
-        detail: subInsertedError,
-      });
+      const { data: subInsertedData, error: subInsertedError } =
+        await adminSupabase.from("sub_services").insert(subInsert).select();
+      if (subInsertedError) {
+        console.log(subInsertedError);
+        return res.status(400).json({
+          message: "Error occur during insert sub services",
+          detail: subInsertedError,
+        });
+      }
+      if (subInsertedData) {
+        return res.status(201).json({ message: "Insert data successfully" });
+      }
     }
-    if (subInsertedData) {
-      return res.status(201).json({ message: "Insert data successfully" });
-    }
+    return res.status(201).json({ message: "Insert data successfully" });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
