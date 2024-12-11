@@ -18,8 +18,8 @@ export default async function handler(
       const { query } = req;
 
       // Pagination params
-      // const page = parseInt((query.page as string) || "1");
-      // const limit = parseInt((query.limit as string) || "13");
+      const page = parseInt((query.page as string) || "1");
+      const limit = parseInt((query.limit as string) || "13");
 
       // Filter params
       const search = (query.search as string) || "";
@@ -53,9 +53,7 @@ export default async function handler(
         categories!inner(category),
         service_picture_url,
         sub_services(unit_price),
-        popularity_score,
-        created_at,
-        updated_at
+        popularity_score
       `,
         { count: "exact" }
       );
@@ -97,8 +95,6 @@ export default async function handler(
           service_picture_url: string;
           sub_services: { unit_price: number }[];
           popularity_score: string | number | null;
-          created_at: any;
-          updated_at: any;
         }) => {
           const subServices = service.sub_services || [];
           const prices = subServices
@@ -141,42 +137,39 @@ export default async function handler(
             is_recommended: popularityScore >= recommendedThreshold,
             is_popular: popularityScore >= popularThreshold,
             popularity_score: popularityScore,
-            created_at: service.created_at,
-            updated_at: service.updated_at
           };
         }
       );
       // เรียงลำดับตาม service_id
       processedServices.sort((a, b) => a.service_id - b.service_id);
 
-      // if (minPrice > 0 || maxPrice < Infinity) {
-      //   processedServices = processedServices.filter((service) => {
-      //     const serviceMinPrice = service.minPrice;
-      //     const serviceMaxPrice = service.maxPrice;
+      if (minPrice > 0 || maxPrice < Infinity) {
+        processedServices = processedServices.filter((service) => {
+          const serviceMinPrice = service.minPrice;
+          const serviceMaxPrice = service.maxPrice;
 
-      //     const minPriceCondition =
-      //       minPrice <= 0 || serviceMinPrice <= maxPrice;
-      //     const maxPriceCondition =
-      //       maxPrice >= Infinity || serviceMaxPrice >= minPrice;
+          const minPriceCondition =
+            minPrice <= 0 || serviceMinPrice <= maxPrice;
+          const maxPriceCondition =
+            maxPrice >= Infinity || serviceMaxPrice >= minPrice;
 
-      //     return minPriceCondition && maxPriceCondition;
-      //   });
-      // }
+          return minPriceCondition && maxPriceCondition;
+        });
+      }
 
       // Apply pagination
-      // const startIndex = (page - 1) * limit;
-      // const endIndex = page * limit;
-      // const paginatedServices = processedServices.slice(startIndex, endIndex);
+      const startIndex = (page - 1) * limit;
+      const endIndex = page * limit;
+      const paginatedServices = processedServices.slice(startIndex, endIndex);
 
       const totalCount = processedServices.length;
-      // const totalPages = Math.ceil(totalCount / limit);
+      const totalPages = Math.ceil(totalCount / limit);
 
       res.status(200).json({
-        // data: paginatedServices,
-        // currentPage: page,
-        // totalPages,
-        data: processedServices,
+        data: paginatedServices,
         totalCount,
+        currentPage: page,
+        totalPages,
       });
     } catch (error) {
       console.error("API Error:", error);
