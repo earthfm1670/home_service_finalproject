@@ -29,8 +29,8 @@ export default async function adminCreate(
   // create data chunk
   const newServices: PostRequestBody = {
     ...req.body,
-    created_at: new Date(),
-    updated_at: new Date(),
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   };
 
   try {
