@@ -9,10 +9,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/context/authContext";
 
 export function Navbar() {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const { login, logout, authState } = useAuth();
 
   useEffect(() => {
     // Check is user is logged in or not and use the Boolean value to set state
@@ -30,6 +32,11 @@ export function Navbar() {
 
   const redirectToLogin = (): void => {
     router.push("/login");
+  };
+
+  const handleLogout = (): void => {
+    logout();
+    router.push("/");
   };
 
   return (
@@ -78,7 +85,9 @@ export function Navbar() {
                   <DropdownMenuItem onClick={() => router.push("/dashboard")}>
                     Dashboard
                   </DropdownMenuItem>
-                  <DropdownMenuItem>Logout</DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout}>
+                    Logout
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
