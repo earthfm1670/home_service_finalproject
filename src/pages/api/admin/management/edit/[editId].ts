@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { adminSupabase } from "@/utils/supabase";
 import { connectionPool } from "@/utils/db";
 
 interface SubSeviceBody {
@@ -49,25 +50,33 @@ export default async function adminEdit(
     // query edit
     //มีการ update 2 ครั้ง คือ
     // 1.update main
-    let mainQuery = `
-  UPDATE services
-  SET service_name=$1, category_id=$2, service_picture_url=$3, updated_at=$4
-  WHERE service_id=$5
-  `;
-    const mainValues = [title, categoryId, image, new Date(), parsedId];
-    // if (!subServices[0]) {
-    //   mainQuery += `COMMIT`;
-    // }
-    const result = await connectionPool.query(mainQuery, mainValues);
-    // return res.status(500).json({ m: "Test pass", detail: result });
-    console.log(`PASS main query`);
+    //----------------------------------------------
+    const { data: updatedMainService, error: updatedMainServiceError } =
+      await adminSupabase
+        .from("services")
+        .update({
+          service_name: title,
+          category_id: categoryId,
+          service_picture_url: image, //FIXME image
+          updated_at: new Date().toISOString(),
+        })
+        .eq("service_id", parsedId);
 
-    // update sub
+    //   let mainQuery = `
+    // UPDATE services
+    // SET service_name=$1, category_id=$2, service_picture_url=$3, updated_at=$4
+    // WHERE service_id=$5
+    // `;
+    //   const mainValues = [title, categoryId, image, new Date(), parsedId];
+
+    //   const result = await connectionPool.query(mainQuery, mainValues);
+    console.log(`PASS main query`);
+    //----------------------------------------------
+
+    // 2.update sub services
     for (const subService of subServices) {
       // --ถ้า sub มีไอดี update
       if (subService.subId) {
-        // console.log(`INSIDE if subID`);
-
         const subQuery = `
       UPDATE sub_services
       SET description=$1, unit=$2, unit_price=$3, updated_at=$4
