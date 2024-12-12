@@ -53,25 +53,9 @@ export default async function adminCreate(
       console.log("Main service inserted.");
     }
 
-    //2.ดึง service_id ออกมา
-    // const { data: serviceId, error: fetchServiceIdError } = await adminSupabase
-    //   .from("services")
-    //   .select("service_id")
-    //   .eq("service_name", newService.title)
-    //   .single();
-
-    // if (fetchServiceIdError) {
-    //   console.error("Error fetching service_id:", fetchServiceIdError.message);
-    // } else {
-    //   console.log(`service_id fetched: ${serviceId.service_id}`);
-    // }
-
-    //0.ใส่รูปลง storage
-    //--------------------------------------------------------------------
-
     //2.5 Image Upload
     if (newService.image) {
-      const imageFileName = serviceId + "/" + uuidv4();
+      const imageFileName = serviceId[0].service_id + "/" + uuidv4();
 
       const { error: insertedImageError } = await adminSupabase.storage
         .from("service_pictures")
@@ -86,8 +70,8 @@ export default async function adminCreate(
       } else {
         const { error: insertedImageUrlError } = await adminSupabase
           .from("services")
-          .insert([{ imageUrl: `URL${imageFileName}` }]) //***************ADD URL
-          .eq("service_id", serviceId);
+          .insert([{ imageUrl: `URL/${imageFileName}` }]) //***************ADD URL
+          .eq("service_id", serviceId[0].service_id);
         if (insertedImageUrlError) {
           console.log("Error occor during inser image url.");
           console.log(insertedImageUrlError);
