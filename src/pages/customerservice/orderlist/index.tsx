@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/navbar";
 import HomeFooter from "@/components/homefooter";
 import UserSidebar from "@/components/customer/userSidebar";
+import OrderCard from "@/components/customer/orderCard";
 export default function customerProfile() {
   return (
     <>
@@ -15,9 +16,9 @@ export default function customerProfile() {
         <div className="small-banner flex lg:hidden justify-center items-center border rounded-lg mx-4 my-4 bg-blue-600 font-medium text-3xl text-white py-6">
           รายการคำสั่งซ่อม
         </div>
-        <div
-          className="content bg-green-400 h-[5000px] 
-        flex justify-center w-full lg:ml-72"></div>
+        <div className="content flex justify-center w-full lg:ml-72 min-h-96 mt-1">
+          <OrderCard />
+        </div>
       </div>
       <HomeFooter />
     </>
