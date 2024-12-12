@@ -128,9 +128,9 @@ export default function HomeFooter() {
             </div>
           </div>
         </div>
+
         {/* Popup dialog for terms and agreement */}
         <Dialog open={isTermsOpen} onOpenChange={setIsTermsOpen}>
-          <DialogTrigger></DialogTrigger>
           <DialogContent className="max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>ข้อตกลงและเงื่อนไข</DialogTitle>
@@ -139,7 +139,6 @@ export default function HomeFooter() {
               <h2 className="font-semibold text-xl">
                 ข้อตกลงและเงื่อนไขการใช้งาน
               </h2>
-
               <p className="mt-4">
                 ยินดีต้อนรับสู่เว็บไซต์ของเรา! ก่อนที่คุณจะใช้บริการเว็บไซต์นี้
                 กรุณาอ่านข้อตกลงและเงื่อนไขนี้อย่างละเอียด
@@ -226,7 +225,6 @@ export default function HomeFooter() {
         </Dialog>
         {/* Popup dialog for privacy policy */}
         <Dialog open={isPrivacyOpen} onOpenChange={setIsPrivacyOpen}>
-          <DialogTrigger></DialogTrigger>
           <DialogContent className="max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>ข้อตกลงและเงื่อนไข</DialogTitle>
@@ -272,14 +270,12 @@ export default function HomeFooter() {
                   </li>
                 </ul>
               </p>
-
               <h3 className="mt-6 font-semibold">4. ความปลอดภัยของข้อมูล</h3>
               <p>
                 เรามีมาตรการรักษาความปลอดภัยที่เหมาะสมเพื่อปกป้องข้อมูลส่วนบุคคลของคุณจากการเข้าถึงโดยไม่ได้รับอนุญาต
                 การใช้งานที่ไม่เหมาะสม หรือการสูญหาย
                 แต่เราไม่สามารถรับประกันความปลอดภัยทั้งหมดในกรณีที่เกิดภัยคุกคามที่ไม่สามารถคาดเดาได้
               </p>
-
               <h3 className="mt-6 font-semibold">5. ข้อความเกี่ยวกับคุกกี้</h3>
               <p>
                 เว็บไซต์ของเรามีการใช้คุกกี้เพื่อปรับปรุงประสบการณ์ของคุณเมื่อเยี่ยมชมเว็บไซต์
@@ -288,7 +284,6 @@ export default function HomeFooter() {
                 หากคุณไม่ต้องการให้มีการใช้งานคุกกี้
                 คุณสามารถตั้งค่าในเบราว์เซอร์ของคุณเพื่อปิดการใช้งานคุกกี้ได้
               </p>
-
               <h3 className="mt-6 font-semibold">
                 6. การเข้าถึงและแก้ไขข้อมูล
               </h3>
@@ -297,7 +292,6 @@ export default function HomeFooter() {
                 รวมถึงสิทธิ์ในการขอให้แก้ไขหรืออัปเดตข้อมูลหากมีข้อผิดพลาด
                 คุณสามารถติดต่อเราผ่านทางอีเมลหรือโทรศัพท์ที่ให้ไว้ด้านล่าง
               </p>
-
               <h3 className="mt-6 font-semibold">
                 7. การเปลี่ยนแปลงนโยบายความเป็นส่วนตัว
               </h3>
@@ -306,7 +300,6 @@ export default function HomeFooter() {
                 การเปลี่ยนแปลงจะมีผลทันทีที่โพสต์บนเว็บไซต์ของเรา
                 คุณควรตรวจสอบนโยบายนี้เป็นระยะเพื่อรับทราบข้อมูลล่าสุด
               </p>
-
               <h3 className="mt-6 font-semibold">8. การติดต่อ</h3>
               <p>
                 หากคุณมีคำถามหรือข้อสงสัยเกี่ยวกับนโยบายความเป็นส่วนตัวนี้
