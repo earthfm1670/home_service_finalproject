@@ -16,13 +16,18 @@ const ServicesListFilteredData: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([200, 1800]);
   const [placeholder, setPlaceholder] = useState<string>("ตามตัวอัก...");
-  const [selecttedCategory, setSelecttedCategory] = useState<string>("");
-  const [sortByChange, setSortByChange] = useState<string>("");
+  const [selecttedCategory, setSelecttedCategory] =
+    useState<string>("บริการทั้งหมด");
+  const [selecttedSortBy, setSelecttedSortBy] = useState<string>("");
   const [searchText, setsearchText] = useState<string>("");
+
   const { getServicesData } = useServices(); // ดึงข้อมูลจาก Context
 
   const handleCategoryChange = (value: string) => {
-    setSelecttedCategory(value);
+    console.log(`Get ที่ 1 = ${value}`);
+    value === "บริการทั้งหมด"
+      ? setSelecttedCategory("")
+      : setSelecttedCategory(value);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,12 +35,12 @@ const ServicesListFilteredData: React.FC = () => {
   };
 
   const handleSortByChange = (value: string) => {
-    setSortByChange(value);
+    setSelecttedSortBy(value);
   };
 
   // ส่ง parameter ไปยัง context เมื่อกด button ค้นหา
   const handleSearchSummit = () => {
-    getServicesData(selecttedCategory, sortByChange, priceRange, searchText);
+    getServicesData(searchText, selecttedCategory, selecttedSortBy, priceRange);
   };
 
   // เรียกใช้ handleSearchSummit เมื่อกด enter on input field
@@ -47,8 +52,11 @@ const ServicesListFilteredData: React.FC = () => {
 
   // ส่ง parameter ไปยัง getServicesData() ที่ ServicesContext.tsx เพื่อ request data
   useEffect(() => {
-    getServicesData(selecttedCategory, sortByChange, priceRange);
-  }, [selecttedCategory, sortByChange, priceRange]);
+    console.log(
+      `Get ที่ 2 = ${selecttedCategory} , ${selecttedSortBy} , ${priceRange}`
+    );
+    getServicesData(searchText, selecttedCategory, selecttedSortBy, priceRange);
+  }, [selecttedCategory, selecttedSortBy, priceRange]);
 
   // update ค่า setPlaceholder Dispay size มีการเปลี่ยนแปลงมากหรือน้อยกว่า 1024px
   useEffect(() => {
@@ -133,16 +141,44 @@ const ServicesListFilteredData: React.FC = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel className="text-blue-700">
+                  <SelectItem
+                    value="บริการทั้งหมด"
+                    className={`text-gray-700 ${
+                      selecttedCategory === "บริการทั้งหมด"
+                        ? "!text-blue-700 font-semibold"
+                        : ""
+                    }`}
+                  >
                     บริการทั้งหมด
-                  </SelectLabel>
-                  <SelectItem className="text-gray-700" value="บริการทั่วไป">
+                  </SelectItem>
+                  <SelectItem
+                    value="บริการทั่วไป"
+                    className={`text-gray-700 ${
+                      selecttedCategory === "บริการทั่วไป"
+                        ? "!text-blue-700 font-semibold"
+                        : ""
+                    }`}
+                  >
                     บริการทั่วไป
                   </SelectItem>
-                  <SelectItem className="text-gray-700" value="บริการห้องครัว">
+                  <SelectItem
+                    value="บริการห้องครัว"
+                    className={`text-gray-700 ${
+                      selecttedCategory === "บริการห้องครัว"
+                        ? "!text-blue-700 font-semibold"
+                        : ""
+                    }`}
+                  >
                     บริการห้องครัว
                   </SelectItem>
-                  <SelectItem className="text-gray-700" value="บริการห้องน้ำ">
+                  <SelectItem
+                    value="บริการห้องน้ำ"
+                    className={`text-gray-700 ${
+                      selecttedCategory === "บริการห้องน้ำ"
+                        ? "!text-blue-700 font-semibold"
+                        : ""
+                    }`}
+                  >
                     บริการห้องน้ำ
                   </SelectItem>
                 </SelectGroup>
@@ -220,16 +256,44 @@ const ServicesListFilteredData: React.FC = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel className="text-blue-700">
+                  <SelectItem
+                    value="recommended"
+                    className={`text-gray-700 ${
+                      selecttedSortBy === "recommended"
+                        ? "!text-blue-700 font-semibold"
+                        : ""
+                    }`}
+                  >
                     บริการแนะนำ
-                  </SelectLabel>
-                  <SelectItem className="text-gray-700" value="popular">
+                  </SelectItem>
+                  <SelectItem
+                    value="popular"
+                    className={`text-gray-700 ${
+                      selecttedSortBy === "popular"
+                        ? "!text-blue-700 font-semibold"
+                        : ""
+                    }`}
+                  >
                     บริการยอดนิยม
                   </SelectItem>
-                  <SelectItem className="text-gray-700" value="asc">
+                  <SelectItem
+                    value="asc"
+                    className={`text-gray-700 ${
+                      selecttedSortBy === "asc"
+                        ? "!text-blue-700 font-semibold"
+                        : ""
+                    }`}
+                  >
                     ตามตัวอักษร (Ascending)
                   </SelectItem>
-                  <SelectItem className="text-gray-700" value="desc">
+                  <SelectItem
+                    value="desc"
+                    className={`text-gray-700 ${
+                      selecttedSortBy === "desc"
+                        ? "!text-blue-700 font-semibold"
+                        : ""
+                    }`}
+                  >
                     ตามตัวอักษร (Descending)
                   </SelectItem>
                 </SelectGroup>
