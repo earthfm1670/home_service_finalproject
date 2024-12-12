@@ -67,11 +67,6 @@ export default async function handler(
       }
 
       if (sortBy) {
-        if (sortBy === "popular") {
-          console.log("popular logic");
-        } else if (sortBy === "recommend") {
-          console.log("recommend logic");
-        }
         dbQuery = dbQuery.order("service_name", {
           ascending: sortBy === "asc",
         });
