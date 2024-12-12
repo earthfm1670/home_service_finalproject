@@ -14,9 +14,8 @@ export interface Service {
   service_pricing: string;
   minPrice: number;
   maxPrice: number;
-  is_recommended: boolean;
-  is_popular: boolean;
-  popularity_score: number;
+  total_usage: number;
+  promotionsAndOffers: boolean;
 }
 
 export interface ServicesResponse {
