@@ -18,7 +18,7 @@ export default function HomeFooter() {
             className="flex items-center m-4 my-6 lg:my-6"
             onClick={redirectToHome}
           >
-            <div className="flex gap-2">
+            <div className="flex gap-2 cursor-pointer">
               <img
                 src="/image/footerhouse.svg"
                 className="w-[39px] h-[39px]"
@@ -89,10 +89,10 @@ export default function HomeFooter() {
             </div>
 
             <div className="flex gap-8">
-              <div className="text-[14px] text-gray-700 font-normal my-2 hidden lg:block">
+              <div className="text-[14px] text-gray-700 font-normal my-2 hidden lg:block lg:curosr-pointer">
                 เงื่อนไขและข้อตกลงการใช้งานเว็บไซต์
               </div>
-              <div className="text-[14px] text-gray-700 font-normal my-2 hidden lg:block">
+              <div className="text-[14px] text-gray-700 font-normal my-2 hidden lg:block lg:curosr-pointer">
                 นโยบายความเป็นส่วนตัว
               </div>
             </div>
