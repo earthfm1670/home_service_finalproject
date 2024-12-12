@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { adminSupabase } from "@/utils/supabase";
+import { v4 as uuidv4 } from "uuid";
 
 interface SubServiceFromAdmin {
   description: string;
@@ -10,8 +11,8 @@ interface SubServiceFromAdmin {
 interface PostRequestBody {
   title: string;
   category_id: number;
-  image: string;
-  subService: Array<SubServiceFromAdmin>;
+  image: File | null;
+  subServices: Array<SubServiceFromAdmin>;
   created_at?: string;
   updated_at?: string;
 }
@@ -27,55 +28,90 @@ export default async function adminCreate(
   // check credential
 
   // create data chunk
-  const newServices: PostRequestBody = {
+  const newService: PostRequestBody = {
     ...req.body,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
 
   try {
-    // 1.คิวรี่เพื่อใส่ main service
-    const { data: insertedMainService, error: insertError } =
-      await adminSupabase.from("services").insert([
+    // 1.คิวรี่เพื่อใส่ main service + ใส่ image url
+    const { data: serviceId, error: insertError } = await adminSupabase
+      .from("services")
+      .insert([
         {
-          service_name: newServices.title,
-          category_id: newServices.category_id,
+          service_name: newService.title,
+          category_id: newService.category_id,
         },
-      ]);
+      ])
+      .select("service_id");
     if (insertError) {
+      console.log("Error occor during insert main service.");
       console.error(insertError);
-      return res
-        .status(400)
-        .json({ error: "Error occor during insert main service" });
+      return res.status(400).json({ error: "Service already exit." });
     } else {
-      console.log(insertedMainService);
-      console.log("Main service inserted");
+      console.log("Main service inserted.");
     }
 
     //2.ดึง service_id ออกมา
-    const { data: serviceId, error: fetchServiceIdError } = await adminSupabase
-      .from("services")
-      .select("service_id")
-      .eq("service_name", newServices.title)
-      .single();
+    // const { data: serviceId, error: fetchServiceIdError } = await adminSupabase
+    //   .from("services")
+    //   .select("service_id")
+    //   .eq("service_name", newService.title)
+    //   .single();
 
-    if (fetchServiceIdError) {
-      console.error("Error fetching service_id:", fetchServiceIdError.message);
-    } else {
-      console.log(`service_id fetched: ${serviceId.service_id}`);
+    // if (fetchServiceIdError) {
+    //   console.error("Error fetching service_id:", fetchServiceIdError.message);
+    // } else {
+    //   console.log(`service_id fetched: ${serviceId.service_id}`);
+    // }
+
+    //0.ใส่รูปลง storage
+    //--------------------------------------------------------------------
+
+    //2.5 Image Upload
+    if (newService.image) {
+      const imageFileName = serviceId + "/" + uuidv4();
+
+      const { error: insertedImageError } = await adminSupabase.storage
+        .from("service_pictures")
+        .upload(imageFileName, newService.image);
+      //0.1 ยัด url ลง database
+      if (insertedImageError) {
+        console.log("Error occor during image upload.");
+        console.log(insertedImageError);
+        return res
+          .status(400)
+          .json({ error: "Error occor during image upload." });
+      } else {
+        const { error: insertedImageUrlError } = await adminSupabase
+          .from("services")
+          .insert([{ imageUrl: `URL${imageFileName}` }]) //***************ADD URL
+          .eq("service_id", serviceId);
+        if (insertedImageUrlError) {
+          console.log("Error occor during inser image url.");
+          console.log(insertedImageUrlError);
+
+          return res
+            .status(400)
+            .json({ error: "Error occor during inser image url." });
+        }
+      }
     }
+    //---------------------------------------------
 
-    //3.ลูปเพื่อใส่ sub service ใน table
-    if (newServices.subService.length > 0) {
+    //3.ลูปเพื่อใส่ sub service ใน table  
+    if (newService.subServices.length > 0) {
+      const service_id = serviceId[0].service_id;
       const subInsert = [];
-      for (let i = 0; i < newServices.subService.length; i++) {
+      for (let i = 0; i < newService.subServices.length; i++) {
         subInsert.push({
-          service_id: Number(serviceId?.service_id),
-          description: newServices.subService[i].description,
-          unit: newServices.subService[i].unit,
-          unit_price: newServices.subService[i].pricePerUnit,
-          created_at: newServices.created_at,
-          updated_at: newServices.updated_at,
+          service_id: Number(service_id),
+          description: newService.subServices[i].description,
+          unit: newService.subServices[i].unit,
+          unit_price: newService.subServices[i].pricePerUnit,
+          created_at: newService.created_at,
+          updated_at: newService.updated_at,
         });
       }
 
@@ -84,19 +120,20 @@ export default async function adminCreate(
       if (subInsertedError) {
         console.log(subInsertedError);
         return res.status(400).json({
-          message: "Error occur during insert sub services",
+          message: "Error occur during insert sub services.",
           detail: subInsertedError,
         });
       }
       if (subInsertedData) {
-        return res.status(201).json({ message: "Insert data successfully" });
+        return res.status(201).json({ message: "Insert data successfully." });
       }
     }
-    return res.status(201).json({ message: "Insert data successfully" });
+    return res.status(201).json({ message: "Insert data successfully." });
   } catch (error) {
+    console.log("Unexpected error occur during data insert.");
     console.log(error);
     return res.status(500).json({
-      message: "Unexpected error occur during data insert",
+      message: "Unexpected error occur during data insert.",
     });
   }
 }
