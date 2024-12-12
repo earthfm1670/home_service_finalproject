@@ -18,16 +18,13 @@ const ServicesListFilteredData: React.FC = () => {
   const [placeholder, setPlaceholder] = useState<string>("ตามตัวอัก...");
   const [selecttedCategory, setSelecttedCategory] =
     useState<string>("บริการทั้งหมด");
-  const [selecttedSortBy, setSelecttedSortBy] = useState<string>("");
+  const [selecttedSortBy, setSelecttedSortBy] = useState<string>("popular");
   const [searchText, setsearchText] = useState<string>("");
 
   const { getServicesData } = useServices(); // ดึงข้อมูลจาก Context
 
   const handleCategoryChange = (value: string) => {
-    console.log(`Get ที่ 1 = ${value}`);
-    value === "บริการทั้งหมด"
-      ? setSelecttedCategory("")
-      : setSelecttedCategory(value);
+    setSelecttedCategory(value);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,7 +50,7 @@ const ServicesListFilteredData: React.FC = () => {
   // ส่ง parameter ไปยัง getServicesData() ที่ ServicesContext.tsx เพื่อ request data
   useEffect(() => {
     console.log(
-      `Get ที่ 2 = ${selecttedCategory} , ${selecttedSortBy} , ${priceRange}`
+      `Get ที่ 2 : SearchText = ${searchText} ,Category = ${selecttedCategory} ,Sort By = ${selecttedSortBy} ,Price Range = ${priceRange}`
     );
     getServicesData(searchText, selecttedCategory, selecttedSortBy, priceRange);
   }, [selecttedCategory, selecttedSortBy, priceRange]);
@@ -62,10 +59,8 @@ const ServicesListFilteredData: React.FC = () => {
   useEffect(() => {
     const updatePlaceholder = () => {
       if (window.innerWidth >= 1024) {
-        console.log("> 1024");
         setPlaceholder("ตามตัวอักษร (Ascending)");
       } else {
-        console.log("> 375");
         setPlaceholder("ตามตัวอัก...");
       }
     };
