@@ -28,21 +28,21 @@ export default async function handler(
       const maxPrice = parseFloat((query.max_price as string) || "Infinity");
       const isRecommended = query.is_recommended === "true";
       const isPopular = query.is_popular === "true";
-      const sortBy = query.sort_by as "asc" | "desc" | undefined;
+      const sortBy = query.sort_by as
+        | "asc"
+        | "desc"
+        | "popular"
+        | "recommend"
+        | undefined;
 
-      // Fetch all popularity scores
+      // Fetch usage counts for each service
       const { data: popularityScores, error: popularityScoreError } =
-        await supabase.from("services").select("popularity_score");
+        await supabase.from("sub_services").select("service_id");
+
+      const recommendedThreshold = 0;
+      const popularThreshold = 0;
 
       if (popularityScoreError) throw popularityScoreError;
-
-      const avgPopularityScore =
-        popularityScores.reduce((sum, service) => {
-          const score = parseFloat(service.popularity_score);
-          return sum + (isNaN(score) ? 0 : score);
-        }, 0) / popularityScores.length;
-      const recommendedThreshold = avgPopularityScore * 0.4;
-      const popularThreshold = avgPopularityScore * 0.9;
 
       // Base query
       let dbQuery = supabase.from("services").select(
@@ -66,7 +66,7 @@ export default async function handler(
       }
 
       if (category) {
-        dbQuery = dbQuery.ilike("categories.category", `%${category}%`);
+        dbQuery = dbQuery.eq("categories.category", category);
       }
 
       if (isRecommended) {
@@ -74,10 +74,16 @@ export default async function handler(
       }
 
       if (isPopular) {
+        console.log("Poppular: ", isPopular);
         dbQuery = dbQuery.gte("popularity_score", popularThreshold);
       }
 
       if (sortBy) {
+        if (sortBy === "popular") {
+          console.log("popular logic");
+        } else if (sortBy === "recommend") {
+          console.log("recommend logic");
+        }
         dbQuery = dbQuery.order("service_name", {
           ascending: sortBy === "asc",
         });
@@ -147,7 +153,7 @@ export default async function handler(
         }
       );
       // เรียงลำดับตาม service_id
-      processedServices.sort((a, b) => a.service_id - b.service_id);
+      // processedServices.sort((a, b) => a.service_id - b.service_id);
 
       // if (minPrice > 0 || maxPrice < Infinity) {
       //   processedServices = processedServices.filter((service) => {
