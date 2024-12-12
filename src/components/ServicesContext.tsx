@@ -36,17 +36,17 @@ export const ServicesProvider: React.FC<{ children: ReactNode }> = ({
 
   const getServicesData = async (
     searchValue = "",
-    selectCategory = "",
-    sortBy = "",
+    selectCategory = "บริการทั้งหมด",
+    sortBy = "popular",
     priceRange: [Number, Number] = [0, 2000]
   ) => {
     try {
       console.log(
-        `Seleted Category = ${selectCategory}, Sort By = ${sortBy}, Price Range Min = ${priceRange[0]} Max= ${priceRange[1]} SearchText = ${searchValue}`
+        `Context : Category = ${selectCategory}, Sort By = ${sortBy}, Price Range Min = ${priceRange[0]} Max= ${priceRange[1]} SearchText = ${searchValue}`
       ); // log ดู parameter ที่ส่งเข้ามาผ่าน context เพื่อใช้ query data
 
       const response = await axios.get(
-        `api/services?limit=9&search=${searchValue}&category=${selectCategory}`
+        `api/services?limit=9&search=${searchValue}&category=${selectCategory}&sort_by=${sortBy}`
       );
       setServicesData(response.data.data);
       console.log("API response:", response.data.data); // log api response จาก database
