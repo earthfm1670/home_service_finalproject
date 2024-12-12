@@ -44,7 +44,7 @@ export default function HomeService() {
                 <img
                   src={service.service_picture_url}
                   alt={service.service_name}
-                  className="w-full h-full rounded-t-md object-cover"
+                  className="w-full h-full rounded-t-md object-cover cursor-pointer"
                 ></img>
               </div>
               <div className="my-1 px-4 py-4">
@@ -67,7 +67,7 @@ export default function HomeService() {
                   {service.service_pricing}
                 </div>
                 <div className="my-3" onClick={redirectToServiceDetail}>
-                  <a className="text-[16px] font-semibold text-blue-600 underline">
+                  <a className="text-[16px] font-semibold text-blue-600 underline cursor-pointer">
                     เลือกบริการ
                   </a>
                 </div>
@@ -187,7 +187,7 @@ export default function HomeService() {
       {/* end of service3 */}
       <div className="flex justify-center">
         <button
-          className="my-6 lg:my-16 w-[155px] h-[44px] bg-blue-600 rounded-lg text-[16px] font-medium text-white"
+          className="my-6 lg:my-16 w-[155px] h-[44px] bg-blue-600 rounded-lg text-[16px] font-medium text-white hover:bg-blue-500"
           onClick={redirectToServiceList}
         >
           ดูบริการทั้งหมด
