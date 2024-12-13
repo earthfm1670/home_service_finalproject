@@ -6,6 +6,8 @@ const PaymentForm: React.FC = () => {
   const elements = useElements();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [name, setName] = useState<string>("");
+  const [promoCode, setPromoCode] = useState<string>("");
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -24,6 +26,9 @@ const PaymentForm: React.FC = () => {
     const { error, paymentMethod } = await stripe.createPaymentMethod({
       type: "card",
       card: cardElement,
+      billing_details: {
+        name,
+      },
     });
 
     if (error) {
@@ -32,12 +37,33 @@ const PaymentForm: React.FC = () => {
     } else {
       // Handle successful payment method creation
       console.log(paymentMethod);
+      console.log("Promotion Code:", promoCode);
       setLoading(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
+      <div>
+        <label>
+          Name on Card
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          ></input>
+        </label>
+      </div>
+      <div>
+        <label>
+          Promotion Code (Optional)
+          <input
+            type="text"
+            value={promoCode}
+            onChange={(e) => setPromoCode(e.target.value)}
+          ></input>
+        </label>
+      </div>
       <CardElement />
       <button type="submit" disabled={!stripe || loading}>
         {loading ? "Processing..." : "Pay"}
