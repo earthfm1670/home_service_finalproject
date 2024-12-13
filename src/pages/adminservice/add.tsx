@@ -9,13 +9,13 @@ import IconDrag from "@/components/ui/IconDragAddAdmin";
 import IconPlusDefaultColor from "@/components/ui/IconPluseDefaultColor";
 
 export default function AdminNavbar() {
-
   const [inputSubservice, setInputSubservice] = useState<any[]>([
     { description: "", unit: "", pricePerUnit: 0 },
   ]);
   const [inputTitle, setInputTitle] = useState("");
   const [inputCat, setInputCat] = useState("");
-  const [inputImage, setInputImage] = useState("");
+  const [inputImage, setInputImage] = useState<File | null>(null);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
 
   const router = useRouter();
 
@@ -27,39 +27,66 @@ export default function AdminNavbar() {
   //     setInput(event.target.value);
   //   };
 
+  // const convertFileToBase64 = (file: File): Promise<string> => {
+  //   return new Promise((resolve, reject) => {
+  //     if (!file) {
+  //       reject(new Error("File is null or undefined"));
+  //       return;
+  //     }
+  //     const reader = new FileReader();
+  //     reader.onload = () => resolve(reader.result as string);
+  //     reader.onerror = (error) => reject(error);
+  //     reader.readAsDataURL(file);
+  //   });
+  // };
+
   const handleSubmit = async () => {
-    console.log("create new category");
-    let category_id = 0;
+    // let base64Image = null;
 
-    if (inputCat === "general_service") {
-      category_id = 2;
-    } else if (inputCat === "kitchen_service") {
-      category_id = 3;
-    } else if (inputCat === "bathroom_service") {
-      category_id = 4;
-    }
+    // if (inputImage instanceof File) {
+    //   try {
+    //     base64Image = await convertFileToBase64(inputImage);
+    //     // console.log(base64Image)
+    //   } catch (error) {
+    //     console.error("Error converting file to Base64:", error);
+    //     alert("เกิดข้อผิดพลาดในการแปลงไฟล์รูปภาพ");
+    //     return;
+    //   }
+    // } else {
+    //   console.error("inputImage is not a valid File");
+    // }
 
-    const newInputData = {
-      title: inputTitle,
-      category_id: category_id,
-      image: inputImage,
-      subService: inputSubservice,
-    };
+    // console.log("create new category");
+    // let category_id = 0;
 
+    // if (inputCat === "general_service") {
+    //   category_id = 2;
+    // } else if (inputCat === "kitchen_service") {
+    //   category_id = 3;
+    // } else if (inputCat === "bathroom_service") {
+    //   category_id = 4;
+    // }
     try {
-      await axios.post(`/api/admin/management/create`, newInputData);
-      router.push("/adminservice")
-    } catch {}
+      const newInputData = {
+        title: inputTitle,
+        category_id: inputCat,
+        image: inputImage,
+        subService: inputSubservice,
+      };
 
-    // คุณอาจใส่ logic เพิ่มเพื่อส่ง `newInputData` ผ่าน API
-    console.log(newInputData); // ทดสอบการสร้างข้อมูล
+      await axios.post(`/api/admin/management/create`, newInputData);
+      // router.push("/adminservice");
+      console.log('newInputData',newInputData)
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-//   useEffect(() => {
-// const refresh=() {
-//   await axios.
-// }
-//   },[])
+  //   useEffect(() => {
+  // const refresh=() {
+  //   await axios.
+  // }
+  //   },[])
 
   return (
     <>
@@ -90,7 +117,7 @@ export default function AdminNavbar() {
             input={setInputSubservice}
             inputtitle={setInputTitle}
             inputcat={setInputCat}
-            inputimage={setInputImage}
+            SetInputimage={setInputImage}
           />
         </div>
       </div>
@@ -104,12 +131,9 @@ export const AdminserviceIndex = ({
   input,
   inputtitle,
   inputcat,
-  inputimage,
+  SetInputimage,
 }: any) => {
   const router = useRouter();
-
-  // รับข้อมูลจาก params
-  const { userid } = router.query;
 
   // ดึงข้อมูลจาก Context
   // สร้าง state เพื่อมารับข้อมูล service
@@ -117,11 +141,12 @@ export const AdminserviceIndex = ({
   // สร้าง state มาส่งข้อมูล
   const [title, setTitle] = useState<string>("");
   const [category_id, setCategory_id] = useState<string>("");
-  const [image, setImage] = useState<string>("");
+  const [image, setImage] = useState<File>();
   const [subService, setSubService] = useState<string>("");
 
   // State เพื่อจัดการข้อมูล subservice
   const [subservices, setSubservices] = useState<any[]>([
+    { description: "", unit: "", pricePerUnit: 0 },
     { description: "", unit: "", pricePerUnit: 0 },
   ]);
 
@@ -161,8 +186,21 @@ export const AdminserviceIndex = ({
 
   inputcat(category_id);
 
+  const [preview, setPreview] = useState<string | null>(null); // เก็บ URL ชั่วคราวของรูปภาพ
+
   const handleInputImg = (event: React.ChangeEvent<HTMLInputElement>) => {
-    inputimage(event.target.value);
+    const file = event.target.files?.[0]; // ดึงไฟล์ที่ผู้ใช้เลือก
+    console.log(event, "event for image");
+    if (file) {
+      const previewURL = URL.createObjectURL(file); // ไม่มีปัญหากับชนิด File
+      console.log("previewURL", previewURL);
+      setPreview(previewURL);
+      SetInputimage(file);
+    }
+  };
+
+  const handleDeleteImg = () => {
+    setPreview(null);
   };
 
   return (
@@ -193,9 +231,10 @@ export const AdminserviceIndex = ({
                 onChange={(e) => setCategory_id(e.target.value)}
               >
                 <option value="">เลือกหมวดหมู่</option>
-                <option value="general_service">บริการทั่วไป</option>
-                <option value="kitchen_service">บริการห้องครัว</option>
-                <option value="bathroom_service">บริการห้องน้ำ</option>
+                <option value="2">บริการทั่วไป</option>
+                <option value="3">บริการห้องครัว</option>
+                <option value="4">บริการห้องน้ำ</option>
+                {/* <option value="bathroom_service">บริการห้องน้ำ</option> */}
               </select>
               {/* ลูกศร */}
               <span className="absolute top-1/2 right-5 transform -translate-y-1/2 text-gray-400 pointer-events-none">
@@ -204,50 +243,83 @@ export const AdminserviceIndex = ({
             </div>
           </div>
 
-          {/* update image */}
           <div className=" flex flex-col gap-12">
+            {/* update image */}
             {/* ข้อความ */}
             <div className="flex items-start justify-between w-[662px]">
               <label htmlFor="ชื่อบริการ" className="">
                 รูปภาพ
               </label>
-              <div className="">
-                <div className="w-[433px] flex gap-4 items-center justify-center flex-col p-4 border-2 border-dashed border-gray-300 rounded-lg">
-                  {/* SVG รูปภาพ */}
-                  <IconPicture />
-
-                  {/* ฟอร์มเลือกไฟล์ */}
-                  <div className="flex flex-col ">
-                    <div className="flex flex-row ' gap-2">
-                      <label
-                        htmlFor="file-upload"
-                        className="cursor-pointer text-blue-500 hover:text-blue-700 underline"
-                      >
-                        อัพโหลดภาพ
-                      </label>
-                      <p className="text-gray-600 text-center mb-4">หรือ</p>
-                      <p className="text-gray-600 text-center mb-4">
-                        ลากและวางที่นี้
-                      </p>
-                    </div>
-                    <div className="flex flex-row gap-2">
-                      <p className="text-gray-600 text-center mb-4">PNG</p>
-                      <p className="text-gray-600 text-center mb-4">,</p>
-                      <p className="text-gray-600 text-center mb-4">JPG</p>
-                      <p className="text-gray-600 text-center mb-4">
-                        ขนาดไม่เกิน
-                      </p>
-                      <p className="text-gray-600 text-center mb-4">5MB</p>
-                    </div>
-
-                    <input
-                      type="file"
-                      id="file-upload"
-                      accept="image/png, image/jpeg"
-                      className="hidden"
-                      onChange={handleInputImg} // ฟังก์ชันที่ใช้ในการจัดการไฟล์ที่เลือก
-                    />
+              {/* input for upload */}
+              <div className="flex flex-col gap-2 w-[433px]">
+                <div className="w-full flex items-center justify-center flex-col  border-2 border-dashed border-gray-300 rounded-lg">
+                  <div>
+                    {preview ? (
+                      <img
+                        src={preview}
+                        alt="Preview"
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                    ) : (
+                      <div>
+                        <div className="w-full h-full flex items-center justify-center flex-col gap-3 p-4">
+                          <IconPicture />
+                          {/* div for first line in box drop img */}
+                          <div className="flex flex-row gap-2">
+                            <label
+                              htmlFor="file-upload"
+                              className="cursor-pointer text-blue-500 hover:text-blue-700"
+                            >
+                              อัพโหลดภาพ
+                            </label>
+                            <p className="text-gray-600 text-center ">หรือ</p>
+                            <p className="text-gray-600 text-center ">
+                              ลากและวางที่นี้
+                            </p>
+                          </div>
+                          {/* div for second line in box drop img*/}
+                          <div className="flex flex-row gap-2 text-sm -mt-2  text-gray-600">
+                            <p>PNG,</p>
+                            <p>JPG</p>
+                            <p>ขนาดไม่เกิน</p>
+                            <p className="text-gray-600 text-center ">5MB</p>
+                          </div>
+                        </div>
+                        <div>
+                          <input
+                            type="file"
+                            id="file-upload"
+                            accept="image/png, image/jpeg"
+                            onChange={handleInputImg}
+                            className="hidden"
+                            // ดักจับการเปลี่ยนแปลงของไฟล์
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
+                </div>
+                <div>
+                  {preview ? (
+                    <div className="flex flex-row justify-between items-center">
+                      <p className="text-sm text-gray-600">
+                        ขนาดภาพที่แนะนำ: 1440 x 225 PX
+                      </p>
+                      <p
+                        className="cursor-pointer text-blue-500 hover:text-blue-700 underline"
+                        onClick={handleDeleteImg}
+                      >
+                        ลบรูปภาพ
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-row justify-between items-center">
+                      <p className="text-sm text-gray-600">
+                        ขนาดภาพที่แนะนำ: 1440 x 225 PX
+                      </p>
+                      <p></p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
