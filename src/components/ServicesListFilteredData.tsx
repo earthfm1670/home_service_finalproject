@@ -24,10 +24,7 @@ const ServicesListFilteredData: React.FC = () => {
   const { getServicesData } = useServices(); // ดึงข้อมูลจาก Context
 
   const handleCategoryChange = (value: string) => {
-    console.log(`Get ที่ 1 = ${value}`);
-    value === "บริการทั้งหมด"
-      ? setSelecttedCategory("")
-      : setSelecttedCategory(value);
+    setSelecttedCategory(value);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,11 +49,8 @@ const ServicesListFilteredData: React.FC = () => {
 
   // ส่ง parameter ไปยัง getServicesData() ที่ ServicesContext.tsx เพื่อ request data
   useEffect(() => {
-    console.log(
-      `Get ที่ 2 : SearchText = ${searchText} ,Category = ${selecttedCategory} ,Sort By = ${selecttedSortBy} ,Price Range = ${priceRange}`
-    );
-    getServicesData(searchText, selecttedCategory, selecttedSortBy, priceRange);
-  }, [selecttedCategory, selecttedSortBy, priceRange]);
+    getServicesData(searchText, selecttedCategory, selecttedSortBy);
+  }, [selecttedCategory, selecttedSortBy]);
 
   // update ค่า setPlaceholder Dispay size มีการเปลี่ยนแปลงมากหรือน้อยกว่า 1024px
   useEffect(() => {
@@ -201,7 +195,7 @@ const ServicesListFilteredData: React.FC = () => {
                     <div className="p-4 w-56 h-24">
                       <Range
                         values={priceRange}
-                        step={1}
+                        step={100}
                         min={0}
                         max={2000}
                         onChange={handleSliderChange}
@@ -226,12 +220,16 @@ const ServicesListFilteredData: React.FC = () => {
                             {children}
                           </div>
                         )}
-                        renderThumb={({ props }) => (
-                          <div
-                            {...props}
-                            className="h-4 w-4 bg-white border-solid border-4 border-blue-700 rounded-full"
-                          />
-                        )}
+                        renderThumb={({ props, index }) => {
+                          const { key, ...otherProps } = props;
+                          return (
+                            <div
+                              key={index}
+                              {...otherProps}
+                              className="h-4 w-4 bg-white border-solid border-4 border-blue-700 rounded-full"
+                            />
+                          );
+                        }}
                       />
                       <div className="flex justify-between mt-2 text-sm text-gray-600">
                         <span>{priceRange[0]}</span>
