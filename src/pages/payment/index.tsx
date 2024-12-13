@@ -2,6 +2,7 @@ import React from "react";
 import StripeContext from "@/components/StripeContext";
 import PaymentForm from "@/components/PaymentForm";
 
+//stand alone payment page, need to connect to service info later
 const PaymentPage: React.FC = () => {
   return (
     <StripeContext>
@@ -11,4 +12,4 @@ const PaymentPage: React.FC = () => {
   );
 };
 
-export default PaymentPage
+export default PaymentPage;
