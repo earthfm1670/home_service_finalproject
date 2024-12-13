@@ -66,17 +66,6 @@ export default async function handler(
         dbQuery = dbQuery.not("categories.category", "is", null);
       }
 
-      if (sortBy) {
-        if (sortBy === "popular") {
-          console.log("popular logic");
-        } else if (sortBy === "recommend") {
-          console.log("recommend logic");
-        }
-        dbQuery = dbQuery.order("service_name", {
-          ascending: sortBy === "asc",
-        });
-      }
-
       const { data: services, error } = await dbQuery;
 
       if (error) throw error;
@@ -164,15 +153,6 @@ export default async function handler(
         });
       }
 
-      // // เรียงลำดับตาม service_id เมื่อไม่มีการใช้งาน sort_by asc & desc
-      // if (sortBy != "asc" && sortBy != "desc" && sortBy != "popular") {
-      //   processedServices.sort((a, b) => a.service_id - b.service_id);
-      // }
-      // // Sort by popularity (total_usage) if sortBy is popular
-      // if (sortBy === "popular") {
-      //   processedServices.sort((a, b) => b.total_usage - a.total_usage);
-      // }
-
       // กรองข้อมูลตาม promotions_and_offers เมื่อ sort_by = "recommend"
       if (sortBy === "recommended") {
         processedServices = processedServices.filter(
@@ -181,6 +161,12 @@ export default async function handler(
         processedServices.sort((a, b) => a.service_id - b.service_id);
       } else if (sortBy === "popular") {
         processedServices.sort((a, b) => b.total_usage - a.total_usage);
+      } else if (sortBy === "asc" || sortBy === "desc") {
+        processedServices.sort((a, b) =>
+          sortBy === "asc"
+            ? a.service_name.localeCompare(b.service_name, "en")
+            : b.service_name.localeCompare(a.service_name, "en")
+        );
       } else {
         processedServices.sort((a, b) => a.service_id - b.service_id);
       }
