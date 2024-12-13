@@ -24,7 +24,10 @@ const ServicesListFilteredData: React.FC = () => {
   const { getServicesData } = useServices(); // ดึงข้อมูลจาก Context
 
   const handleCategoryChange = (value: string) => {
-    setSelecttedCategory(value);
+    console.log(`Get ที่ 1 = ${value}`);
+    value === "บริการทั้งหมด"
+      ? setSelecttedCategory("")
+      : setSelecttedCategory(value);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
