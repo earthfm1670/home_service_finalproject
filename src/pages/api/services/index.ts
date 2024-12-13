@@ -26,20 +26,12 @@ export default async function handler(
       const category = query.category as string;
       const minPrice = parseFloat((query.min_price as string) || "0");
       const maxPrice = parseFloat((query.max_price as string) || "Infinity");
-
       const sortBy = query.sort_by as
         | "asc"
         | "desc"
         | "popular"
         | "recommended"
         | undefined;
-
-      // Fetch usage counts for each service
-      const { data: subServicesData, error: subServicesDataError } =
-        await supabase
-          .from("sub_services")
-          .select("service_id, unit_price, usage_count, promotions_and_offers");
-      if (subServicesDataError) throw subServicesDataError;
 
       // Base query
       let dbQuery = supabase.from("services").select(
@@ -55,11 +47,19 @@ export default async function handler(
         { count: "exact" }
       );
 
-      // Apply filters
+      // Fetch usage counts for each service
+      const { data: subServicesData, error: subServicesDataError } =
+        await supabase
+          .from("sub_services")
+          .select("service_id, unit_price, usage_count, promotions_and_offers");
+      if (subServicesDataError) throw subServicesDataError;
+
+      // search filters
       if (search) {
         dbQuery = dbQuery.ilike("service_name", `%${search}%`);
       }
 
+      // category filters
       if (category != "บริการทั้งหมด") {
         dbQuery = dbQuery.eq("categories.category", category);
       } else {
@@ -139,21 +139,16 @@ export default async function handler(
         }
       );
 
-      if (minPrice > 0 || maxPrice < Infinity) {
-        processedServices = processedServices.filter((service) => {
-          const serviceMinPrice = service.minPrice;
-          const serviceMaxPrice = service.maxPrice;
-
-          const minPriceCondition =
-            minPrice == 0 || serviceMinPrice <= maxPrice;
-          const maxPriceCondition =
-            maxPrice >= Infinity || serviceMaxPrice >= minPrice;
-
-          return minPriceCondition && maxPriceCondition;
-        });
+      //  minPrice & maxPrice filters
+      if (minPrice || (maxPrice && maxPrice != 0)) {
+        processedServices = processedServices.filter(
+          (service) =>
+            Number(service.minPrice) >= Number(minPrice) &&
+            Number(service.maxPrice) <= Number(maxPrice)
+        );
       }
 
-      // กรองข้อมูลตาม promotions_and_offers เมื่อ sort_by = "recommend"
+      //  sort_By filters
       if (sortBy === "recommended") {
         processedServices = processedServices.filter(
           (service) => service.promotionsAndOffers
