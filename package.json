@@ -33,6 +33,7 @@
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
     "react-range": "^1.10.0",
+    "stripe": "^17.4.0",
     "swagger-ui-dist": "^5.18.2",
     "swagger-ui-express": "^5.0.1",
     "tailwind-merge": "^2.5.5",
