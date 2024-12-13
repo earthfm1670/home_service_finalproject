@@ -6,7 +6,11 @@ const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
 
-const StripeContext: React.FC = ({ children }) => (
+interface StripeContextProps {
+  children: React.ReactNode;
+}
+
+const StripeContext: React.FC<StripeContextProps> = ({ children }) => (
   <Elements stripe={stripePromise}>{children}</Elements>
 );
 
