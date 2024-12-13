@@ -79,7 +79,7 @@ export default async function adminCreate(
       } else {
         const { error: insertedImageUrlError } = await adminSupabase
           .from("services")
-          .upsert(
+          .update(
             [
               {
                 service_picture_url: `https://frqdeijtcguxcozmpucc.supabase.co/storage/v1/object/public/service_pictures/${serviceId[0].service_id}/${imageFileName}`,
