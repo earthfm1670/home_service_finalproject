@@ -77,11 +77,12 @@ export default function AdminNavbar() {
         title: inputTitle,
         category_id: inputCat,
         image: inputImage,
-        subService: inputSubservice,
+        subServices: inputSubservice,
       };
 
       await axios.post(`/api/admin/management/create`, newInputData);
       // router.push("/adminservice");
+      setShowPopup(true)
       console.log("newInputData", newInputData);
     } catch (error) {
       console.log(error);
