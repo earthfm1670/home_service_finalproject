@@ -33,9 +33,10 @@ export default async function adminCreate(
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
-
+  console.log("---start-------------------------------------------");
   try {
     // 1.คิวรี่เพื่อใส่ main service + ใส่ image url
+    console.log(newService.title);
     const { data: serviceId, error: insertError } = await adminSupabase
       .from("services")
       .insert([
@@ -52,10 +53,18 @@ export default async function adminCreate(
     } else {
       console.log("Main service inserted.");
     }
-
+    console.log("---1-------------------------------------------");
     //2.5 Image Upload
+    console.log("newService data for first time to send at api", newService);
     if (newService.image) {
       const imageFileName = serviceId[0].service_id + "/" + uuidv4();
+      console.log("data from serviceId", serviceId[0].service_id);
+      console.log("newService.image", newService.image);
+
+      const fileBlob = new Blob([newService.image], {
+        type: newService.image.type,
+      });
+      console.log("check type of file Blob", fileBlob); // ตรวจสอบว่าเป็น Blob
 
       const { error: insertedImageError } = await adminSupabase.storage
         .from("service_pictures")
@@ -70,7 +79,13 @@ export default async function adminCreate(
       } else {
         const { error: insertedImageUrlError } = await adminSupabase
           .from("services")
-          .insert([{ imageUrl: `URL/${imageFileName}` }]) //***************ADD URL
+          .upsert(
+            [
+              {
+                service_picture_url: `https://frqdeijtcguxcozmpucc.supabase.co/storage/v1/object/public/service_pictures/${serviceId[0].service_id}/${imageFileName}`,
+              },
+            ],
+          ) //***************ADD URL
           .eq("service_id", serviceId[0].service_id);
         if (insertedImageUrlError) {
           console.log("Error occor during inser image url.");
@@ -83,8 +98,8 @@ export default async function adminCreate(
       }
     }
     //---------------------------------------------
-
-    //3.ลูปเพื่อใส่ sub service ใน table  
+    console.log("---2-------------------------------------------");
+    //3.ลูปเพื่อใส่ sub service ใน table
     if (newService.subServices.length > 0) {
       const service_id = serviceId[0].service_id;
       const subInsert = [];
@@ -107,6 +122,7 @@ export default async function adminCreate(
           message: "Error occur during insert sub services.",
           detail: subInsertedError,
         });
+        console.log("---3-------------------------------------------");
       }
       if (subInsertedData) {
         return res.status(201).json({ message: "Insert data successfully." });

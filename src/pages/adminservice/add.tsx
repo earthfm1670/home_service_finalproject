@@ -17,6 +17,12 @@ export default function AdminNavbar() {
   const [inputImage, setInputImage] = useState<File | null>(null);
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
+  console.log("inputImage",inputImage)
+
+  
+  // const file = new Blob([yourData], { type: "image/jpeg" });
+
+
   const router = useRouter();
 
   //   <option value="general_service">บริการทั่วไป</option>
@@ -76,7 +82,7 @@ export default function AdminNavbar() {
 
       await axios.post(`/api/admin/management/create`, newInputData);
       // router.push("/adminservice");
-      console.log('newInputData',newInputData)
+      console.log("newInputData", newInputData);
     } catch (error) {
       console.log(error);
     }
@@ -192,7 +198,8 @@ export const AdminserviceIndex = ({
     const file = event.target.files?.[0]; // ดึงไฟล์ที่ผู้ใช้เลือก
     console.log(event, "event for image");
     if (file) {
-      const previewURL = URL.createObjectURL(file); // ไม่มีปัญหากับชนิด File
+      const previewURL = URL.createObjectURL(file); // การแปลง file เป็น url เพื่อแสดงในกล่อง
+      // const previewURL = URL.revokeObjectURL(preview); // การลบ url เมื่อไม่ได้ใช้งาน ยังไม่ค่อยเข้าใจ
       console.log("previewURL", previewURL);
       setPreview(previewURL);
       SetInputimage(file);
