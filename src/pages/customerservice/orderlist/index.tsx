@@ -2,7 +2,63 @@ import { Navbar } from "@/components/navbar";
 import HomeFooter from "@/components/homefooter";
 import UserSidebar from "@/components/customer/userSidebar";
 import OrderCard from "@/components/customer/orderCard";
-export default function customerProfile() {
+import React from "react";
+interface Orders {
+  description: string;
+  type: string;
+  amount: number;
+  unit: string;
+}
+interface CustomerOrder {
+  id: string;
+  status: string;
+  date: string;
+  time: string;
+  staff: string;
+  totalPrice: number;
+  orders: Orders[];
+}
+const orderlist: CustomerOrder[] = [
+  {
+    id: "AD001",
+    status: "รอดำเนินการ",
+    date: "25/04/2563",
+    time: "13.00",
+    staff: "สมาน ยอดเยี่ยม",
+    totalPrice: 15000,
+    orders: [
+      {
+        description: "ล้างแอร์ 9000 - 18000 BTU",
+        type: "ติดผนัง",
+        amount: 2,
+        unit: "เครื่อง",
+      },
+      {
+        description: "ล้างแอร์ 9000 - 18000 BTU",
+        type: "ติดผนัง",
+        amount: 2,
+        unit: "เครื่อง",
+      },
+    ],
+  },
+  {
+    id: "AD002",
+    status: "กำลังดำเนินการ",
+    date: "25/04/2563",
+    time: "13.00",
+    staff: "สมาน ยอดเยี่ยม",
+    totalPrice: 15000,
+    orders: [
+      {
+        description: "ล้างแอร์ 9000 - 18000 BTU",
+        type: "ติดผนัง",
+        amount: 2,
+        unit: "เครื่อง",
+      },
+    ],
+  },
+];
+export default function customerOrderlist() {
   return (
     <>
       <Navbar />
@@ -16,8 +72,23 @@ export default function customerProfile() {
         <div className="small-banner flex lg:hidden justify-center items-center border rounded-lg mx-4 my-4 bg-blue-600 font-medium text-3xl text-white py-6">
           รายการคำสั่งซ่อม
         </div>
-        <div className="content flex justify-center w-full lg:ml-72 min-h-96 mt-1">
-          <OrderCard />
+        <div className="content flex flex-col justify-center items-center w-full min-h-96 mt-1 pb-7 lg:pt-7 lg:ml-60">
+          {orderlist.map(
+            ({ id, status, date, time, staff, totalPrice, orders }) => {
+              return (
+                <OrderCard
+                  key={id}
+                  id={id}
+                  status={status}
+                  date={date}
+                  time={time}
+                  staff={staff}
+                  totalPrice={totalPrice}
+                  orders={orders}
+                />
+              );
+            }
+          )}
         </div>
       </div>
       <HomeFooter />
