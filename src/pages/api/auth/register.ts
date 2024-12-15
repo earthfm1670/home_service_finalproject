@@ -63,7 +63,7 @@ export default async function userRegister(
     // Check if user already exists in the users table
     //FIXME find new way to get email
     const { data: existingUser } = await supabase
-      .from("users") //<<<< FIX
+      .from("users")
       .select("user_id")
       .eq("email", email) //<<< FIX
       .single();
@@ -104,7 +104,8 @@ export default async function userRegister(
     const { data: insertData, error: insertError } = await supabase
       .from("users")
       .insert([
-        { 
+        {
+          user_id: data.user.id,
           name,
           email,
           phone_number: phoneNumber,
