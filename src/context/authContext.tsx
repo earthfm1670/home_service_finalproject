@@ -41,6 +41,7 @@ interface UserPayload {
 interface AuthContextType {
   authState: AuthState;
   login: (email: string, password: string) => void;
+  adminLogin: (email: string, password: string) => void;
   logout: () => void;
   contextTest: boolean;
 }
@@ -123,6 +124,29 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.error("Invalid email or password");
     }
   };
+  const adminLogin = async (email: string, password: string) => {
+    try {
+      const response = await axios.post("api/admin/login", { email, password });
+      //access token
+      const authToken = response.data.access_token;
+      //access userInfo
+      const userInfo = jwtDecode(authToken);
+      //store user info as string in local& store token
+      localStorage.setItem("user", JSON.stringify(userInfo));
+      localStorage.setItem("token", authToken);
+      //setauth state to store user / token
+      // if (userInfo.user_metadata.role === "admin"){} << แก้ type
+      setAuthState({
+        user: userInfo,
+        token: authToken,
+        isAdmin: true, //ใส่เงื่อนไข
+      });
+    } catch (error) {
+      const err = error as Error;
+      console.log(err.message);
+      console.error("Invalid email or password");
+    }
+  };
   //define logout function which will remove user and token
   const logout = () => {
     localStorage.removeItem("user");
@@ -135,7 +159,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider value={{ authState, login, logout, contextTest }}>
+    <AuthContext.Provider
+      value={{ authState, login, logout, contextTest, adminLogin }}>
       {children}
     </AuthContext.Provider>
   );
