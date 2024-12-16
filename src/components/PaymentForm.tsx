@@ -76,14 +76,29 @@ const PaymentForm: React.FC = () => {
   const elementStyle = {
     base: {
       fontSize: "16px",
+      fontWeight: "normal",
       color: "#424770",
+      fontFamily: "'Poppins', sans-serif", // Apply font family globally
       "::placeholder": {
-        color: "#aab7c4",
+        color: "#6B7280", // Placeholder color
+        fontSize: "16px", // Placeholder font size
+        fontWeight: "normal",
+        fontFamily: "'Poppins', sans-serif", // Ensure placeholder text uses the custom font
       },
     },
     invalid: {
-      color: "#9e2146",
+      color: "#9e2146", // Invalid input color
     },
+  };
+
+  const customCardNumberOptions = {
+    ...elementStyle,
+    placeholder: "XXXX XXXX XXXX XXXX",
+  };
+
+  const customCvcOptions = {
+    ...elementStyle,
+    placeholder: "XXX",
   };
 
   return (
@@ -94,8 +109,8 @@ const PaymentForm: React.FC = () => {
             หมายเลขบัตรเครดิต<span className="text-[#C82438]">*</span>
           </label>
           <CardNumberElement
-            options={{ style: elementStyle }}
-            className="block w-full border border-gray-300 rounded-md py-2 px-3"
+            options={customCardNumberOptions}
+            className="block w-full border border-gray-300 rounded-md py-2 px-2"
           />
         </div>
         <div className="mx-3">
@@ -105,7 +120,8 @@ const PaymentForm: React.FC = () => {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="block w-full border border-gray-300 rounded-md py-1"
+              className="block w-full border border-gray-300 rounded-md py-1 placeholder:text-gray-500 placeholder:text-[16px] placeholder:font-normal placeholder:px-2"
+              placeholder="กรุณากรอกชื่อบนบัตร"
             ></input>
           </label>
         </div>
@@ -116,7 +132,7 @@ const PaymentForm: React.FC = () => {
             </label>
             <CardExpiryElement
               options={{ style: elementStyle }}
-              className="block w-full border border-gray-300 rounded-md py-2 px-3"
+              className="block w-full border border-gray-300 rounded-md py-2 px-2"
             />
           </div>
           <div className="mx-3 mb-4">
@@ -124,8 +140,8 @@ const PaymentForm: React.FC = () => {
               รหัส CVC / CVV<span className="text-[#C82438]">*</span>
             </label>
             <CardCvcElement
-              options={{ style: elementStyle }}
-              className="block w-full border border-gray-300 rounded-md py-2 px-3"
+              options={customCvcOptions}
+              className="block w-full border border-gray-300 rounded-md py-2 px-2"
             />
           </div>
           <div className="mx-3 mb-4">
@@ -135,7 +151,7 @@ const PaymentForm: React.FC = () => {
                 type="text"
                 value={promoCode}
                 onChange={(e) => setPromoCode(e.target.value)}
-                className="block min-w-[205px] h-[64px] text-[16px] border border-gray-300 rounded-md py-3 px-4 placeholder:text-[14px]"
+                className="block min-w-[205px] h-[64px] text-[16px] border border-gray-300 rounded-md py-3 px-2 placeholder:text-[16px]"
                 placeholder="กรุณากรอกโค้ดส่วนลด(ถ้ามี)"
               ></input>
               <button
