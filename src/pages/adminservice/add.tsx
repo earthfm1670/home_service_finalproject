@@ -7,21 +7,27 @@ import axios from "axios";
 import IconPicture from "@/components/ui/IconPicture";
 import IconDrag from "@/components/ui/IconDragAddAdmin";
 import IconPlusDefaultColor from "@/components/ui/IconPluseDefaultColor";
+import { stringify } from "querystring";
+
+interface SubService {
+  description: string;
+  unit: string;
+  pricePerUnit: number;
+}
 
 export default function AdminNavbar() {
-  const [inputSubservice, setInputSubservice] = useState<any[]>([
+  const [inputSubservice, setInputSubservice] = useState<SubService[]>([
     { description: "", unit: "", pricePerUnit: 0 },
   ]);
   const [inputTitle, setInputTitle] = useState("");
   const [inputCat, setInputCat] = useState("");
-  const [inputImage, setInputImage] = useState<File | null>(null);
+  const [inputImage, setInputImage] = useState<File>();
+  const [URLimage, setURLimage] = useState<String>();
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
-  console.log("inputImage",inputImage)
+  // console.log("inputImage", inputImage);
 
-  
   // const file = new Blob([yourData], { type: "image/jpeg" });
-
 
   const router = useRouter();
 
@@ -46,7 +52,33 @@ export default function AdminNavbar() {
   //   });
   // };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("title", inputTitle);
+    formData.append("category_id", inputCat);
+    if (inputImage) {
+      formData.append("image", inputImage);
+    }
+    formData.append("subservices", JSON.stringify(inputSubservice));
+  
+    // วนลูปเพื่อแสดงข้อมูลใน FormData
+    console.log("FormData contents:");
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
+    }
+
+    // การแสดงข้อมูลข้างใน formdata ได้นั้นต้องใช้วิธีการ loop
+    console.log("FormData contents:");
+    let formDataObject: { [key: string]: any } = []; // สร้าง object เปล่าเพื่อเก็บข้อมูล
+    
+    for (let [key, value] of formData.entries()) {
+      formDataObject[key] = value;
+    }
+    
+    console.log(formDataObject); // แสดงข้อมูลทั้งหมดในรูปแบบ object
+
     // let base64Image = null;
 
     // if (inputImage instanceof File) {
@@ -73,21 +105,26 @@ export default function AdminNavbar() {
     //   category_id = 4;
     // }
     try {
-      const newInputData = {
-        title: inputTitle,
-        category_id: inputCat,
-        image: inputImage,
-        subServices: inputSubservice,
-      };
+      // const newInputData = {
+      //   title: inputTitle,
+      //   category_id: inputCat,
+      //   image: inputImage,
+      //   subServices: inputSubservice,
+      // };
 
-      await axios.post(`/api/admin/management/create`, newInputData);
-      // router.push("/adminservice");
-      setShowPopup(true)
-      console.log("newInputData", newInputData);
+      // await axios.post(`/api/admin/management/create`, newInputData);
+      await axios.post(`/api/admin/management/create`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      router.push("/adminservice");
+      // setShowPopup(true);
+      console.log("fromdata2", formData);
+      // console.log("newInputData", newInputData);
     } catch (error) {
       console.log(error);
     }
   };
+
 
   //   useEffect(() => {
   // const refresh=() {
@@ -97,37 +134,40 @@ export default function AdminNavbar() {
 
   return (
     <>
-      <div className="flex flex-row w-full">
-        <div>
-          <Adminsidebar />
-        </div>
-        <div className="w-full flex flex-col">
-          {/* navbar for admin page */}
-          <div className="flex flex-row items-center justify-between bg-white sticky top-0 h-20 px-10 py-5 min-w-[1200px] border-b  border-gray-300 z-10">
-            <div className="text-xl">เพิ่มบริการ</div>
-            <div className="h-full flex flex-row items-center gap-6 relative">
-              <button
-                className=" bg-white text-defaultColor text-base h-full px-7 flex items-center gap-3 rounded-lg w-32 text-center justify-center border border-defaultColor"
-                onClick={() => router.push("/adminservice")}
-              >
-                ยกเลิก
-              </button>
-              <button
-                className=" bg-defaultColor text-white text-base h-full px-7 flex items-center gap-3 rounded-lg w-32 text-center justify-center "
-                onClick={handleSubmit}
-              >
-                สร้าง
-              </button>
-            </div>
+      <form onSubmit={handleSubmit}>
+        <div className="flex flex-row w-full">
+          <div>
+            <Adminsidebar />
           </div>
-          <AdminserviceIndex
-            input={setInputSubservice}
-            inputtitle={setInputTitle}
-            inputcat={setInputCat}
-            SetInputimage={setInputImage}
-          />
+          <div className="w-full flex flex-col">
+            {/* navbar for admin page */}
+            <div className="flex flex-row items-center justify-between bg-white sticky top-0 h-20 px-10 py-5 min-w-[1200px] border-b  border-gray-300 z-10">
+              <div className="text-xl">เพิ่มบริการ</div>
+              <div className="h-full flex flex-row items-center gap-6 relative">
+                <button
+                  className=" bg-white text-defaultColor text-base h-full px-7 flex items-center gap-3 rounded-lg w-32 text-center justify-center border border-defaultColor"
+                  onClick={() => router.push("/adminservice")}
+                >
+                  ยกเลิก
+                </button>
+                <button
+                  className=" bg-defaultColor text-white text-base h-full px-7 flex items-center gap-3 rounded-lg w-32 text-center justify-center "
+                  type="submit"
+                >
+                  สร้าง
+                </button>
+              </div>
+            </div>
+            <AdminserviceIndex
+              input={setInputSubservice}
+              inputtitle={setInputTitle}
+              inputcat={setInputCat}
+              SetInputimage={setInputImage}
+              setURLimage={setURLimage}
+            />
+          </div>
         </div>
-      </div>
+      </form>
     </>
   );
 }
@@ -139,6 +179,7 @@ export const AdminserviceIndex = ({
   inputtitle,
   inputcat,
   SetInputimage,
+  setURLimage
 }: any) => {
   const router = useRouter();
 
@@ -193,7 +234,7 @@ export const AdminserviceIndex = ({
 
   inputcat(category_id);
 
-  const [preview, setPreview] = useState<string | null>(null); // เก็บ URL ชั่วคราวของรูปภาพ
+  const [preview, setPreview] = useState<String | null>(null); // เก็บ URL ชั่วคราวของรูปภาพ
 
   const handleInputImg = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]; // ดึงไฟล์ที่ผู้ใช้เลือก
@@ -207,13 +248,38 @@ export const AdminserviceIndex = ({
     }
   };
 
+  // const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   const previewURL = URL.createObjectURL(file)
+  //   setPreview(previewURL)
+  //   if (!file) {
+  //     alert("No file selected.");
+  //     return;
+  //   }
+  //   if (!file.type.startsWith("image/")) {
+  //     alert("Please upload a valid image file.");
+  //     return;
+  //   }
+  //   const formData = new FormData();
+  //   formData.append("image", file);
+
+  //   try {
+  //     const response = await axios.post("/api/admin/management/create/", formData, {
+  //       headers: { "Content-Type": "multipart/form-data" },
+  //     });
+  //     setURLimage(response.data.urls[0]);
+  //   } catch (err) {
+  //     console.log("Error uploading image:", err);
+  //   }
+  // };
+
   const handleDeleteImg = () => {
     setPreview(null);
   };
 
   return (
     <>
-      <form className=" min-h-screen w-full flex justify-center items-start py-12 min-w-[1200px]  bg-gray-100">
+      <div className=" min-h-screen w-full flex justify-center items-start py-12 min-w-[1200px]  bg-gray-100">
         <div className="flex flex-col w-[1120px] border bg-white border-gray-300 rounded-lg overflow-x-auto gap-10 py-12 px-7">
           {/* กล่องบน */}
           {/* ชื่อบริการ */}
@@ -252,7 +318,7 @@ export const AdminserviceIndex = ({
           </div>
 
           <div className=" flex flex-col gap-12">
-            {/* update image */}
+            {/* Update Image */}
             {/* ข้อความ */}
             <div className="flex items-start justify-between w-[662px]">
               <label htmlFor="ชื่อบริการ" className="">
@@ -299,6 +365,7 @@ export const AdminserviceIndex = ({
                             id="file-upload"
                             accept="image/png, image/jpeg"
                             onChange={handleInputImg}
+                            // onChange={handleImageUpload}
                             className="hidden"
                             // ดักจับการเปลี่ยนแปลงของไฟล์
                           />
@@ -361,7 +428,7 @@ export const AdminserviceIndex = ({
             </div>
           </div>
         </div>
-      </form>
+      </div>
     </>
   );
 };
