@@ -78,12 +78,12 @@ const PaymentForm: React.FC = () => {
       fontSize: "16px",
       fontWeight: "normal",
       color: "#424770",
-      fontFamily: "'Poppins', sans-serif", // Apply font family globally
+      fontFamily: "'Poppins', sans-serif",
       "::placeholder": {
-        color: "#6B7280", // Placeholder color
-        fontSize: "16px", // Placeholder font size
+        color: "#6B7280",
+        fontSize: "16px",
         fontWeight: "normal",
-        fontFamily: "'Poppins', sans-serif", // Ensure placeholder text uses the custom font
+        fontFamily: "'Poppins', sans-serif",
       },
     },
     invalid: {
@@ -144,6 +144,8 @@ const PaymentForm: React.FC = () => {
               className="block w-full border border-gray-300 rounded-md py-2 px-2"
             />
           </div>
+          {/* divider line */}
+          <div className="border-t border-gray-300 my-6 mb-8 mx-3"></div>
           <div className="mx-3 mb-4">
             <label>Promotion Code</label>{" "}
             <div className="flex items-center gap-4">
