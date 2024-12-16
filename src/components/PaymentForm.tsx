@@ -65,7 +65,7 @@ const PaymentForm: React.FC = () => {
       const appliedDiscount: number = promoCodes[promoCode];
       setDiscount(appliedDiscount);
       alert(
-        `Promotion code applied! You get ${appliedDiscount * 100}% discount!}`
+        `Promotion code applied! You get ${appliedDiscount * 100}% discount!`
       );
     } else {
       alert("Invalid promotion code.");
