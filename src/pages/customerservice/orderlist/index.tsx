@@ -2,7 +2,8 @@ import { Navbar } from "@/components/navbar";
 import HomeFooter from "@/components/homefooter";
 import UserSidebar from "@/components/customer/userSidebar";
 import OrderCard from "@/components/customer/orderCard";
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 interface Orders {
   description: string;
   type: string;
@@ -58,7 +59,57 @@ const orderlist: CustomerOrder[] = [
     ],
   },
 ];
+
+interface FetchedOrders {
+  id: number;
+  description: string;
+  amount: number;
+  total_price: number;
+}
+interface FetchedBooking {
+  booking_id: string;
+  user_name: string;
+  scheduled_date: string;
+  staff_name: string;
+  status: string;
+  order_list: FetchedOrders[];
+}
+interface FetchedData {
+  data: FetchedBooking;
+}
+
 export default function customerOrderlist() {
+  const [fetchOrder, setFetchOrder] = useState<FetchedBooking>({
+    booking_id: "",
+    user_name: "",
+    scheduled_date: "",
+    staff_name: "",
+    status: "",
+    order_list: [],
+  });
+
+  const fetchData = async () => {
+    const respond: FetchedData = await axios.get("/api/customer/orderlist");
+    if (respond) {
+      setFetchOrder({
+        booking_id: respond.data.booking_id,
+        user_name: respond.data.user_name,
+        scheduled_date: respond.data.scheduled_date,
+        staff_name: respond.data.staff_name,
+        status: respond.data.status,
+        order_list: [...respond.data.order_list],
+      });
+    }
+  };
+  // const {
+  //   booking_id: id,
+  //   user_name: userName,
+  //   scheduled_date,
+  //   staff_name: staff,
+  //   status,
+  //   order_list: orders,
+  // } = fetchOrder;
+
   return (
     <>
       <Navbar />
