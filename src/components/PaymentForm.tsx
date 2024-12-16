@@ -65,9 +65,18 @@ const PaymentForm: React.FC = () => {
   return (
     <div className="border mt-14 mx-4 rounded-lg">
       <form onSubmit={handleSubmit}>
+        <div className="mx-3 my-2">
+          <label className="block">
+            หมายเลขบัตรเครดิต<span className="text-[#C82438]">*</span>
+          </label>
+          <CardNumberElement
+            options={{ style: elementStyle }}
+            className="block w-full border border-gray-300 rounded-md py-2 px-3"
+          />
+        </div>
         <div className="mx-3">
           <label className="block mb-2">
-            Name on Card
+            ชื่อบนบัตร<span className="text-[#C82438]">*</span>
             <input
               type="text"
               value={name}
@@ -75,37 +84,36 @@ const PaymentForm: React.FC = () => {
               className="block w-full border border-gray-300 rounded-md py-1"
             ></input>
           </label>
-          <label>
-            Promotion Code (Optional)
-            <input
-              type="text"
-              value={promoCode}
-              onChange={(e) => setPromoCode(e.target.value)}
-              className="block w-full border border-gray-300 rounded-md py-1"
-            ></input>
-          </label>
         </div>
         <div>
           <div className="mx-3 mb-4">
-            <label className="block mb-2">Card Number</label>
-            <CardNumberElement
-              options={{ style: elementStyle }}
-              className="block w-full border border-gray-300 rounded-md py-2 px-3"
-            />
-          </div>
-          <div className="mx-3 mb-4">
-            <label className="block mb-2">Expiration Date</label>
+            <label className="block">
+              วันหมดอายุ<span className="text-[#C82438]">*</span>
+            </label>
             <CardExpiryElement
               options={{ style: elementStyle }}
               className="block w-full border border-gray-300 rounded-md py-2 px-3"
             />
           </div>
           <div className="mx-3 mb-4">
-            <label className="block mb-2">CVC</label>
+            <label className="block">
+              รหัส CVC / CVV<span className="text-[#C82438]">*</span>
+            </label>
             <CardCvcElement
               options={{ style: elementStyle }}
               className="block w-full border border-gray-300 rounded-md py-2 px-3"
             />
+          </div>
+          <div className="mx-3 mb-4">
+            <label>
+              Promotion Code (Optional)
+              <input
+                type="text"
+                value={promoCode}
+                onChange={(e) => setPromoCode(e.target.value)}
+                className="block w-full border border-gray-300 rounded-md py-1"
+              ></input>
+            </label>
           </div>
         </div>
         <button type="submit" disabled={!stripe || loading}>
