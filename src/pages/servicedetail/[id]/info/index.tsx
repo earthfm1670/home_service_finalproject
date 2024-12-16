@@ -24,7 +24,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Clock } from "lucide-react";
 import {
   format,
   isWeekend,
@@ -299,8 +299,8 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
     onChange: (time: string) => void;
   }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedHour, setSelectedHour] = useState("");
-    const [selectedMinute, setSelectedMinute] = useState("");
+    const [selectedHour, setSelectedHour] = useState("00");
+    const [selectedMinute, setSelectedMinute] = useState("00");
 
     const hours = Array.from({ length: 25 }, (_, i) => i.toString().padStart(2, "0"));
     const minutes = Array.from({ length: 25 }, (_, i) =>
@@ -321,20 +321,41 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
           onClick={() => setIsOpen(!isOpen)}
         >
           <span>{value || "เลือกเวลา"}</span>
-          <span className="text-blue-600">เลือกเวลา</span>
+          <Clock className="h-4 w-4" size={18} />
         </div>
 
         {isOpen && (
           <div className="absolute z-50 mt-1 w-full bg-white border rounded-md shadow-lg overflow-hidden lg:w-48">
+<MobileBottomBar
+  canProceed={canProceed}
+  calculateTotal={() => selectedServices?.totalAmount || 0}
+  getSelectedServices={() => selectedServices?.selections || []}
+  getQuantityDisplay={(id) =>
+    selectedServices?.selections.find((s: any) => s.id === id)?.quantity || 0
+  }
+  handleProceed={handleProceed}
+  locationInfo={{
+    date: selectedDate,
+    time: selectedTime,
+    address: address,
+    province: provinces.find((p) => p.id === selected.province_id)?.name_th || "",
+    district: amphures.find((a) => a.id === selected.amphure_id)?.name_th || "",
+    subDistrict: tambons.find((t) => t.id === selected.tambon_id)?.name_th || "",
+  }}
+  isServiceInfoPage={true}
+/>
             <div className="flex divide-x divide-gray-200">
               {/* Hours Column */}
               <div className="flex-1 w-1/2 overflow-y-auto max-h-60">
                 {hours.map((hour) => (
                   <div
                     key={`hour-${hour}`}
-                    className={`h-8 flex items-center justify-center cursor-pointer hover:bg-gray-50 text-base ${
-                      selectedHour === hour ? "bg-blue-500 text-white hover:text-white" : ""
-                    }`}
+                    className={`h-8 flex items-center justify-center cursor-pointer text-base rounded-md
+                      ${
+                        selectedHour === hour
+                          ? "bg-blue-500 text-white hover:bg-blue-600 round-md hover:round-md"
+                          : "hover:bg-gray-100 round-md hover:round-md"
+                      }`}
                     onClick={() => setSelectedHour(hour)}
                   >
                     {hour}
@@ -347,9 +368,12 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
                 {minutes.map((minute) => (
                   <div
                     key={`minute-${minute}`}
-                    className={`h-8 flex items-center justify-center cursor-pointer hover:bg-gray-50 text-base ${
-                      selectedMinute === minute ? "bg-blue-500 text-white hover:bg-blue-400 hover:text-white" : ""
-                    }`}
+                    className={`h-8 flex items-center justify-center cursor-pointer text-base rounded-md
+                      ${
+                        selectedMinute === minute
+                          ? "bg-blue-500 text-white hover:bg-blue-600 round-md hover:round-md"
+                          : "hover:bg-gray-100 round-md hover:round-md"
+                      }`}
                     onClick={() => setSelectedMinute(minute)}
                   >
                     {minute}
@@ -360,11 +384,11 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
 
             <div className="p-4 border-t flex justify-between items-center">
               <div className="text-base font-medium">
-                {selectedHour ? (
-                  selectedMinute ? 
-                    `${selectedHour}:${selectedMinute}` : 
-                    `${selectedHour}:--`
-                ) : ""}
+                {selectedHour
+                  ? selectedMinute
+                    ? `${selectedHour}:${selectedMinute}`
+                    : `${selectedHour}:--`
+                  : ""}
               </div>
               <button
                 className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 text-sm"
@@ -632,6 +656,18 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
             ?.quantity || 0
         }
         handleProceed={handleProceed}
+        locationInfo={{
+          date: selectedDate,
+          time: selectedTime,
+          address: address,
+          province:
+            provinces.find((p) => p.id === selected.province_id)?.name_th || "",
+          district:
+            amphures.find((a) => a.id === selected.amphure_id)?.name_th || "",
+          subDistrict:
+            tambons.find((t) => t.id === selected.tambon_id)?.name_th || "",
+        }}
+        isServiceInfoPage={true}
       />
 
       <NavigationButtons
