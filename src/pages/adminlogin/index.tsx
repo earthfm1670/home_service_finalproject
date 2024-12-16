@@ -1,10 +1,10 @@
-import React, { useRef } from "react";
+import React from "react";
 import { Navbar } from "@/components/navbar";
 import homeservicelogo from "../../../public/image/homeservicelogo.svg";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { useState, ChangeEvent, FormEvent } from "react";
-import axios from "axios";
+import { useAuth } from "@/context/authContext";
 
 export default function Login() {
   // เก็บค่าข้อมูลที่กรอก
@@ -37,6 +37,7 @@ export default function Login() {
   };
 
   const router = useRouter();
+  const { adminLogin } = useAuth();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -67,24 +68,13 @@ export default function Login() {
     }
 
     try {
-      const response = await axios.post(
-        "/api/admin/login",
-        { email, password },
-        {
-          // ใช้เพื่อขอให้ server ส่งข้อมูล token เข้ามาหลังจาก login
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      // ใช้เพื่อหลังจากที่ขอ login success จะทำการส่ง token กลับมาไว้ใน storage
-      localStorage.setItem("token", response.data.access_token);
+      adminLogin(email, password);
       // นำทางไปที่หน้าเพจที่เราต้องการ
       router.push("/admincategory");
-    } catch (error: any) {
+    } catch (error) {
       // ไม่พบข้อมูล email || password ในฐานข้อมูล
       console.error("Invalid email or password");
+      console.log(error);
       setShowPopup(true);
     }
   };
@@ -95,7 +85,11 @@ export default function Login() {
         {/* div login form */}
         <div className="flex flex-col items-center justify-center w-full">
           <div className="w-[35%] mt-16">
-            <Image src={homeservicelogo} alt="Homeservice Logo" className="w-full" />
+            <Image
+              src={homeservicelogo}
+              alt="Homeservice Logo"
+              className="w-full"
+            />
           </div>
           <div className="my-10 rounded-lg border bg-white border-gray-300 max-w-[614px]  w-screen py-7 px-20">
             <form onSubmit={handleSubmit}>
@@ -178,8 +172,7 @@ export default function Login() {
                     </p>
                     <button
                       onClick={() => setShowPopup(false)}
-                      className="bg-defaultColor hover:bg-hoverColor text-white rounded-lg px-4 py-2 font-medium w-full"
-                    >
+                      className="bg-defaultColor hover:bg-hoverColor text-white rounded-lg px-4 py-2 font-medium w-full">
                       ปิด
                     </button>
                   </div>

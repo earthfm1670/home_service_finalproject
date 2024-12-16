@@ -1,5 +1,4 @@
-import { supabase } from "@/utils/supabase";
-import { connectionPool } from "@/utils/db";
+import { adminSupabase } from "@/utils/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
 import {
   validateName,
@@ -57,25 +56,27 @@ export default async function adminRegister(
   }
 
   try {
+    //FIXME change to supabase query && find new way to get email
     //check if user already exists in users table
-    const checkIfUserExit = await connectionPool.query(
-      `SELECT email FROM users WHERE email=$1`,
-      [email]
-    );
+    const { data: checkIfUserExit } = await adminSupabase
+      .from("admins")
+      .select("admin_id")
+      .eq("email", email) //<<<FIXME
+      .single();
 
-    if (checkIfUserExit.rows[0]) {
-      return res.status(400).json({ message: "User email already exit" });
+    if (checkIfUserExit) {
+      return res.status(400).json({ error: "Admin email already exit" });
     }
 
     //register via supabase auth
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await adminSupabase.auth.signUp({
       email,
       password,
       options: {
         data: {
           name: name,
           phone: phoneNumber,
-          role: "customer",
+          role: "admin",
         },
       },
     });
@@ -93,21 +94,32 @@ export default async function adminRegister(
     }
 
     // Insert user data into users table
-    const insertResult = await connectionPool.query(
-      `INSERT INTO users (user_id, name, email, phone_number, address, user_type)
-      VALUES ( $1,$2,$3,$4,$5,$6 )
-      `,
-      [data.user.id, name, email, phoneNumber, null, "admin"]
-    );
-    // If rowCount === 0 meannig insert fail return 500 and delete user from auth table
-    if (insertResult.rowCount === 0) {
-      await supabase.auth.admin.deleteUser(data.user.id);
-      return res
-        .status(500)
-        .json({ error: "Error occurred during insert data" });
+    //FIXME change to supabase query && change user_type to role_id = 2
+    const { data: insertedAdmin, error: insertedAdminError } =
+      await adminSupabase
+        .from("admins")
+        .insert([
+          {
+            admin_id: data.user.id,
+            name,
+            email,
+            phone_number: phoneNumber,
+            address: null,
+            role_id: 2,
+          },
+        ])
+        .select();
+
+    if (insertedAdminError) {
+      await adminSupabase.auth.admin.deleteUser(data.user.id);
+      console.log("Fail to insert admin data.");
+      console.log(insertedAdminError);
+      return res.status(500).json({ error: "Fail to insert admin data." });
     }
 
-    return res.status(201).json({ message: "Register successfully" });
+    return res
+      .status(201)
+      .json({ message: "Register successfully", detail: insertedAdmin[0] });
   } catch (err) {
     console.log("Unexpected error during registration:", err);
     return res.status(500).json({ error: "An unexpected error occurred" });

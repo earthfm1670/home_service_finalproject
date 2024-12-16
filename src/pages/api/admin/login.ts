@@ -1,11 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { connectionPool } from "@/utils/db";
-import { supabase } from "@/utils/supabase";
+import { adminSupabase, supabase } from "@/utils/supabase";
 
 interface AdminLoginRequestBody {
   email: string;
   password: string;
 }
+//FIXME Token มา แต่ user ไม่มา
 
 export default async function adminLogin(
   req: NextApiRequest,
@@ -14,22 +15,23 @@ export default async function adminLogin(
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
-  
+
   const { email, password }: AdminLoginRequestBody = req.body;
 
   //check type of user
-  const checkIfAdmin = await connectionPool.query(
-    `
-    SELECT user_type 
-    FROM users
-    WHERE email=$1`,
-    [email]
-  );
-
-  if (!checkIfAdmin.rows[0]) {
+  const { data: checkIfAdmin, error: checkIfAdminError } = await adminSupabase
+    .from("admins")
+    .select("role_id")
+    .eq("email", email);
+  if (checkIfAdminError) {
+    return res
+      .status(400)
+      .json({ m: "check role error", e: checkIfAdminError });
+  }
+  if (!checkIfAdmin) {
     return res.status(404).json({ error: "User email not found" });
   }
-  if (checkIfAdmin.rows[0].user_type !== "admin") {
+  if (checkIfAdmin[0].role_id !== 2) {
     return res.status(403).json({ error: "User unauthorized" });
   }
 
