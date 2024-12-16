@@ -8,6 +8,16 @@ import {
 } from "@stripe/react-stripe-js";
 import React, { useState } from "react";
 
+interface PromoCodes {
+  [key: string]: number;
+}
+
+const promoCodes: PromoCodes = {
+  DISCOUNT10: 0.1,
+  DISCOUNT20: 0.2,
+  FURRY: 0.99,
+};
+
 const PaymentForm: React.FC = () => {
   const stripe = useStripe();
   const elements = useElements();
@@ -15,6 +25,7 @@ const PaymentForm: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
   const [promoCode, setPromoCode] = useState<string>("");
+  const [discount, setDiscount] = useState<number>(0);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -46,6 +57,19 @@ const PaymentForm: React.FC = () => {
       console.log(paymentMethod);
       console.log("Promotion Code:", promoCode);
       setLoading(false);
+    }
+  };
+
+  const applyPromoCode = (): void => {
+    if (promoCodes[promoCode]) {
+      const appliedDiscount: number = promoCodes[promoCode];
+      setDiscount(appliedDiscount);
+      alert(
+        `Promotion code applied! You get ${appliedDiscount * 100}% discount!}`
+      );
+    } else {
+      alert("Invalid promotion code.");
+      setDiscount(0);
     }
   };
 
@@ -114,7 +138,11 @@ const PaymentForm: React.FC = () => {
                 className="block min-w-[205px] h-[64px] text-[16px] border border-gray-300 rounded-md py-3 px-4 placeholder:text-[14px]"
                 placeholder="กรุณากรอกโค้ดส่วนลด(ถ้ามี)"
               ></input>
-              <button className="min-w-[90px] h-[44px] bg-blue-600 rounded-md text-white font-medium text-[16px]">
+              <button
+                type="button"
+                onClick={applyPromoCode}
+                className="min-w-[90px] h-[44px] bg-blue-600 rounded-md text-white font-medium text-[16px]"
+              >
                 ใช้โค้ด
               </button>
             </div>
