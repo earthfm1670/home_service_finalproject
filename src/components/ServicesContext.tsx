@@ -10,10 +10,10 @@ import axios from "axios";
 interface ServicesContextProps {
   servicesData: any[];
   getServicesData: (
+    searchValue?: string,
     selecttedCategory?: string,
     sortBy?: string,
-    priceRange?: [number, number],
-    searchValue?: string
+    priceRange?: [number, number]
   ) => void;
 }
 
@@ -35,18 +35,14 @@ export const ServicesProvider: React.FC<{ children: ReactNode }> = ({
   const [servicesData, setServicesData] = useState<any[]>([]);
 
   const getServicesData = async (
-    selectCategory = "",
-    sortBy = "",
-    priceRange: [Number, Number] = [0, 2000],
-    searchValue = ""
+    searchValue = "",
+    selectCategory = "บริการทั้งหมด",
+    sortBy = "popular",
+    priceRange: [Number, Number] = [0, 0]
   ) => {
     try {
-      console.log(
-        `Seleted = ${selectCategory}, Sort By = ${sortBy}, Price Range Min = ${priceRange[0]} Max= ${priceRange[1]} SearchText = ${searchValue}`
-      ); // log ดู parameter ที่ส่งเข้ามาผ่าน context เพื่อใช้ query data
-
       const response = await axios.get(
-        `api/services?limit=100&category=${selectCategory}&sortBy=${sortBy}`
+        `api/services?limit=9&search=${searchValue}&category=${selectCategory}&sort_by=${sortBy}&min_price=${priceRange[0]}&max_price=${priceRange[1]}`
       );
       setServicesData(response.data.data);
       console.log("API response:", response.data.data); // log api response จาก database

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Tag } from "lucide-react";
+import { useRouter } from "next/router";
 import { useServices } from "./ServicesContext";
+import { useEffect, useState } from "react";
 
 const categoryBgClassMap: Record<string, string> = {
   บริการทั่วไป: "text-blue-800 bg-blue-100",
@@ -10,17 +10,28 @@ const categoryBgClassMap: Record<string, string> = {
 
 const ServicesListRendering: React.FC = () => {
   const { servicesData, getServicesData } = useServices(); // รับ - ส่ง ข้อมูลจาก Context
+  const [serviceID, setServiceID] = useState<Number>(0);
+  const router = useRouter();
 
   // ส่ง category ที่คลิกไปที่ context เพื่อ requet category ตามที่คลิกเลือกมาแสดง
   const selectCategory = (value: string) => {
-    console.log(`Render with ${value}`);
-    // getServicesData(value);
+    getServicesData("", value);
+  };
+
+  useEffect(() => {
+    if (serviceID) {
+      redirectToServiceDetail();
+    }
+  }, [serviceID]);
+
+  const redirectToServiceDetail = (): void => {
+    router.push(`servicedetail/${serviceID}`);
   };
 
   return (
     <div className="flex flex-col items-center ">
       <section className="min-w-[375px] w-full h-auto mt-6 pb-14  bg-slate-200 lg:max-w-[1440px] mx-auto flex justify-center">
-        <div className="w-full grid grid-cols-1 gap-6 justify-self-center mt-6 sm:grid-cols-2 lg:max-w-[1121px] lg:grid-cols-3 lg:justify-self-center lg:grid-rows-3 lg:gap-[37px]">
+        <div className="w-full grid grid-cols-1 gap-6 justify-self-center mt-6 sm:grid-cols-2 lg:max-w-[1121px] lg:grid-cols-3 lg:justify-self-center lg:gap-[37px]">
           {servicesData.map((service, index) => {
             const colorCategoryClass =
               categoryBgClassMap[service.category] || " "; // ใช้ค่า default ถ้า category ไม่มีใน map
@@ -55,7 +66,12 @@ const ServicesListRendering: React.FC = () => {
                     ></img>
                     {service.service_pricing}
                   </h2>
-                  <button className="text-base font-semibold underline underline-offset-1 text-blue-600 hover:scale-105">
+                  <button
+                    className="text-base font-semibold underline underline-offset-1 text-blue-600 hover:scale-105"
+                    onClick={() => {
+                      setServiceID(service.service_id);
+                    }}
+                  >
                     เลือกบริการ
                   </button>
                 </div>
@@ -63,6 +79,37 @@ const ServicesListRendering: React.FC = () => {
             );
           })}
         </div>
+      </section>
+      <section className="w-full h-[458px] flex justify-center relative px-6 py-12 overflow-hidden bg-blue-600 lg:items-center lg:h-[284px]">
+        <h1 className="min-w-[327px] w-full h-[243px] sm:px-10 text-lg font-medium text-center text-[#FFFFFF] lg:justify-center lg:px-0 lg:flex lg:max-w-[810px] lg:max-h-[120px] ">
+          <p className="lg:hidden">
+            เพราะเราคือช่าง ผู้ให้บริการเรื่องบ้านอันดับ
+            <br className="sm:hidden"></br> 1 แบบครบวงจร
+            <br></br>
+            โดยทีมช่างมืออาชีพมากกว่า 100 ทีม<br className="sm:hidden"></br>
+            สามารถตอบโจทย์ด้านการบริการเรื่องบ้าน<br className="sm:hidden"></br>
+            ของคุณ และสร้าง
+            <br className="sm:hidden"></br>
+            ความสะดวกสบายในการติดต่อกับทีมช่าง<br className="sm:hidden"></br>
+            ได้ทุกที่ ทุกเวลา ตลอด 24 ชม.<br className="sm:hidden"></br>
+            มั่นใจ ช่างไม่ทิ้งงาน<br className="sm:hidden"></br>
+            พร้อมรับประกันคุณภาพงาน
+          </p>
+          <p className="hidden lg:block lg:pt-0 lg:text-xl">
+            เพราะเราคือช่าง ผู้ให้บริการเรื่องบ้านอันดับ 1 แบบครบวงจร
+            โดยทีมช่างมืออาชีพมากกว่า 100 ทีม <br></br>
+            สามารถตอบโจทย์ด้านการบริการเรื่องบ้านของคุณ และสร้าง<br></br>
+            ความสะดวกสบายในการติดต่อกับทีมช่าง ได้ทุกที่ ทุกเวลา ตลอด 24 ชม.
+            <br></br>
+            มั่นใจ ช่างไม่ทิ้งงาน พร้อมรับประกันคุณภาพงาน
+          </p>
+        </h1>
+
+        <img
+          src="image/homeservicelogo.png"
+          alt="homeservicelogo"
+          className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 w-[250px] h-[250px] opacity-20 lg:w-[416px] lg:h-[416px] lg:left-[1370px] lg:top-[-29px]"
+        />
       </section>
     </div>
   );

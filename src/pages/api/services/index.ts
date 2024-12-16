@@ -18,31 +18,20 @@ export default async function handler(
       const { query } = req;
 
       // Pagination params
-      // const page = parseInt((query.page as string) || "1");
-      // const limit = parseInt((query.limit as string) || "13");
+      const page = parseInt((query.page as string) || "1");
+      const limit = parseInt((query.limit as string) || "13");
 
       // Filter params
       const search = (query.search as string) || "";
       const category = query.category as string;
       const minPrice = parseFloat((query.min_price as string) || "0");
       const maxPrice = parseFloat((query.max_price as string) || "Infinity");
-      const isRecommended = query.is_recommended === "true";
-      const isPopular = query.is_popular === "true";
-      const sortBy = query.sort_by as "asc" | "desc" | undefined;
-
-      // Fetch all popularity scores
-      const { data: popularityScores, error: popularityScoreError } =
-        await supabase.from("services").select("popularity_score");
-
-      if (popularityScoreError) throw popularityScoreError;
-
-      const avgPopularityScore =
-        popularityScores.reduce((sum, service) => {
-          const score = parseFloat(service.popularity_score);
-          return sum + (isNaN(score) ? 0 : score);
-        }, 0) / popularityScores.length;
-      const recommendedThreshold = avgPopularityScore * 0.4;
-      const popularThreshold = avgPopularityScore * 0.9;
+      const sortBy = query.sort_by as
+        | "asc"
+        | "desc"
+        | "popular"
+        | "recommended"
+        | undefined;
 
       // Base query
       let dbQuery = supabase.from("services").select(
@@ -53,39 +42,50 @@ export default async function handler(
         categories!inner(category),
         service_picture_url,
         sub_services(unit_price),
-        popularity_score,
-        created_at,
-        updated_at
+        popularity_score
       `,
         { count: "exact" }
       );
 
-      // Apply filters
+      // Fetch usage counts for each service
+      const { data: subServicesData, error: subServicesDataError } =
+        await supabase
+          .from("sub_services")
+          .select("service_id, unit_price, usage_count, promotions_and_offers");
+      if (subServicesDataError) throw subServicesDataError;
+
+      // search filters
       if (search) {
         dbQuery = dbQuery.ilike("service_name", `%${search}%`);
       }
 
-      if (category) {
-        dbQuery = dbQuery.ilike("categories.category", `%${category}%`);
-      }
-
-      if (isRecommended) {
-        dbQuery = dbQuery.gte("popularity_score", recommendedThreshold);
-      }
-
-      if (isPopular) {
-        dbQuery = dbQuery.gte("popularity_score", popularThreshold);
-      }
-
-      if (sortBy) {
-        dbQuery = dbQuery.order("service_name", {
-          ascending: sortBy === "asc",
-        });
+      // category filters
+      if (category != "บริการทั้งหมด") {
+        dbQuery = dbQuery.eq("categories.category", category);
+      } else {
+        dbQuery = dbQuery.not("categories.category", "is", null);
       }
 
       const { data: services, error } = await dbQuery;
 
       if (error) throw error;
+
+      // Calculate total_usage from sub_services
+      const serviceUsageMap = subServicesData.reduce((map, subService) => {
+        if (!map[subService.service_id]) {
+          map[subService.service_id] = 0;
+        }
+        map[subService.service_id] += subService.usage_count;
+        return map;
+      }, {} as Record<number, number>);
+
+      // Calculate promotions_and_offers from sub_services
+      const promotionsMap = subServicesData.reduce((map, subService) => {
+        if (subService.promotions_and_offers) {
+          map[subService.service_id] = true;
+        }
+        return map;
+      }, {} as Record<number, boolean>);
 
       // Process and filter services
       let processedServices: Service[] = (services || []).map(
@@ -96,9 +96,6 @@ export default async function handler(
           categories: { category: string } | { category: string }[]; // รองรับ object หรือ array
           service_picture_url: string;
           sub_services: { unit_price: number }[];
-          popularity_score: string | number | null;
-          created_at: any;
-          updated_at: any;
         }) => {
           const subServices = service.sub_services || [];
           const prices = subServices
@@ -106,23 +103,21 @@ export default async function handler(
             .filter((price) => !isNaN(price));
           const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
           const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
-          const popularityScore =
-            service.popularity_score != null &&
-            !isNaN(parseFloat(service.popularity_score.toString()))
-              ? parseFloat(service.popularity_score.toString())
-              : 0;
 
           let pricing = "";
           if (prices.length > 0) {
             pricing =
               minPrice === maxPrice
-                ? `${formatPrice(minPrice)} ฿`
-                : `${formatPrice(minPrice)} - ${formatPrice(maxPrice)} ฿`;
+                ? `ค่าบริการประมาณ ${formatPrice(minPrice)} ฿`
+                : `ค่าบริการประมาณ ${formatPrice(minPrice)} - ${formatPrice(
+                    maxPrice
+                  )} ฿`;
           } else {
             pricing = "ราคายังไม่ระบุ";
           }
 
           // ตรวจสอบว่า categories เป็น array หรือ object เดี่ยว
+
           const category =
             Array.isArray(service.categories) && service.categories.length > 0
               ? service.categories[0].category
@@ -138,45 +133,52 @@ export default async function handler(
             service_pricing: pricing,
             minPrice,
             maxPrice,
-            is_recommended: popularityScore >= recommendedThreshold,
-            is_popular: popularityScore >= popularThreshold,
-            popularity_score: popularityScore,
-            created_at: service.created_at,
-            updated_at: service.updated_at
+            total_usage: serviceUsageMap[service.service_id] || 0,
+            promotionsAndOffers: promotionsMap[service.service_id] || false,
           };
         }
       );
-      // เรียงลำดับตาม service_id
-      processedServices.sort((a, b) => a.service_id - b.service_id);
 
-      // if (minPrice > 0 || maxPrice < Infinity) {
-      //   processedServices = processedServices.filter((service) => {
-      //     const serviceMinPrice = service.minPrice;
-      //     const serviceMaxPrice = service.maxPrice;
+      //  minPrice & maxPrice filters
+      if (minPrice || (maxPrice && maxPrice != 0)) {
+        processedServices = processedServices.filter(
+          (service) =>
+            Number(service.minPrice) >= Number(minPrice) &&
+            Number(service.maxPrice) <= Number(maxPrice)
+        );
+      }
 
-      //     const minPriceCondition =
-      //       minPrice <= 0 || serviceMinPrice <= maxPrice;
-      //     const maxPriceCondition =
-      //       maxPrice >= Infinity || serviceMaxPrice >= minPrice;
-
-      //     return minPriceCondition && maxPriceCondition;
-      //   });
-      // }
+      //  sort_By filters
+      if (sortBy === "recommended") {
+        processedServices = processedServices.filter(
+          (service) => service.promotionsAndOffers
+        );
+        processedServices.sort((a, b) => a.service_id - b.service_id);
+      } else if (sortBy === "popular") {
+        processedServices.sort((a, b) => b.total_usage - a.total_usage);
+      } else if (sortBy === "asc" || sortBy === "desc") {
+        processedServices.sort((a, b) =>
+          sortBy === "asc"
+            ? a.service_name.localeCompare(b.service_name, "en")
+            : b.service_name.localeCompare(a.service_name, "en")
+        );
+      } else {
+        processedServices.sort((a, b) => a.service_id - b.service_id);
+      }
 
       // Apply pagination
-      // const startIndex = (page - 1) * limit;
-      // const endIndex = page * limit;
-      // const paginatedServices = processedServices.slice(startIndex, endIndex);
+      const startIndex = (page - 1) * limit;
+      const endIndex = page * limit;
+      const paginatedServices = processedServices.slice(startIndex, endIndex);
 
       const totalCount = processedServices.length;
-      // const totalPages = Math.ceil(totalCount / limit);
+      const totalPages = Math.ceil(totalCount / limit);
 
       res.status(200).json({
-        // data: paginatedServices,
-        // currentPage: page,
-        // totalPages,
-        data: processedServices,
+        data: paginatedServices,
         totalCount,
+        currentPage: page,
+        totalPages,
       });
     } catch (error) {
       console.error("API Error:", error);
