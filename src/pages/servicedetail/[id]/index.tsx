@@ -108,6 +108,7 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
           id: subService.id,
           description: subService.description,
           quantity: quantities[subService.id].quantity,
+          unit: subService.unit,
           unitPrice: subService.unit_price,
           total: subService.unit_price * quantities[subService.id].quantity,
         })),

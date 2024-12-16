@@ -22,7 +22,7 @@ export const ProgressSteps = ({ currentStep }: ProgressStepsProps) => {
           {/* Step 1 */}
           <div className="flex flex-col items-center relative z-10 flex-1 ">
             <div className="w-10 h-10 rounded-full bg-white border-2 bg-grey-200 border-blue-500 flex items-center justify-center">
-              <ClipboardList className="w-5 h-5 text-blue-500" />
+              <ClipboardList className="w-5 h-5 text-blue-500 "  />
             </div>
             <span className="mt-2 text-xs lg:text-sm font-medium text-blue-600">
               รายการ
