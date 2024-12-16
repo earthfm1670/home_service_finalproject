@@ -105,15 +105,19 @@ const PaymentForm: React.FC = () => {
             />
           </div>
           <div className="mx-3 mb-4">
-            <label>
-              Promotion Code (Optional)
+            <label>Promotion Code</label>{" "}
+            <div className="flex items-center gap-4">
               <input
                 type="text"
                 value={promoCode}
                 onChange={(e) => setPromoCode(e.target.value)}
-                className="block w-full border border-gray-300 rounded-md py-1"
+                className="block min-w-[205px] h-[64px] text-[16px] border border-gray-300 rounded-md py-3 px-4 placeholder:text-[14px]"
+                placeholder="กรุณากรอกโค้ดส่วนลด(ถ้ามี)"
               ></input>
-            </label>
+              <button className="min-w-[90px] h-[44px] bg-blue-600 rounded-md text-white font-medium text-[16px]">
+                ใช้โค้ด
+              </button>
+            </div>
           </div>
         </div>
         <button type="submit" disabled={!stripe || loading}>
