@@ -1,4 +1,11 @@
-import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import {
+  CardElement,
+  useStripe,
+  useElements,
+  CardNumberElement,
+  CardExpiryElement,
+  CardCvcElement,
+} from "@stripe/react-stripe-js";
 import React, { useState } from "react";
 
 const PaymentForm: React.FC = () => {
@@ -42,34 +49,71 @@ const PaymentForm: React.FC = () => {
     }
   };
 
+  const elementStyle = {
+    base: {
+      fontSize: "16px",
+      color: "#424770",
+      "::placeholder": {
+        color: "#aab7c4",
+      },
+    },
+    invalid: {
+      color: "#9e2146",
+    },
+  };
+
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>
-          Name on Card
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          ></input>
-        </label>
-      </div>
-      <div>
-        <label>
-          Promotion Code (Optional)
-          <input
-            type="text"
-            value={promoCode}
-            onChange={(e) => setPromoCode(e.target.value)}
-          ></input>
-        </label>
-      </div>
-      <CardElement />
-      <button type="submit" disabled={!stripe || loading}>
-        {loading ? "Processing..." : "Pay"}
-      </button>
-      {error && <div>{error}</div>}
-    </form>
+    <div className="border mt-14 mx-4 rounded-lg">
+      <form onSubmit={handleSubmit}>
+        <div className="mx-3">
+          <label className="block mb-2">
+            Name on Card
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="block w-full border border-gray-300 rounded-md py-1"
+            ></input>
+          </label>
+          <label>
+            Promotion Code (Optional)
+            <input
+              type="text"
+              value={promoCode}
+              onChange={(e) => setPromoCode(e.target.value)}
+              className="block w-full border border-gray-300 rounded-md py-1"
+            ></input>
+          </label>
+        </div>
+        <div>
+          <div className="mx-3 mb-4">
+            <label className="block mb-2">Card Number</label>
+            <CardNumberElement
+              options={{ style: elementStyle }}
+              className="block w-full border border-gray-300 rounded-md py-2 px-3"
+            />
+          </div>
+          <div className="mx-3 mb-4">
+            <label className="block mb-2">Expiration Date</label>
+            <CardExpiryElement
+              options={{ style: elementStyle }}
+              className="block w-full border border-gray-300 rounded-md py-2 px-3"
+            />
+          </div>
+          <div className="mx-3 mb-4">
+            <label className="block mb-2">CVC</label>
+            <CardCvcElement
+              options={{ style: elementStyle }}
+              className="block w-full border border-gray-300 rounded-md py-2 px-3"
+            />
+          </div>
+        </div>
+        <button type="submit" disabled={!stripe || loading}>
+          {loading ? "Processing..." : "Pay"}
+        </button>
+        {error && <div>{error}</div>}
+      </form>
+    </div>
   );
 };
 
