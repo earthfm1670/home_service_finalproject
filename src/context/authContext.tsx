@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useContext, createContext } from "react";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import axios from "axios";
+import { supabase } from "@/utils/supabase";
 //define user structure
 interface UserMetadata {
   email: string;
@@ -43,10 +44,11 @@ interface AuthContextType {
   login: (email: string, password: string) => void;
   adminLogin: (email: string, password: string) => void;
   logout: () => void;
-  contextTest: boolean;
+  isLoggedIn: boolean;
 }
 //defined authState
 interface AuthState {
+  userId: string;
   user: JwtPayload | null;
   // user: UserPayload | null;
   token: string | null;
@@ -75,8 +77,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 //creat provider which will be render as **WRAPPER for whole app.
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [contextTest, setTest] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [authState, setAuthState] = useState<AuthState>({
+    userId: "",
     user: null,
     token: null,
     isAdmin: false,
@@ -88,35 +91,37 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const savedUser: UserPayload = savedToken
       ? JSON.parse(localStorage.getItem("user") || "{}")
       : null;
-    if (savedToken && savedUser) {
+
+    if (savedToken) {
       setAuthState({
+        userId: "",
         user: savedUser,
         token: savedToken,
         isAdmin: false,
       });
     }
-    // if (savedUser.user_metadata.role === "admin") {
-    //   setIsAdmin(true);
-    // }
-    setTest(true);
+    setIsLoggedIn(true);
   }, []);
 
   //define login function which will use to store userdata and token.
   const login = async (email: string, password: string) => {
     try {
       const response = await axios.post("api/auth/login", { email, password });
+      const getUserId = await axios.post("api/auth/getUserId", { email });
       //access token
       const authToken = response.data.access_token;
       //access userInfo
       const userInfo = jwtDecode(authToken);
+      const userId = getUserId.userId.user_id;
       //store user info as string in local& store token
       localStorage.setItem("user", JSON.stringify(userInfo));
       localStorage.setItem("token", authToken);
       //setauth state to store user / token
       setAuthState({
+        userId: userId,
         user: userInfo,
         token: authToken,
-        isAdmin: false, //ใส่เงื่อนไข
+        isAdmin: false,
       });
     } catch (error) {
       const err = error as Error;
@@ -124,19 +129,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.error("Invalid email or password");
     }
   };
+
   const adminLogin = async (email: string, password: string) => {
     try {
       const response = await axios.post("api/admin/login", { email, password });
+      const getUserId = await axios.post("api/auth/getUserId", { email });
       //access token
       const authToken = response.data.access_token;
       //access userInfo
       const userInfo = jwtDecode(authToken);
+      const userId = getUserId.userId.user_id;
       //store user info as string in local& store token
       localStorage.setItem("user", JSON.stringify(userInfo));
       localStorage.setItem("token", authToken);
       //setauth state to store user / token
       // if (userInfo.user_metadata.role === "admin"){} << แก้ type
       setAuthState({
+        userId: userId,
         user: userInfo,
         token: authToken,
         isAdmin: true, //ใส่เงื่อนไข
@@ -152,6 +161,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setAuthState({
+      userId: "",
       user: null,
       token: null,
       isAdmin: false,
@@ -160,7 +170,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   return (
     <AuthContext.Provider
-      value={{ authState, login, logout, contextTest, adminLogin }}>
+      value={{ authState, login, logout, isLoggedIn, adminLogin }}>
       {children}
     </AuthContext.Provider>
   );

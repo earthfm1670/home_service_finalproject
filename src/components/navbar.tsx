@@ -14,16 +14,22 @@ import { useAuth } from "@/context/authContext";
 export function Navbar() {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const { login, logout, authState } = useAuth();
+  const { logout, authState } = useAuth();
   const user = authState.user;
-  console.log(user);
-  console.log(authState);
 
   useEffect(() => {
     // Check is user is logged in or not and use the Boolean value to set state
     const userLoggedIn: boolean = Boolean(localStorage.getItem("user"));
     setIsLoggedIn(userLoggedIn);
-  });
+  }, []);
+
+  useEffect(() => {
+    console.log("login successful");
+    console.log("user data");
+    console.log(user);
+    console.log("auth state");
+    console.log(authState);
+  }, [authState, user]);
 
   const redirectToHome = (): void => {
     router.push("/");
@@ -67,7 +73,7 @@ export function Navbar() {
           <div className="flex gap-2 items-center lg:mr-20">
             {/* still hard code */}
             <p className="hidden lg:block lg:text-[14px] text-gray-700">
-              {user?.user_metadata?.name || "Guest"}
+              {user?.user_metadata.name || "Guest"}
             </p>
             <div className="w-[32px] h-[32px] lg:w-[40px] lg:h-[40px]">
               <DropdownMenu>
@@ -82,8 +88,13 @@ export function Navbar() {
                 <DropdownMenuContent>
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => router.push("/dashboard")}>
-                    Dashboard
+                  <DropdownMenuItem
+                    onClick={() => router.push("/customerservice")}>
+                    User Dashboard
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => router.push("/adminservice")}>
+                    Admin Dashboard
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLogout}>
                     Logout
