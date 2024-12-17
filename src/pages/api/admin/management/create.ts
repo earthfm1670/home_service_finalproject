@@ -1,3 +1,4 @@
+// ใช้สำหรับกำหนดประเภทของคำสั่ง req, res
 import { NextApiRequest, NextApiResponse } from "next";
 // ใช้เชื่อมข้อมูลในฝั่งของ admin
 import { adminSupabase } from "@/utils/supabase";
@@ -41,59 +42,135 @@ export default async function adminCreate(
   if (req.method !== "POST") {
     return res.status(403).json({ error: "Method not allowed." });
   }
-  // check credential
+  // สร้าง instance ของ formidable เพื่อใช้ในการแยกข้อมูลจากฟอร์ม
+  // const form = formidable({ multiples: true }); ในกรณีส่งหลายไฟล์ แล้วจะมีการเก็บข้อมูลในรูปแบบ Array
+  const form = formidable();
 
-  // create data chunk
-  const newService: PostRequestBody = {
-    ...req.body,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  };
-  console.log("---start-------------------------------------------");
-  try {
-    // 1.คิวรี่เพื่อใส่ main service + ใส่ image url
-    console.log(newService.title);
-    const { data: serviceId, error: insertError } = await adminSupabase
-      .from("services")
-      .insert([
-        {
-          service_name: newService.title,
-          category_id: newService.category_id,
-        },
-      ])
-      .select("service_id");
-    if (insertError) {
-      console.log("Error occor during insert main service.");
-      console.error(insertError);
-      return res.status(400).json({ error: "Service already exit." });
-    } else {
-      console.log("Main service inserted.");
+  // เป็นฟังก์ชันหลักที่ Formidable ใช้ในการแยกข้อมูลจากคำขอ (req)  ซึ่งข้อมูลที่ได้จะมี 2 แบบ
+  // fields: ข้อมูลทั่วไปจากฟอร์ม (ที่ไม่ใช่ไฟล์ เช่น ชื่อ, อีเมล ฯลฯ) || files: ไฟล์ที่แนบมาในฟอร์ม
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      console.error("Error parsing form data:", err);
+      return res.status(400).json({ error: "Error parsing form data" });
     }
-    console.log("---1-------------------------------------------");
-    //2.5 Image Upload
-    console.log("newService data for first time to send at api", newService);
-    if (newService.image) {
-      const imageFileName = serviceId[0].service_id + "/" + uuidv4();
-      console.log("data from serviceId", serviceId[0].service_id);
-      console.log("newService.image", newService.image);
 
-      const fileBlob = new Blob([newService.image], {
-        type: newService.image.type,
-      });
-      console.log("check type of file Blob", fileBlob); // ตรวจสอบว่าเป็น Blob
+    // แปลงข้อมูล subservices ที่ได้รับมาในรูปแบบ JSON
+    // ข้อมูลยู่ในรูปแบบ string และเราต้องการแปลงให้เป็น (array of objects) เพื่อให้สามารถทำงานกับข้อมูลได้สะดวกขึ้น เลยใช้ .parse แค่ตรงนี้
+    // ซึ่ง multipart/form-data หรือการใช้ formData.append จะบังคับแปลง array of object เป็น JSON.stringify ตอนที่รับข้อมูลมาจาก frontend
+    // ดึงข้อมูลจาก fields และ files มาสร้าง service ใหม่
+    // fields: ข้อมูลทั่วไปจากฟอร์ม (ที่ไม่ใช่ไฟล์ เช่น ชื่อ, อีเมล ฯลฯ)
+    // files: ไฟล์ที่แนบมาในฟอร์ม
+    let subServices: Array<SubServiceFromAdmin> = [];
+    if (fields.subservices) {
+      try {
+        // แปลงข้อมูลจาก JSON ให้อยู่ในรูปแบบ Array
+        subServices = JSON.parse(
+          Array.isArray(fields.subservices)
+            ? fields.subservices[0]
+            : fields.subservices
+        );
+      } catch (e) {
+        console.log("Error parsing subservices JSON:", e);
+        return res.status(400).json({ error: "Invalid subservices data" });
+      }
+    }
 
-      const { error: insertedImageError } = await adminSupabase.storage
-        .from("service_pictures")
-        .upload(imageFileName, newService.image);
-      //0.1 ยัด url ลง database
-      if (insertedImageError) {
-        console.log("Error occor during image upload.");
-        console.log(insertedImageError);
-        return res
-          .status(400)
-          .json({ error: "Error occor during image upload." });
-      } else {
-        const { error: insertedImageUrlError } = await adminSupabase
+    if (subServices.length === 0) {
+      console.log(
+        "--------- Warning: Subservice is null or undefined. ---------"
+      );
+    }
+
+    // มีการใช้ array ในการครอบ ข้อมูลซ้อนกันอยู่ข้างในจึงต้องทำการแปลงและดึงออกมาแค่ข้อมูลข้างในเท่านั้น
+    // fields.title = ["My Title"];
+    // fields.title = My Title;
+    const title = Array.isArray(fields.title) ? fields.title[0] : fields.title;
+    const category_id = Array.isArray(fields.category_id)
+      ? fields.category_id[0]
+      : fields.category_id;
+    const image = Array.isArray(files.image) ? files.image[0] : files.image;
+
+    // algorythm ที่ใช้ตรวจสอบค่าว่าง (!title || title.trim() === "")
+    if (!title) {
+      return res.status(400).json({ error: "Title is required." });
+    }
+    if (!category_id || isNaN(Number(category_id))) {
+      return res.status(400).json({ error: "Valid category_id is required." });
+    }
+    if (!image) {
+      console.log("--------- Warning: Image is null or undefined. ---------");
+    }
+
+    // เตรียมข้อมูลบริการที่ได้จากฟอร์ม
+    const newService: PostRequestBody = {
+      // title: typeof title === 'string' ? title.replace(/["\[\]]/g, '').trim() : ''
+      // ^ หากข้อมูลมีเป็น array หรือมีข้อมูลครอบเกินมาอีกทีจะใช้วิธีนี้ในการลบสัญลักษณ์ที่เกินออก
+      title: title,
+      category_id: Number(
+        Array.isArray(fields.category_id)
+          ? fields.category_id[0]
+          : fields.category_id
+      ),
+      subServices: subServices,
+      image: image,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    // บันทึกข้อมูลบริการใหม่ลงในฐานข้อมูล Supabase
+    try {
+      const { data: serviceId, error: insertError } = await adminSupabase
+        .from("services")
+        .insert([
+          {
+            service_name: newService.title,
+            category_id: newService.category_id,
+          },
+        ])
+        .select("service_id"); // เลือก service_id ที่ถูกสร้างขึ้น
+
+      // ถ้ามีข้อผิดพลาดในการบันทึกข้อมูล
+      if (insertError) {
+        console.log("Error inserting service:", insertError);
+        return res.status(500).json({ error: "Failed to insert service" });
+      }
+
+      // ถ้ามีไฟล์ภาพให้ทำการอัปโหลด
+      if (newService.image && "filepath" in newService.image) {
+        // อ่านไฟล์จาก filepath
+        const fileData = await fs.readFile(newService.image.filepath);
+        // หาค่า extension ของไฟล์
+        const fileExtension =
+          newService.image.originalFilename?.split(".").pop() || "jpg";
+        // สร้างชื่อไฟล์ใหม่ที่ไม่ซ้ำกัน
+        const fileName = `${Date.now()}_${uuidv4()}.${fileExtension}`.replace(
+          /['"]/g,
+          ""
+        );
+
+        const { error: uploadError } = await adminSupabase.storage
+          .from("service_pictures")
+          .upload(fileName, fileData, {
+            contentType:
+              newService.image.mimetype || "application/octet-stream",
+          });
+
+        if (uploadError) {
+          console.log("Error uploading file:", uploadError);
+          return res.status(400).json({ error: "Error during image upload." });
+        }
+
+        const { data: urlData } = adminSupabase.storage
+          .from("service_pictures")
+          .getPublicUrl(fileName);
+
+        if (!urlData?.publicUrl) {
+          return res
+            .status(400)
+            .json({ error: "Error getting public URL for uploaded image." });
+        }
+
+        const { error: updateImageUrlError } = await adminSupabase
           .from("services")
           .update({
             service_picture_url: urlData.publicUrl,
@@ -115,18 +192,18 @@ export default async function adminCreate(
           unit_price: subService.pricePerUnit,
           created_at: newService.created_at,
           updated_at: newService.updated_at,
-        });
-      }
+        }));
 
-      const { data: subInsertedData, error: subInsertedError } =
-        await adminSupabase.from("sub_services").insert(subInsert).select();
-      if (subInsertedError) {
-        console.log(subInsertedError);
-        return res.status(400).json({
-          message: "Error occur during insert sub services.",
-          detail: subInsertedError,
-        });
-        console.log("---3-------------------------------------------");
+        const { error: subInsertedError } = await adminSupabase
+          .from("sub_services")
+          .insert(subInsert);
+
+        if (subInsertedError) {
+          return res.status(400).json({
+            message: "Error inserting subservices.",
+            detail: subInsertedError,
+          });
+        }
       }
 
       return res.status(201).json({ message: "Data inserted successfully." });

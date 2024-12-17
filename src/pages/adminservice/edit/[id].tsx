@@ -392,6 +392,8 @@ export const AdminserviceIndex = ({
             </div>
             <div className="h-px w-full bg-gray-300"></div>
             {/* กล่องกลาง */}
+            <div className="h-px w-full bg-gray-300"></div>
+            {/* กล่องกลาง */}
             <div>
               <div className="">
                 <h1>รายการรับผิดชอบ</h1>
@@ -511,10 +513,12 @@ export function AddSubService({
     description: string;
     unit: string;
     unit_price: number;
+    unit_price: number;
   };
   deleteSubservice: (index: number) => void;
   updateSubservice: (
     index: number,
+    field: "description" | "unit" | "unit_price",
     field: "description" | "unit" | "unit_price",
     value: string | number
   ) => void;
@@ -537,6 +541,7 @@ export function AddSubService({
               updateSubservice(index, "description", e.target.value)
             }
             className="border border-gray-300 h-11 rounded-lg w-[422px] pl-5"
+            className="border border-gray-300 h-11 rounded-lg w-[422px] pl-5"
           />
         </div>
         <div className="flex flex-col py-6">
@@ -549,7 +554,9 @@ export function AddSubService({
             value={subservice.unit_price !== null ? subservice.unit_price : ""}
             onChange={(e) =>
               updateSubservice(index, "unit_price", e.target.value)
+              updateSubservice(index, "unit_price", e.target.value)
             }
+            className="border border-gray-300 h-11 rounded-lg w-[240px] pl-5"
             className="border border-gray-300 h-11 rounded-lg w-[240px] pl-5"
           />
         </div>
@@ -560,6 +567,7 @@ export function AddSubService({
             id={`subserviceUnit-${index}`}
             value={subservice.unit}
             onChange={(e) => updateSubservice(index, "unit", e.target.value)}
+            className="border border-gray-300 h-11 rounded-lg w-[240px] pl-5"
             className="border border-gray-300 h-11 rounded-lg w-[240px] pl-5"
           />
         </div>
