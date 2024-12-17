@@ -37,7 +37,6 @@ import {
   isSunday,
 } from "date-fns";
 import { th } from "date-fns/locale";
-import { Input } from "@/components/ui/input";
 import type { Service } from "@/types/service";
 
 async function getService(
@@ -77,7 +76,7 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
   const [additionalDetails, setAdditionalDetails] = useState<string>("");
   const [address, setAddress] = useState<string>("");
   const [canProceed, setCanProceed] = useState(false);
-  const currentStep = 3;
+  const currentStep = 2;
   const [selectedTime, setSelectedTime] = useState("09:00");
   const [timeError, setTimeError] = useState("");
   const [dateError, setDateError] = useState<string | null>(null);

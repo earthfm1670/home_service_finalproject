@@ -11,11 +11,11 @@ export const ProgressSteps = ({ currentStep }: ProgressStepsProps) => {
     <Card className="p-4 mt-5 g:p-6 lg:mt-8 lg:p-8">
       <div className="relative">
         {/* Progress Line */}
-        <div className="absolute top-5 left-[17%] right-[17%] h-0.5 bg-gray-200" />
+        <div className="absolute top-5 left-[16%] right-[16%] h-0.5 bg-gray-200" />
         {/* Blue Progress Line */}
         <div
           className="absolute top-5 left-[17%] h-0.5 bg-blue-500 transition-all duration-300"
-          style={{ width: `${((currentStep - 1) / 2) * 65}%` }}
+          style={{ width: `${((currentStep - 1) / 2) * 66}%` }}
         />
 
         <div className="relative flex justify-between max-w-none mx-auto">

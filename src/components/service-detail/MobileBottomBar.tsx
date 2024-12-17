@@ -21,6 +21,7 @@ interface MobileBottomBarProps {
   getQuantityDisplay: (subServiceId: number) => number;
   handleProceed: () => void;
   locationInfo?: LocationInfo;
+  isServiceInfoPage?: boolean; // Add this new prop
 }
 
 export const MobileBottomBar = ({
@@ -30,6 +31,7 @@ export const MobileBottomBar = ({
   getQuantityDisplay,
   handleProceed,
   locationInfo,
+  isServiceInfoPage = false, // Add this new prop with a default value
 }: MobileBottomBarProps) => {
   const router = useRouter();
 
@@ -48,10 +50,18 @@ export const MobileBottomBar = ({
         <div className="flex gap-4">
           <Button
             variant="outline"
-            className="flex-1 border-grey-500 text-grey-500"
+            className={`flex-1 ${
+              isServiceInfoPage
+                ? "border-blue-500 text-blue-500"
+                : "border-grey-500 text-grey-500"
+            }`}
             onClick={() => router.back()}
           >
-            <ChevronLeft className="h-4 w-4 mr-2 text-grey-500" />
+            <ChevronLeft
+              className={`h-4 w-4 mr-2 ${
+                isServiceInfoPage ? "text-blue-500" : "text-grey-500"
+              }`}
+            />
             ย้อนกลับ
           </Button>
           <Button

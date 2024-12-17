@@ -135,7 +135,10 @@ export const MobileSummary = ({
         <div className="flex justify-between items-center">
           <span className="text-sm text-gray-600">รวม</span>
           <span className="text-base font-semibold">
-            {calculateTotal().toFixed(2)} ฿
+            {calculateTotal().toLocaleString('th-TH', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            })} ฿
           </span>
         </div>
       </div>
