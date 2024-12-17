@@ -16,8 +16,8 @@ export function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const { login, logout, authState } = useAuth();
   const user = authState.user;
-  // console.log(user);
-  // console.log(authState);
+  console.log(user);
+  console.log(authState);
 
   useEffect(() => {
     // Check is user is logged in or not and use the Boolean value to set state
@@ -49,8 +49,7 @@ export function Navbar() {
 
         <div
           className="hidden lg:block text-[16px] font-medium"
-          onClick={redirectToServiceList}
-        >
+          onClick={redirectToServiceList}>
           บริการของเรา
         </div>
       </div>
@@ -61,8 +60,7 @@ export function Navbar() {
         {!isLoggedIn ? (
           <div
             onClick={redirectToLogin}
-            className="flex justify-center items-center lg:mr-16 w-[90px] h-[37px] text-[14px] font-medium text-blue-600 bg-white border border-blue-600 px-2 hover:text-blue-400 hover:border-blue-400 rounded-lg cursor-pointer"
-          >
+            className="flex justify-center items-center lg:mr-16 w-[90px] h-[37px] text-[14px] font-medium text-blue-600 bg-white border border-blue-600 px-2 hover:text-blue-400 hover:border-blue-400 rounded-lg cursor-pointer">
             <button>เข้าสู่ระบบ</button>
           </div>
         ) : (
@@ -78,8 +76,7 @@ export function Navbar() {
                     <img
                       src="/image/defaultprofile.svg"
                       alt="notification bell"
-                      className="w-[14px] h-[14px] lg:w-[18px] lg:h-[18px]"
-                    ></img>
+                      className="w-[14px] h-[14px] lg:w-[18px] lg:h-[18px]"></img>
                   </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
@@ -98,8 +95,7 @@ export function Navbar() {
               <img
                 src="/image/notibell.svg"
                 alt="notification bell"
-                className="w-full h-full"
-              ></img>
+                className="w-full h-full"></img>
             </div>
           </div>
         )}
