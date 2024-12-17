@@ -231,7 +231,7 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
   );
 };
 
-function IconDrag() {
+export function IconDrag() {
   // change color icon when active
   const [active, setActive] = useState<boolean>(false);
 
