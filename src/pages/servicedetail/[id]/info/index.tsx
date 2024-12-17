@@ -38,6 +38,7 @@ import {
 } from "date-fns";
 import { th } from "date-fns/locale";
 import type { Service } from "@/types/service";
+import ServiceDetailSkeleton from "@/components/service-detail/ServiceDetailSkeleton";
 
 async function getService(
   id: string
@@ -304,7 +305,7 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
     const hours = Array.from({ length: 25 }, (_, i) =>
       i.toString().padStart(2, "0")
     );
-    const minutes = Array.from({ length: 25 }, (_, i) =>
+    const minutes = Array.from({ length: 60 }, (_, i) =>
       i.toString().padStart(2, "0")
     );
 
@@ -388,7 +389,7 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
   };
 
   if (!service) {
-    return <div>Loading...</div>;
+    return <ServiceDetailSkeleton />;
   }
 
   return (
