@@ -63,11 +63,11 @@ export default function AdminNavbar() {
     }
     formData.append("subservices", JSON.stringify(inputSubservice));
   
-    // วนลูปเพื่อแสดงข้อมูลใน FormData
-    console.log("FormData contents:");
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
+    // // วนลูปเพื่อแสดงข้อมูลใน FormData
+    // console.log("FormData contents:");
+    // for (let [key, value] of formData.entries()) {
+    //   console.log(`${key}:`, value);
+    // }
 
     // การแสดงข้อมูลข้างใน formdata ได้นั้นต้องใช้วิธีการ loop
     console.log("FormData contents:");
