@@ -1,8 +1,7 @@
 "use client";
 import React, { useState, useEffect, useContext, createContext } from "react";
-import { jwtDecode, JwtPayload } from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import axios from "axios";
-import { supabase } from "@/utils/supabase";
 //define user structure
 interface UserMetadata {
   email: string;
@@ -44,15 +43,15 @@ interface AuthContextType {
   login: (email: string, password: string) => void;
   adminLogin: (email: string, password: string) => void;
   logout: () => void;
+  isAdmin: boolean;
+  isStaff: boolean;
   isLoggedIn: boolean;
 }
 //defined authState
 interface AuthState {
-  userId: string;
-  user: JwtPayload | null;
+  user: UserPayload | null;
   // user: UserPayload | null;
   token: string | null;
-  isAdmin: boolean;
 }
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -77,52 +76,74 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 //creat provider which will be render as **WRAPPER for whole app.
 export const AuthProvider = ({ children }: AuthProviderProps) => {
+  console.log("From Auth Context");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [authState, setAuthState] = useState<AuthState>({
-    userId: "",
     user: null,
     token: null,
-    isAdmin: false,
   });
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isStaff, setIsStaff] = useState<boolean>(false);
+
   //check localstorage for token/ if have one, set user state base on token payload
-  //FIXME double check the savedUser process, JSON.parse? getItem('user') from where?
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
     const savedUser: UserPayload = savedToken
       ? JSON.parse(localStorage.getItem("user") || "{}")
       : null;
-
-    if (savedToken) {
+    if (savedToken && savedUser) {
       setAuthState({
-        userId: "",
         user: savedUser,
         token: savedToken,
-        isAdmin: false,
       });
+
+      if (authState.user?.user_metadata.role === "customer") {
+        setIsAdmin(false);
+        setIsStaff(false);
+      } else if (authState.user?.user_metadata.role === "admin") {
+        setIsAdmin(true);
+        setIsStaff(false);
+      } else if (authState.user?.user_metadata.role === "staff") {
+        setIsStaff(true);
+        setIsAdmin(false);
+        setIsLoggedIn(true);
+      }
+      if (!savedToken || !savedUser) {
+        setIsLoggedIn(false);
+      }
     }
-    setIsLoggedIn(true);
   }, []);
 
   //define login function which will use to store userdata and token.
   const login = async (email: string, password: string) => {
     try {
       const response = await axios.post("api/auth/login", { email, password });
-      const getUserId = await axios.post("api/auth/getUserId", { email });
       //access token
       const authToken = response.data.access_token;
       //access userInfo
-      const userInfo = jwtDecode(authToken);
-      const userId = getUserId.userId.user_id;
+      const userInfo: UserPayload = jwtDecode(authToken);
+      // NOT USE const userId = getUserId.userId.user_id;
       //store user info as string in local& store token
       localStorage.setItem("user", JSON.stringify(userInfo));
       localStorage.setItem("token", authToken);
       //setauth state to store user / token
       setAuthState({
-        userId: userId,
         user: userInfo,
         token: authToken,
-        isAdmin: false,
       });
+
+      const userRole = userInfo.user_metadata.role;
+      if (userRole === "customer") {
+        setIsAdmin(false);
+        setIsStaff(false);
+      } else if (userRole === "admin") {
+        setIsAdmin(true);
+        setIsStaff(false);
+      } else if (userRole === "staff") {
+        setIsStaff(true);
+        setIsAdmin(false);
+      }
+      setIsLoggedIn(true);
     } catch (error) {
       const err = error as Error;
       console.log(err.message);
@@ -133,23 +154,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const adminLogin = async (email: string, password: string) => {
     try {
       const response = await axios.post("api/admin/login", { email, password });
-      const getUserId = await axios.post("api/auth/getUserId", { email });
       //access token
       const authToken = response.data.access_token;
       //access userInfo
-      const userInfo = jwtDecode(authToken);
-      const userId = getUserId.userId.user_id;
+      const userInfo: UserPayload = jwtDecode(authToken);
       //store user info as string in local& store token
       localStorage.setItem("user", JSON.stringify(userInfo));
       localStorage.setItem("token", authToken);
       //setauth state to store user / token
       // if (userInfo.user_metadata.role === "admin"){} << แก้ type
       setAuthState({
-        userId: userId,
         user: userInfo,
         token: authToken,
-        isAdmin: true, //ใส่เงื่อนไข
       });
+      setIsAdmin(true);
     } catch (error) {
       const err = error as Error;
       console.log(err.message);
@@ -161,16 +179,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setAuthState({
-      userId: "",
       user: null,
       token: null,
-      isAdmin: false,
     });
+    setIsAdmin(false);
+    setIsStaff(false);
+    setIsLoggedIn(false);
   };
 
   return (
     <AuthContext.Provider
-      value={{ authState, login, logout, isLoggedIn, adminLogin }}>
+      value={{
+        authState,
+        login,
+        logout,
+        isLoggedIn,
+        isAdmin,
+        isStaff,
+        adminLogin,
+      }}>
       {children}
     </AuthContext.Provider>
   );

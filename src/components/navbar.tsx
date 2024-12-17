@@ -1,35 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import React from "react";
+import AuthNavbar from "./navbar/authNavbar";
 import { useRouter } from "next/router";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { useAuth } from "@/context/authContext";
+import Image from "next/image";
 
 export function Navbar() {
   const router = useRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const { logout, authState } = useAuth();
+  const { authState, isLoggedIn } = useAuth();
   const user = authState.user;
 
-  useEffect(() => {
-    // Check is user is logged in or not and use the Boolean value to set state
-    const userLoggedIn: boolean = Boolean(localStorage.getItem("user"));
-    setIsLoggedIn(userLoggedIn);
-  }, []);
-
-  useEffect(() => {
-    console.log("login successful");
-    console.log("user data");
-    console.log(user);
-    console.log("auth state");
-    console.log(authState);
-  }, [authState, user]);
+  // useEffect(() => {
+  //   console.log("login successful");
+  //   console.log("user data");
+  //   console.log(user);
+  //   console.log("auth state");
+  //   console.log(authState);
+  //   console.log("is login " + isLoggedIn);
+  //   console.log("is admin " + isAdmin);
+  //   console.log("is staff " + isStaff);
+  //   console.log("user role" + user?.user_metadata.role);
+  // }, [authState, user]);
 
   const redirectToHome = (): void => {
     router.push("/");
@@ -43,16 +34,10 @@ export function Navbar() {
     router.push("/login");
   };
 
-  const handleLogout = (): void => {
-    logout();
-    router.push("/");
-  };
-
   return (
     <div className="flex justify-between items-center border shadow-lg p-2 px-4 bg-white lg:px-32 ">
       <div className="flex gap-10 cursor-pointer">
         <img src="/image/homeservicelogo.svg" onClick={redirectToHome}></img>
-
         <div
           className="hidden lg:block text-[16px] font-medium"
           onClick={redirectToServiceList}>
@@ -63,44 +48,14 @@ export function Navbar() {
         <div className="lg:hidden text-[14px]" onClick={redirectToServiceList}>
           บริการของเรา
         </div>
-        {!isLoggedIn ? (
-          <div
-            onClick={redirectToLogin}
-            className="flex justify-center items-center lg:mr-16 w-[90px] h-[37px] text-[14px] font-medium text-blue-600 bg-white border border-blue-600 px-2 hover:text-blue-400 hover:border-blue-400 rounded-lg cursor-pointer">
-            <button>เข้าสู่ระบบ</button>
-          </div>
-        ) : (
+
+        {isLoggedIn ? (
           <div className="flex gap-2 items-center lg:mr-20">
-            {/* still hard code */}
             <p className="hidden lg:block lg:text-[14px] text-gray-700">
               {user?.user_metadata.name || "Guest"}
             </p>
             <div className="w-[32px] h-[32px] lg:w-[40px] lg:h-[40px]">
-              <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <div className="w-[32px] h-[32px] lg:w-[40px] lg:h-[40px] rounded-full bg-gray-100 flex justify-center items-center">
-                    <img
-                      src="/image/defaultprofile.svg"
-                      alt="notification bell"
-                      className="w-[14px] h-[14px] lg:w-[18px] lg:h-[18px]"></img>
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => router.push("/customerservice")}>
-                    User Dashboard
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => router.push("/adminservice")}>
-                    Admin Dashboard
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleLogout}>
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <AuthNavbar />
             </div>
             <div className="w-[32px] h-[32px] lg:w-[40px] lg:h-[40px]">
               <img
@@ -109,16 +64,26 @@ export function Navbar() {
                 className="w-full h-full"></img>
             </div>
           </div>
+        ) : (
+          <div
+            onClick={redirectToLogin}
+            className="flex justify-center items-center lg:mr-16 w-[90px] h-[37px] text-[14px] font-medium text-blue-600 bg-white border border-blue-600 px-2 hover:text-blue-400 hover:border-blue-400 rounded-lg cursor-pointer">
+            <button>เข้าสู่ระบบ</button>
+          </div>
         )}
-
-        {/* backup for not login */}
-        {/* <div
-          onClick={redirectToLogin}
-          className="flex justify-center items-center w-[90px] h-[37px] text-[14px] font-medium text-blue-600 bg-white border border-blue-600 px-2 hover:text-blue-400 hover:border-blue-400 rounded-lg cursor-pointer"
-        >
-          <button>เข้าสู่ระบบ</button>
-        </div> */}
       </div>
     </div>
   );
+}
+
+{
+  /* backup for not login */
+}
+{
+  /* <div
+  onClick={redirectToLogin}
+  className="flex justify-center items-center w-[90px] h-[37px] text-[14px] font-medium text-blue-600 bg-white border border-blue-600 px-2 hover:text-blue-400 hover:border-blue-400 rounded-lg cursor-pointer"
+>
+  <button>เข้าสู่ระบบ</button>
+</div> */
 }
