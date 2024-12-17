@@ -8,6 +8,7 @@ import ServiceList from "@/components/service-detail/ServiceList";
 import DesktopSummary from "@/components/service-detail/DesktopSummary";
 import MobileBottomBar from "@/components/service-detail/MobileBottomBar";
 import NavigationButtons from "@/components/service-detail/NavigationButtons";
+import ServiceDetailSkeleton from "@/components/service-detail/ServiceDetailSkeleton";
 import type { Service } from "@/types/service";
 
 async function getService(
@@ -42,14 +43,17 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
   );
   const [canProceed, setCanProceed] = useState(false);
   const [currentStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(!initialService);
 
   useEffect(() => {
     if (id && !service) {
+      setIsLoading(true);
       const serviceId = Array.isArray(id) ? id[0] : id;
       getService(serviceId).then((result) => {
         if (result.data) {
           setService(result.data);
         }
+        setIsLoading(false);
       });
     }
   }, [id, service]);
@@ -61,8 +65,12 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
     setCanProceed(hasSelectedServices);
   }, [quantities]);
 
+  if (isLoading) {
+    return <ServiceDetailSkeleton />;
+  }
+
   if (!service) {
-    return <div>Loading...</div>;
+    return <div>Service not found</div>;
   }
 
   const handleQuantityChange = (subServiceId: number, change: number) => {
