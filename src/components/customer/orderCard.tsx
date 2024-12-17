@@ -1,12 +1,13 @@
 import { CalendarDays, CircleUser } from "lucide-react";
 import React from "react";
+import { OrdersList } from "@/pages/customerservice/orderlist";
 
-interface Orders {
-  description: string;
-  type: string;
-  amount: number;
-  unit: string;
-}
+// interface Orders {
+//   description: string;
+//   type: string;
+//   amount: number;
+//   unit: string;
+// }
 interface OrderCardProps {
   key: string;
   id: string;
@@ -15,7 +16,7 @@ interface OrderCardProps {
   time: string;
   staff: string;
   totalPrice: number;
-  orders: Orders[];
+  orders: OrdersList[];
 }
 
 export default function OrderCard({
@@ -75,7 +76,7 @@ export default function OrderCard({
                       key={indext}
                       className="price font-normal flex gap-2 text-sm w-52 lg:w-full text-gray-950 ">
                       <span className="font-bold">•</span>
-                      {`${eachOrder.description}, ${eachOrder.type} ${eachOrder.amount} ${eachOrder.unit}`}
+                      {`${eachOrder.description}, ${eachOrder.amount} ${eachOrder.unit}`}
                     </span>
                   );
                 })}

@@ -14,11 +14,13 @@ export default async function getOrderList(
     users.name as user_name, 
     scheduled_date, 
     staffs.name as staff_name, 
-    booking_status.status_name as status, 
+    booking_status.status_name as status,
+    bookings.total_price,
     json_agg(json_build_object(
             'id', order_list.id, 
             'description', sub_services.description, 
             'amount', amount, 
+            'unit', sub_services.unit,
             'total_price', total_price  )) as order_list
     FROM bookings
     INNER JOIN booking_status
@@ -45,7 +47,7 @@ export default async function getOrderList(
         .status(404)
         .json({ error: "Orders list not found, check user id." });
     }
-    return res.status(200).json({ data: respond.rows[0] });
+    return res.status(200).json({ data: respond.rows });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ error: "Internal server error." });

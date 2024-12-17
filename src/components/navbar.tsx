@@ -16,8 +16,8 @@ export function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const { login, logout, authState } = useAuth();
   const user = authState.user;
-  console.log(user);
-  console.log(authState);
+  // console.log(user);
+  // console.log(authState);
 
   useEffect(() => {
     // Check is user is logged in or not and use the Boolean value to set state
