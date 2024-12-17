@@ -5,12 +5,22 @@ import { useRouter } from "next/router";
 import MobileSummary from "@/components/service-detail/MobileSummary";
 import type { Service } from "@/types/service";
 
+interface LocationInfo {
+  date: Date | null;
+  time: string | null;
+  address: string;
+  subDistrict: string;
+  district: string;
+  province: string;
+  additionalDetails?: string;
+}
 interface MobileBottomBarProps {
   canProceed: boolean;
   calculateTotal: () => number;
   getSelectedServices: () => Service["sub_services"];
   getQuantityDisplay: (subServiceId: number) => number;
   handleProceed: () => void;
+  locationInfo?: LocationInfo;
 }
 
 export const MobileBottomBar = ({
@@ -19,6 +29,7 @@ export const MobileBottomBar = ({
   getSelectedServices,
   getQuantityDisplay,
   handleProceed,
+  locationInfo,
 }: MobileBottomBarProps) => {
   const router = useRouter();
 
@@ -29,6 +40,7 @@ export const MobileBottomBar = ({
         getSelectedServices={getSelectedServices}
         getQuantityDisplay={getQuantityDisplay}
         calculateTotal={calculateTotal}
+        locationInfo={locationInfo}
       />
 
       {/* Navigation Buttons */}

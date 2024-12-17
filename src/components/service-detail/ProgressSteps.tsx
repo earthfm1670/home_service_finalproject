@@ -14,49 +14,91 @@ export const ProgressSteps = ({ currentStep }: ProgressStepsProps) => {
         <div className="absolute top-5 left-[17%] right-[17%] h-0.5 bg-gray-200" />
         {/* Blue Progress Line */}
         <div
-          className="absolute top-5 left-[17%] h-0.5 bg-blue-600 transition-all duration-300"
+          className="absolute top-5 left-[17%] h-0.5 bg-blue-500 transition-all duration-300"
           style={{ width: `${((currentStep - 1) / 2) * 65}%` }}
         />
 
         <div className="relative flex justify-between max-w-none mx-auto">
           {/* Step 1 */}
           <div className="flex flex-col items-center relative z-10 flex-1 ">
-            <div className="w-10 h-10 rounded-full bg-white border-2 bg-grey-200 border-blue-500 flex items-center justify-center">
-              <ClipboardList className="w-5 h-5 text-blue-500 "  />
+            <div
+              className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                currentStep > 1
+                  ? "bg-blue-500"
+                  : currentStep === 1
+                  ? "bg-white border-2 border-blue-500"
+                  : "bg-white border-2 border-gray-200"
+              }`}
+            >
+              <ClipboardList
+                className={`w-5 h-5 ${
+                  currentStep > 1
+                    ? "text-white"
+                    : currentStep === 1
+                    ? "text-blue-500"
+                    : "text-gray-400"
+                }`}
+              />
             </div>
-            <span className="mt-2 text-xs lg:text-sm font-medium text-blue-600">
+            <span
+              className={`mt-2 text-xs lg:text-sm font-medium ${
+                currentStep >= 1 ? "text-blue-600" : "text-gray-400"
+              }`}
+            >
               รายการ
             </span>
           </div>
 
           {/* Step 2 */}
           <div className="flex flex-col items-center relative z-10 flex-1">
-            <div className={`w-10 h-10 rounded-full bg-white border-2 ${
-              currentStep >= 2 ? 'border-blue-500' : 'border-gray-200'
-            } flex items-center justify-center`}>
-              <FileText className={`w-5 h-5 ${
-                currentStep >= 2 ? 'text-blue-500' : 'text-gray-400'
-              }`} />
+            <div
+              className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                currentStep > 2
+                  ? "bg-blue-500"
+                  : currentStep === 2
+                  ? "bg-white border-2 border-blue-500"
+                  : "bg-white border-2 border-gray-200"
+              }`}
+            >
+              <FileText
+                className={`w-5 h-5 ${
+                  currentStep > 2
+                    ? "text-white"
+                    : currentStep === 2
+                    ? "text-blue-500"
+                    : "text-gray-400"
+                }`}
+              />
             </div>
-            <span className={`mt-2 text-xs lg:text-sm font-medium ${
-              currentStep >= 2 ? 'text-blue-600' : 'text-gray-400'
-            }`}>
+            <span
+              className={`mt-2 text-xs lg:text-sm font-medium ${
+                currentStep >= 2 ? "text-blue-600" : "text-gray-400"
+              }`}
+            >
               กรอกข้อมูลบริการ
             </span>
           </div>
 
           {/* Step 3 */}
           <div className="flex flex-col items-center relative z-10 flex-1">
-            <div className={`w-10 h-10 rounded-full bg-white border-2 ${
-              currentStep >= 3 ? 'border-blue-500' : 'border-gray-200'
-            } flex items-center justify-center`}>
-              <CreditCard className={`w-5 h-5 ${
-                currentStep >= 3 ? 'text-blue-500' : 'text-gray-400'
-              }`} />
+            <div
+              className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                currentStep === 3
+                  ? "bg-white border-2 border-blue-500"
+                  : "bg-white border-2 border-gray-200"
+              }`}
+            >
+              <CreditCard
+                className={`w-5 h-5 ${
+                  currentStep === 3 ? "text-blue-500" : "text-gray-400"
+                }`}
+              />
             </div>
-            <span className={`mt-2 text-xs lg:text-sm font-medium ${
-              currentStep >= 3 ? 'text-blue-600' : 'text-gray-400'
-            }`}>
+            <span
+              className={`mt-2 text-xs lg:text-sm font-medium ${
+                currentStep === 3 ? "text-blue-600" : "text-gray-400"
+              }`}
+            >
               ชำระเงิน
             </span>
           </div>

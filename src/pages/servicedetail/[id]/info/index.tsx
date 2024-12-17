@@ -77,7 +77,7 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
   const [additionalDetails, setAdditionalDetails] = useState<string>("");
   const [address, setAddress] = useState<string>("");
   const [canProceed, setCanProceed] = useState(false);
-  const currentStep = 2;
+  const currentStep = 3;
   const [selectedTime, setSelectedTime] = useState("09:00");
   const [timeError, setTimeError] = useState("");
   const [dateError, setDateError] = useState<string | null>(null);
@@ -302,7 +302,9 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
     const [selectedHour, setSelectedHour] = useState("00");
     const [selectedMinute, setSelectedMinute] = useState("00");
 
-    const hours = Array.from({ length: 25 }, (_, i) => i.toString().padStart(2, "0"));
+    const hours = Array.from({ length: 25 }, (_, i) =>
+      i.toString().padStart(2, "0")
+    );
     const minutes = Array.from({ length: 25 }, (_, i) =>
       i.toString().padStart(2, "0")
     );
@@ -326,24 +328,6 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
 
         {isOpen && (
           <div className="absolute z-50 mt-1 w-full bg-white border rounded-md shadow-lg overflow-hidden lg:w-48">
-<MobileBottomBar
-  canProceed={canProceed}
-  calculateTotal={() => selectedServices?.totalAmount || 0}
-  getSelectedServices={() => selectedServices?.selections || []}
-  getQuantityDisplay={(id) =>
-    selectedServices?.selections.find((s: any) => s.id === id)?.quantity || 0
-  }
-  handleProceed={handleProceed}
-  locationInfo={{
-    date: selectedDate,
-    time: selectedTime,
-    address: address,
-    province: provinces.find((p) => p.id === selected.province_id)?.name_th || "",
-    district: amphures.find((a) => a.id === selected.amphure_id)?.name_th || "",
-    subDistrict: tambons.find((t) => t.id === selected.tambon_id)?.name_th || "",
-  }}
-  isServiceInfoPage={true}
-/>
             <div className="flex divide-x divide-gray-200">
               {/* Hours Column */}
               <div className="flex-1 w-1/2 overflow-y-auto max-h-60">
@@ -666,6 +650,7 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
             amphures.find((a) => a.id === selected.amphure_id)?.name_th || "",
           subDistrict:
             tambons.find((t) => t.id === selected.tambon_id)?.name_th || "",
+          additionalDetails: additionalDetails, // เพิ่มบรรทัดนี้
         }}
         isServiceInfoPage={true}
       />
