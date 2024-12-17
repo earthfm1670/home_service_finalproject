@@ -3,14 +3,14 @@ import HomeFooter from "@/components/homefooter";
 import UserSidebar from "@/components/customer/userSidebar";
 import { useAuth } from "@/context/authContext";
 export default function CustomerProfile() {
-  // const { authState } = useAuth();
-  // const user = authState.user?.user_metadata;
-  // if (!user) {
-  //   console.log("No User");
-  //   console.log(authState);
-  //   console.log(authState.user?.user_metadata);
-  //   console.log(user);
-  // }
+  const { authState } = useAuth();
+  const user = authState.user?.user_metadata;
+  if (!user) {
+    console.log("No User");
+    console.log(authState);
+    console.log(authState.user?.user_metadata);
+    console.log(user);
+  }
   return (
     <>
       <Navbar />
@@ -25,11 +25,11 @@ export default function CustomerProfile() {
           ข้อมูลผู้ใช้งาน
         </div>
         <div className="content bg-gray-300 h-96 flex flex-col justify-start w-full lg:ml-72">
-          {/* <li>User ID : </li>
-          <li>User Name : {user.name} </li>
-          <li>User Email : {user.email} </li>
-          <li>User Phone : {user.phone}</li>
-          <li>User Role : {user.role} </li> */}
+          <li>User ID : {authState.user?.sub || ""} </li>
+          <li>User Name : {user?.name || ""} </li>
+          <li>User Email : {user?.email || ""} </li>
+          <li>User Phone : {user?.phone || ""}</li>
+          <li>User Role : {user?.role || ""} </li>
         </div>
       </div>
       <HomeFooter />
