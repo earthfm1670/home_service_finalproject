@@ -77,7 +77,7 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
 
   const fetchUser = async () => {
     try {
-      const response = await axios.get(`/api/services?search=${input}`);
+      const response = await axios.get(`/api/admin/getdataAdmin?search=${input}`);
       // console.log("test response 101");
       if(response.data.data.length !== 0){
         setServicesList(response.data.data);
