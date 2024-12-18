@@ -235,7 +235,28 @@ const PaymentForm: React.FC = () => {
           </form>
         </>
       ) : (
-        <></>
+        <>
+          <div className="mx-3 mb-6">
+            <label>Promotion Code</label>{" "}
+            <div className="flex items-center gap-4 mb-4">
+              <input
+                type="text"
+                value={promoCode}
+                onChange={(e) => setPromoCode(e.target.value)}
+                className="block min-w-[205px] h-[64px] text-[16px] border border-gray-300 rounded-md py-3 px-2 placeholder:text-[16px]"
+                placeholder="กรุณากรอกโค้ดส่วนลด(ถ้ามี)"
+              ></input>
+              <button
+                type="button"
+                onClick={applyPromoCode}
+                className="min-w-[90px] h-[44px] bg-blue-600 rounded-md text-white font-medium text-[16px]"
+              >
+                ใช้โค้ด
+              </button>
+            </div>
+            <img src="/image/mockqrcode.jpg" className="w-full h-full"></img>
+          </div>
+        </>
       )}
 
       {/* <button type="submit" disabled={!stripe || loading}>
