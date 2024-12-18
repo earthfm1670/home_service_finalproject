@@ -109,9 +109,30 @@ const PaymentForm: React.FC = () => {
       </div>
       <div className="mx-3 mb-2 h-[95px] flex justify-between">
         {/* Promptpay Option */}
-        <div className="w-[147px] h-[95px] border rounded-sm flex flex-col justify-center items-center">
-          <img src="/image/qricon.svg" className="w-[35px] h-[35px]"></img>
-          <p className="text-[16px] text-gray-800">พร้อมเพย์</p>
+        <div
+          className={`w-[147px] h-[95px] border rounded-sm flex flex-col justify-center items-center cursor-pointer ${
+            selectedPayment === "qrcode" ? "bg-blue-100 border-blue-600" : ""
+          }`}
+          onClick={() => setSelectedPayment("qrcode")}
+        >
+          {selectedPayment === "qrcode" ? (
+            <>
+              <img
+                src="/image/qrclicked.svg"
+                className="w-[35px] h-[35px]"
+              ></img>
+              <p className="text-[16px] text-blue-600 font-semibold">
+                พร้อมเพย์
+              </p>
+            </>
+          ) : (
+            <>
+              <img src="/image/qricon.svg" className="w-[35px] h-[35px]"></img>
+              <p className="text-[16px] text-gray-800 font-semibold">
+                พร้อมเพย์
+              </p>
+            </>
+          )}
         </div>
         {/* Credit Card Option */}
         <div
@@ -128,7 +149,9 @@ const PaymentForm: React.FC = () => {
                 src="/image/creditcardclicked.svg"
                 className="w-[35px] h-[35px]"
               ></img>
-              <p className="text-[16px] text-blue-600">บัตรเครดิต</p>
+              <p className="text-[16px] text-blue-600 font-semibold">
+                บัตรเครดิต
+              </p>
             </>
           ) : (
             <>
@@ -136,7 +159,9 @@ const PaymentForm: React.FC = () => {
                 src="/image/creditcard.svg"
                 className="w-[35px] h-[35px]"
               ></img>
-              <p className="text-[16px] text-gray-800">บัตรเครดิต</p>
+              <p className="text-[16px] text-gray-800 font-semibold">
+                บัตรเครดิต
+              </p>
             </>
           )}
         </div>
