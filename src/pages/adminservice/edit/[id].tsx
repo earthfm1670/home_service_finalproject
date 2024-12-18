@@ -15,6 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import IconWarning from "@/components/ui/Iconwarning";
+import IconX from "@/components/ui/IconX";
 
 interface SubService {
   description: string;
@@ -23,15 +25,15 @@ interface SubService {
 }
 
 export default function AdminNavbar() {
-  const [inputSubservice, setInputSubservice] = useState<SubService[]>([
-    { description: "", unit: "", unit_price: 0 },
-  ]);
-  const [inputTitle, setInputTitle] = useState("");
-  const [inputCat, setInputCat] = useState("");
+  const [inputSubservice, setInputSubservice] = useState<SubService[]>();
+  const [inputTitle, setInputTitle] = useState<string>("");
+  const [inputCat, setInputCat] = useState<number | undefined>();
   const [inputImage, setInputImage] = useState<File>();
   const [nameTopic, setNameTopic] = useState<String>("loading");
   const [URLimage, setURLimage] = useState<String>();
-  const [showPopup, setShowPopup] = useState<boolean>(false);
+  // const [changeImage,setChangeImage] = useState<Boolean>(false)
+  const [showPopUpSubmit, setShowPopUpSubmit] = useState<Boolean>(false);
+  const [showPopUpDeleteImg, setShowPopUpDeleteImg] = useState<Boolean>(false);
 
   const router = useRouter();
 
@@ -40,36 +42,39 @@ export default function AdminNavbar() {
 
     const formData = new FormData();
     formData.append("title", inputTitle);
-    formData.append("category_id", inputCat);
+    if (inputCat) {
+      formData.append("category_id", inputCat.toString());
+    }
+
     if (inputImage) {
       formData.append("image", inputImage);
     }
+
     formData.append("subservices", JSON.stringify(inputSubservice));
 
-    // การแสดงข้อมูลข้างใน formdata ได้นั้นต้องใช้วิธีการ loop
     console.log("FormData contents:");
-    let formDataObject: { [key: string]: any } = []; // สร้าง object เปล่าเพื่อเก็บข้อมูล
-
+    let formDataObject: { [key: string]: any } = {};
     for (let [key, value] of formData.entries()) {
       formDataObject[key] = value;
     }
 
-    console.log(formDataObject); // แสดงข้อมูลทั้งหมดในรูปแบบ object
+    console.log(
+      "test data for sent request by form data.append",
+      formDataObject
+    );
 
     const { id } = router.query;
 
-    //   try {
-
-    //     await axios.put(`/api/admin/management/edit/${id}`, formData, {
-    //       headers: { "Content-Type": "multipart/form-data" },
-    //     });
-    //     router.push("/adminservice");
-    //     // setShowPopup(true);
-    //     console.log("fromdata2", formData);
-    //     // console.log("newInputData", newInputData);
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
+    // Commented out API call
+    try {
+      await axios.put(`/api/admin/management/edit/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      router.push("/adminservice");
+      console.log("fromdata2", formData);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -91,26 +96,28 @@ export default function AdminNavbar() {
               </div>
               <div className="h-full flex flex-row items-center gap-6 relative">
                 <button
-                  className=" bg-white text-defaultColor text-base h-full px-7 flex items-center gap-3 rounded-lg w-32 text-center justify-center border border-defaultColor"
+                  className="bg-white text-defaultColor text-base h-full px-7 flex items-center gap-3 rounded-lg w-32 text-center justify-center border border-defaultColor"
                   onClick={() => router.push("/adminservice")}
                 >
                   ยกเลิก
                 </button>
                 <button
-                  className=" bg-defaultColor text-white text-base h-full px-7 flex items-center gap-3 rounded-lg w-32 text-center justify-center "
+                  className="bg-defaultColor text-white text-base h-full px-7 flex items-center gap-3 rounded-lg w-32 text-center justify-center"
                   type="submit"
                 >
-                  สร้าง
+                  ยืนยัน
                 </button>
               </div>
             </div>
             <AdminserviceIndex
-              input={setInputSubservice}
-              inputtitle={setInputTitle}
-              inputcat={setInputCat}
+              setInputSubservice={setInputSubservice}
+              setInputTitle={setInputTitle}
+              setInputCat={setInputCat}
               SetInputimage={setInputImage}
               setURLimage={setURLimage}
               setNameTopic={setNameTopic}
+              setShowPopUpDeleteImg={setShowPopUpDeleteImg}
+              showPopUpDeleteImg={showPopUpDeleteImg}
             />
           </div>
         </div>
@@ -119,45 +126,42 @@ export default function AdminNavbar() {
   );
 }
 
-// ----------------------------------------------------------------------------------------------
-
 export const AdminserviceIndex = ({
-  input,
-  inputtitle,
-  inputcat,
+  setInputSubservice,
+  setInputTitle,
+  setInputCat,
   SetInputimage,
   setURLimage,
   setNameTopic,
+  setShowPopUpDeleteImg,
+  showPopUpDeleteImg,
 }: any) => {
   const router = useRouter();
   const { id } = router.query;
 
-  // ดึงข้อมูลจาก Context
-  // สร้าง state เพื่อมารับข้อมูล service
-
-  // สร้าง state มาส่งข้อมูล
-  const [title, setTitle] = useState<string>("");
   const [category_id, setCategory_id] = useState<string>("");
-  const [image, setImage] = useState<File>();
+  const [subservices, setSubservices] = useState<any[]>([]);
 
-  // State เพื่อจัดการข้อมูล subservice
-  const [subservices, setSubservices] = useState<any[]>([
-    { description: "", unit: "", unit_price: 0 },
-    { description: "", unit: "", unit_price: 0 },
-  ]);
-  // console.log(subservices, "fetching data subservice check 102");
+  // setInputSubservice(subservices)
+  useEffect(() => {
+    setInputSubservice(subservices);
+  }, [subservices]);
 
-  input(subservices);
+  const [dataParams, setDataParams] = useState();
+  const [serviceNameData, setServiceNameData] = useState<String>("");
+  const [serviceCategoryData, setServiceCategoryData] = useState<String>();
+  const [fetchDataCategories, setFetchDataCategories] = useState<any>([]);
+  const [createAt, setCreateAt] = useState<String>();
+  const [updateAt, setUpdateAt] = useState<String>();
 
   const addSubService = () => {
     setSubservices((prevSubservices) => [
       ...prevSubservices,
-      { description: "", unit: "", unit_price: 0 },
+      { description: "", unit: "", unit_price: null },
     ]);
   };
 
   const deleteSubservice = (index: number) => {
-    // ลบรายการตาม index
     const updatedSubservices = subservices.filter((_, idx) => idx !== index);
     setSubservices(updatedSubservices);
   };
@@ -178,44 +182,55 @@ export const AdminserviceIndex = ({
   };
 
   const handleInputTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
-    inputtitle(event.target.value);
+    setServiceNameData(event.target.value);
+    setInputTitle(event.target.value);
   };
 
-  inputcat(category_id);
+  const handleCategorySelect = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const value = Number(event.target.value);
+    setInputCat(value);
+  };
 
-  const [preview, setPreview] = useState<String | null>(null); // เก็บ URL ชั่วคราวของรูปภาพ
+  const [preview, setPreview] = useState<String | null>(null);
 
   const handleInputImg = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]; // ดึงไฟล์ที่ผู้ใช้เลือก
+    const file = event.target.files?.[0];
     console.log(event, "event for image");
     if (file) {
-      const previewURL = URL.createObjectURL(file); // การแปลง file เป็น url เพื่อแสดงในกล่อง
-      // const previewURL = URL.revokeObjectURL(preview); // การลบ url เมื่อไม่ได้ใช้งาน ยังไม่ค่อยเข้าใจ
+      const previewURL = URL.createObjectURL(file);
       console.log("previewURL", previewURL);
       setPreview(previewURL);
       SetInputimage(file);
     }
   };
 
-  const handleDeleteImg = () => {
+  const handleDeleteImg = async () => {
     setPreview(null);
+    setShowPopUpDeleteImg(false);
+    try {
+      const response = await axios.delete(`/api/delete-image`, {
+        params: { serviceId: id },
+      });
+
+      console.log("Image deleted successfully", response.data);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        // AxiosError: จัดการข้อผิดพลาดที่เกิดจาก axios
+        if (error.response) {
+          console.error("Error response from server:", error.response.data);
+        } else if (error.request) {
+          console.error("No response received:", error.request);
+        } else {
+          console.error("Unexpected Axios error:", error.message);
+        }
+      } else {
+        // Unknown error: จัดการกรณีที่ไม่ใช่ข้อผิดพลาดของ axios
+        console.error("An unknown error occurred:", error);
+      }
+    }
   };
-
-  const [dataParams, setDataParams] = useState();
-  // console.log(user,"test fetch data by state")
-
-  // create state for storage data by params
-  const [serviceNameData, setServiceNameData] = useState();
-  setNameTopic(serviceNameData);
-  const [serviceCategoryData, setServiceCategoryData] = useState<String>();
-  const [subServiceParamsData, setSubServiceParamsData] = useState<any>([]);
-  const [imageURL, setImageURL] = useState();
-  const [fetchDataCategories, setFetchDataCategories] = useState<any>([]);
-  const [createAt, setCreateAt] = useState<String>();
-  const [updateAt, setUpdateAt] = useState<String>();
-  // console.log(fetchDataCategories, "test fetch categories form supabase 102");
-
-  // console.log(subServiceParamsData,"test array state")
 
   const fetchService = async () => {
     try {
@@ -225,13 +240,15 @@ export const AdminserviceIndex = ({
       console.log("test response fetching data", response.data);
       setDataParams(response.data);
       setServiceNameData(response.data.service_name);
+      setNameTopic(response.data.service_name);
       setServiceCategoryData(response.data.categories.category);
       setSubservices(response.data.sub_services);
-      // console.log(subservices, "fetching data subservice check 101");
       setPreview(response.data.service_picture_url);
       setCreateAt(response.data.created_at);
       setUpdateAt(response.data.updated_at);
-      console.log(response.data);
+      setInputTitle(response.data.service_name);
+      setInputCat(response.data.categories.id);
+      setInputSubservice(response.data.sub_services);
     } catch (error) {
       console.log(error);
     }
@@ -240,7 +257,6 @@ export const AdminserviceIndex = ({
   const fetchCategories = async () => {
     try {
       const response = await axios.get(`/api/admin/management/getCategories`);
-      console.log("test fetch categories form supabase 101", response);
       setFetchDataCategories(response.data);
     } catch (error) {
       console.log(error);
@@ -256,9 +272,8 @@ export const AdminserviceIndex = ({
 
   return (
     <>
-      <div className=" min-h-screen w-full flex justify-center items-start py-12 min-w-[1200px]  bg-gray-100">
+      <div className="min-h-screen w-full flex justify-center items-start py-12 min-w-[1200px] bg-gray-100">
         <div className="flex flex-col w-[1120px] border bg-white border-gray-300 rounded-lg overflow-x-auto gap-10 py-12 px-7">
-          {/* กล่องบน */}
           {/* ชื่อบริการ */}
           <div className="w-full bg-white ">
             <div className="flex items-center justify-between w-[662px]">
@@ -266,7 +281,7 @@ export const AdminserviceIndex = ({
               <input
                 type="text"
                 onChange={handleInputTitle}
-                value={serviceNameData}
+                value={serviceNameData.toString()}
                 className="border border-gray-300 h-11 rounded-lg w-[433px] pl-5"
               />
             </div>
@@ -275,28 +290,13 @@ export const AdminserviceIndex = ({
           {/* หมวดหมู่ */}
           <div className="flex items-center justify-between w-[662px]">
             <label htmlFor="category">หมวดหมู่</label>
-            {/* <div className="relative w-[433px]">
-              <select
-                id="category"
-                className="border border-gray-300 h-11 rounded-lg w-full px-5  appearance-none" // ลบลูกศรเดิมและเพิ่ม padding ขวา
-                value={category_id}
-                onChange={(e) => setCategory_id(e.target.value)}
-              >
-                <option value="">เลือกหมวดหมู่</option>
-                <option value="2">บริการทั่วไป</option>
-                <option value="3">บริการห้องครัว</option>
-                <option value="4">บริการห้องน้ำ</option>
-                
-              </select>
-              
-              <span className="absolute top-1/2 right-5 transform -translate-y-1/2 text-gray-400 pointer-events-none">
-                &#9662;
-              </span>
-            </div> */}
-            {/* const handleCategoryChange = (value: string) => {
-    setSelecttedCategory(value);
-  }; */}
-            <Select>
+            <Select
+              onValueChange={(value: string) => {
+                handleCategorySelect({
+                  target: { value },
+                } as React.ChangeEvent<HTMLSelectElement>);
+              }}
+            >
               <SelectTrigger className="w-[433px]">
                 <SelectValue placeholder={serviceCategoryData} />
               </SelectTrigger>
@@ -315,16 +315,14 @@ export const AdminserviceIndex = ({
             </Select>
           </div>
 
-          <div className=" flex flex-col gap-12">
+          <div className="flex flex-col gap-12">
             {/* Update Image */}
-            {/* ข้อความ */}
             <div className="flex items-start justify-between w-[662px]">
               <label htmlFor="ชื่อบริการ" className="">
                 รูปภาพ
               </label>
-              {/* input for upload */}
               <div className="flex flex-col gap-2 w-[433px]">
-                <div className="w-full flex items-center justify-center flex-col  border-2 border-dashed border-gray-300 rounded-lg">
+                <div className="w-full flex items-center justify-center flex-col border-2 border-dashed border-gray-300 rounded-lg">
                   <div>
                     {preview ? (
                       <img
@@ -336,7 +334,6 @@ export const AdminserviceIndex = ({
                       <div>
                         <div className="w-full h-full flex items-center justify-center flex-col gap-3 p-4">
                           <IconPicture />
-                          {/* div for first line in box drop img */}
                           <div className="flex flex-row gap-2">
                             <label
                               htmlFor="file-upload"
@@ -349,8 +346,7 @@ export const AdminserviceIndex = ({
                               ลากและวางที่นี้
                             </p>
                           </div>
-                          {/* div for second line in box drop img*/}
-                          <div className="flex flex-row gap-2 text-sm -mt-2  text-gray-600">
+                          <div className="flex flex-row gap-2 text-sm -mt-2 text-gray-600">
                             <p>PNG,</p>
                             <p>JPG</p>
                             <p>ขนาดไม่เกิน</p>
@@ -363,9 +359,7 @@ export const AdminserviceIndex = ({
                             id="file-upload"
                             accept="image/png, image/jpeg"
                             onChange={handleInputImg}
-                            // onChange={handleImageUpload}
                             className="hidden"
-                            // ดักจับการเปลี่ยนแปลงของไฟล์
                           />
                         </div>
                       </div>
@@ -380,7 +374,7 @@ export const AdminserviceIndex = ({
                       </p>
                       <p
                         className="cursor-pointer text-blue-500 hover:text-blue-700 underline"
-                        onClick={handleDeleteImg}
+                        onClick={() => setShowPopUpDeleteImg(true)}
                       >
                         ลบรูปภาพ
                       </p>
@@ -414,7 +408,7 @@ export const AdminserviceIndex = ({
               <div className="">
                 <button
                   type="button"
-                  className=" bg-white text-defaultColor text-base h-10  flex items-center justify-center gap-3 rounded-lg border border-defaultColor px-7 mt-7"
+                  className="bg-white text-defaultColor text-base h-10 flex items-center justify-center gap-3 rounded-lg border border-defaultColor px-7 mt-7"
                   onClick={addSubService}
                 >
                   เพิ่มรายการ
@@ -426,50 +420,85 @@ export const AdminserviceIndex = ({
             </div>
             {/* กล่องล่าง */}
             <div className="h-px w-full bg-gray-300"></div>
-            <div className="flex flex-row justify-between w-2/6 ">
-              <div>สร้างเมื่อ</div>
-              <div className="flex gap-2">
-                
-                <div>
-                  {new Date(createAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
+            <div className="flex flex-col gap-5">
+              <div className="flex flex-row justify-between w-2/6 ">
+                <div>สร้างเมื่อ</div>
+                <div className="flex gap-2">
+                  <div>
+                    {new Date(createAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })}
+                  </div>
+                  {new Date(createAt).toLocaleTimeString("en-US", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
                   })}
                 </div>
-                {new Date(createAt).toLocaleTimeString("en-US", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}
               </div>
-            </div>
-            <div className="flex flex-row justify-between w-2/6 ">
-              <div>แก้ไขล่าสุด</div>
-              <div className="flex gap-2">
-                <div>
-                  {new Date(updateAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
+              <div className="flex flex-row justify-between w-2/6 ">
+                <div>แก้ไขล่าสุด</div>
+                <div className="flex gap-2">
+                  <div>
+                    {new Date(updateAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })}
+                  </div>
+                  {new Date(updateAt).toLocaleTimeString("en-US", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
                   })}
                 </div>
-                {new Date(updateAt).toLocaleTimeString("en-US", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}
               </div>
             </div>
-
           </div>
         </div>
       </div>
+      {/* Popup for delete image */}
+      {showPopUpDeleteImg && (
+        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white w-[360px] h-auto flex flex-col items-center rounded-xl p-4 gap-3">
+            <div className="w-full">
+              <div
+                className="w-full flex justify-end "
+                onClick={() => setShowPopUpDeleteImg(false)}
+              >
+                <IconX />
+              </div>
+              <div className="flex justify-center">
+                <IconWarning />
+              </div>
+            </div>
+            <h1 className="font-medium text-xl ">ยืนยันการลบรายการ ?</h1>
+            <h1 className="text-center text-gray-500">
+              {/* คุณต้องการลบรายการ ‘{serviceName}’ <br /> */}
+              ใช่หรือไม่
+            </h1>
+            <div className="flex flex-row gap-3">
+              <button
+                className="bg-defaultColor text-white w-28 py-2 rounded-lg font-medium"
+                onClick={handleDeleteImg}
+              >
+                ลบรายการ
+              </button>
+              <button
+                className="bg-white text-defaultColor border-[1px] border-defaultColor w-28 py-2 rounded-lg font-medium"
+                onClick={() => setShowPopUpDeleteImg(false)}
+              >
+                ยกเลิก
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
-
-// --------------------------------------------------------------------------
 
 export function AddSubService({
   index,
@@ -517,7 +546,7 @@ export function AddSubService({
           <input
             type="number"
             id={`subservicePrice-${index}`}
-            value={subservice.unit_price}
+            value={subservice.unit_price !== null ? subservice.unit_price : ""}
             onChange={(e) =>
               updateSubservice(index, "unit_price", e.target.value)
             }
@@ -557,9 +586,9 @@ export function ArrowBack() {
       <path
         d="M25.0007 31.6667L13.334 20L25.0007 8.33337"
         stroke="#646C80"
-        stroke-width="3"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
