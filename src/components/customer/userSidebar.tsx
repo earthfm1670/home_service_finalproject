@@ -6,17 +6,25 @@ import {
 } from "lucide-react";
 //TODO แก้โครงสร้าง folder
 interface ParamsProp {
-  userId: string;
+  userId: string | null;
 }
 export default function UserSidebar({ userId }: ParamsProp) {
   const router = useRouter();
+  const pathBlockIfNoUser = (userId: string | null): void => {
+    if (!userId) {
+      router.push("/");
+    }
+  };
   const handleProfile = (): void => {
+    pathBlockIfNoUser(userId);
     router.push(`/customerservice/${userId}`);
   };
   const handleOrderList = (): void => {
+    pathBlockIfNoUser(userId);
     router.push(`/customerservice/${userId}/orderlist`);
   };
   const handleHistory = (): void => {
+    pathBlockIfNoUser(userId);
     router.push(`/customerservice/${userId}/history`);
   };
 

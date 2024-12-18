@@ -5,7 +5,7 @@ import { useAuth } from "@/context/authContext";
 export default function CustomerProfile() {
   const { authState } = useAuth();
   const user = authState.user?.user_metadata;
-  const userId = authState.user?.sub;
+  const userId = authState.userId;
   if (!user || !userId) {
     console.log("No User");
     console.log(authState);
@@ -26,7 +26,7 @@ export default function CustomerProfile() {
           ข้อมูลผู้ใช้งาน
         </div>
         <div className="content bg-gray-300 h-96 flex flex-col justify-start w-full lg:ml-72">
-          <li>User ID : {authState.user?.sub || ""} </li>
+          <li>User ID : {userId || ""} </li>
           <li>User Name : {user?.name || ""} </li>
           <li>User Email : {user?.email || ""} </li>
           <li>User Phone : {user?.phone || ""}</li>
