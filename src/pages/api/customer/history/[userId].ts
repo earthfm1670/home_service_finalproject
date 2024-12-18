@@ -8,6 +8,7 @@ export default async function getOrderHistory(
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
   }
+  const userId = req.query;
   //api for get order history
   /**needed
    * booking id
@@ -47,7 +48,7 @@ export default async function getOrderHistory(
     AND bookings.user_id=$1
     GROUP BY bookings.booking_id, users.name, scheduled_date, staffs.name, booking_status.status_name;
 `;
-  const userIdFromClient = `a8371d36-b1af-4582-a31d-4edf8fbacb38`;
+  const userIdFromClient = userId || `a8371d36-b1af-4582-a31d-4edf8fbacb38`;
   try {
     const respond = await connectionPool.query(query, [userIdFromClient]);
     console.log(respond);

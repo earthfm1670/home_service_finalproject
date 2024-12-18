@@ -4,19 +4,20 @@ import {
   ClipboardList as ListIcon,
   History as HistoryIcon,
 } from "lucide-react";
-//TODO ลบสี
-//TODO เพิ่ม icon
-//TODO แก้ margin header
-export default function UserSidebar() {
+//TODO แก้โครงสร้าง folder
+interface ParamsProp {
+  userId: string;
+}
+export default function UserSidebar({ userId }: ParamsProp) {
   const router = useRouter();
   const handleProfile = (): void => {
-    router.push("/customerservice");
+    router.push(`/customerservice/${userId}`);
   };
   const handleOrderList = (): void => {
-    router.push("/customerservice/orderlist");
+    router.push(`/customerservice/${userId}/orderlist`);
   };
   const handleHistory = (): void => {
-    router.push("/customerservice/history");
+    router.push(`/customerservice/${userId}/history`);
   };
 
   return (
@@ -34,7 +35,7 @@ export default function UserSidebar() {
           <button
             className={`font-normal text-base py-3 pr-5 pl-1 w-32 lg:w-44 text-start
             flex justify-start items-center gap-2 ${
-              router.pathname === "/customerservice"
+              router.pathname === `/customerservice`
                 ? `text-blue-700`
                 : `text-gray-950`
             } `}
@@ -47,10 +48,11 @@ export default function UserSidebar() {
             </span>
             ข้อมูลผู้ใช้งาน
           </button>
+
           <button
             className={`font-normal text-base py-3 pr-5 pl-1 w-32 lg:w-44 text-start 
             flex justify-start items-center gap-2 ${
-              router.pathname === "/customerservice/orderlist"
+              router.pathname === "/orderlist"
                 ? `text-blue-700`
                 : `text-gray-950`
             }`}
@@ -58,31 +60,22 @@ export default function UserSidebar() {
             <span>
               <ListIcon
                 size={24}
-                color={
-                  router.pathname === "/customerservice/orderlist"
-                    ? "blue"
-                    : "grey"
-                }
+                color={router.pathname === "/orderlist" ? "blue" : "grey"}
               />
             </span>
             รายการคำสั่งซ่อม
           </button>
+
           <button
             className={`font-normal text-base py-3 pr-5 pl-1 w-32 lg:w-44 text-start 
             flex justify-start items-center gap-2 ${
-              router.pathname === "/customerservice/history"
-                ? `text-blue-700`
-                : `text-gray-950`
+              router.pathname === "/history" ? `text-blue-700` : `text-gray-950`
             } `}
             onClick={handleHistory}>
             <span>
               <HistoryIcon
                 size={24}
-                color={
-                  router.pathname === "/customerservice/history"
-                    ? "blue"
-                    : "grey"
-                }
+                color={router.pathname === "/history" ? "blue" : "grey"}
               />
             </span>
             ประวัติการซ่อม

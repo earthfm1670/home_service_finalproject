@@ -11,11 +11,12 @@ import { useRouter } from "next/router";
 
 export default function AuthNavbar() {
   const router = useRouter();
-  const { logout, isAdmin, isStaff } = useAuth();
+  const { logout, isAdmin, isStaff, authState } = useAuth();
   const handleLogout = (): void => {
     logout();
     router.push("/");
   };
+  const userId = authState.user?.sub;
 
   return (
     <DropdownMenu>
@@ -39,7 +40,8 @@ export default function AuthNavbar() {
             Staff Dashboard
           </DropdownMenuItem>
         ) : (
-          <DropdownMenuItem onClick={() => router.push("/customerservice")}>
+          <DropdownMenuItem
+            onClick={() => router.push(`/customerservice/${userId}`)}>
             User Dashboard
           </DropdownMenuItem>
         )}

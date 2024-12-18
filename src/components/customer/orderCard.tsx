@@ -1,6 +1,6 @@
 import { CalendarDays, CircleUser } from "lucide-react";
 import React from "react";
-import { OrdersList } from "@/pages/customerservice/orderlist";
+import { OrdersList } from "@/pages/customerservice/[userId]/orderlist";
 
 // interface Orders {
 //   description: string;

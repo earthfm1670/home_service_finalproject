@@ -6,17 +6,22 @@ import React, { useEffect, useState } from "react";
 import { FetchedBooking, Respond } from "../orderlist";
 import axios from "axios";
 import SkeletonCardRender from "@/components/customer/cardSkeletonRender";
+import { useRouter } from "next/router";
 
 export default function CustomerHistory() {
   const [fetchOrder, setFetchOrder] = useState<FetchedBooking[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
+  const userId = router.query;
 
   const fetchData = async () => {
     setIsLoading(true);
     console.log("history fetching--------------------------------------------");
     console.log(fetchOrder);
     try {
-      const respond: Respond = await axios.get("/api/customer/history");
+      const respond: Respond = await axios.get(
+        `/api/customer/history/${userId}`
+      );
       if (respond) {
         console.log(
           "history respond-----------------------------------------------"
@@ -42,7 +47,7 @@ export default function CustomerHistory() {
       </div>
       <div className="template-body bg-[#F3F4F6] lg:flex lg:pb-24 lg:pl-44 lg:pr-40">
         <div className="sidebar-box flex justify-center lg:fixed lg:top-44">
-          <UserSidebar />
+          <UserSidebar userId={userId} />
         </div>
         <div className="small-banner flex lg:hidden justify-center items-center border rounded-lg mx-4 my-4 bg-blue-600 font-medium text-3xl text-white py-6">
           ประวัติการสั่งซ่อม
