@@ -103,6 +103,10 @@ const PaymentForm: React.FC = () => {
 
   return (
     <div className="border mt-14 mx-4 rounded-lg">
+      <div className="mx-3 my-2 h-[95px] flex justify-between">
+        <div className="w-[147px] h-[95px] border rounded-sm"></div>
+        <div className="w-[147px] h-[95px] border rounded-sm"></div>
+      </div>
       <form onSubmit={handleSubmit}>
         <div className="mx-3 my-2">
           <label className="block">
@@ -146,7 +150,7 @@ const PaymentForm: React.FC = () => {
           </div>
           {/* divider line */}
           <div className="border-t border-gray-300 my-6 mb-8 mx-3"></div>
-          <div className="mx-3 mb-4">
+          <div className="mx-3 mb-6">
             <label>Promotion Code</label>{" "}
             <div className="flex items-center gap-4">
               <input
@@ -166,10 +170,10 @@ const PaymentForm: React.FC = () => {
             </div>
           </div>
         </div>
-        <button type="submit" disabled={!stripe || loading}>
+        {/* <button type="submit" disabled={!stripe || loading}>
           {loading ? "Processing..." : "Pay"}
-        </button>
-        {error && <div>{error}</div>}
+        </button> */}
+        {/* {error && <div>{error}</div>} */}
       </form>
     </div>
   );
