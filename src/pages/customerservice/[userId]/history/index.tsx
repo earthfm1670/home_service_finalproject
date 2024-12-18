@@ -6,13 +6,20 @@ import React, { useEffect, useState } from "react";
 import { FetchedBooking, Respond } from "../orderlist";
 import axios from "axios";
 import SkeletonCardRender from "@/components/customer/cardSkeletonRender";
-import { useRouter } from "next/router";
+import { useAuth } from "@/context/authContext";
 
 export default function CustomerHistory() {
   const [fetchOrder, setFetchOrder] = useState<FetchedBooking[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const router = useRouter();
-  const userId = router.query;
+  const { authState } = useAuth();
+  const user = authState.user?.user_metadata;
+  const userId = authState.userId;
+  if (!user || !userId) {
+    console.log("No User");
+    console.log(authState);
+    console.log(authState.user?.user_metadata);
+    console.log(user);
+  }
 
   const fetchData = async () => {
     setIsLoading(true);

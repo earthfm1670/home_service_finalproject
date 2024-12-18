@@ -5,7 +5,7 @@ import OrderCard from "@/components/customer/orderCard";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import SkeletonCardRender from "@/components/customer/cardSkeletonRender";
-import { useRouter } from "next/router";
+import { useAuth } from "@/context/authContext";
 export interface OrdersList {
   id: number;
   description: string;
@@ -31,8 +31,15 @@ export interface Respond {
 export default function CustomerOrderlist() {
   const [fetchOrder, setFetchOrder] = useState<FetchedBooking[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const router = useRouter();
-  const { userId } = router.query;
+  const { authState } = useAuth();
+  const user = authState.user?.user_metadata;
+  const userId = authState.userId;
+  if (!user || !userId) {
+    console.log("No User");
+    console.log(authState);
+    console.log(authState.user?.user_metadata);
+    console.log(user);
+  }
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -66,7 +73,7 @@ export default function CustomerOrderlist() {
       </div>
       <div className="template-body bg-[#F3F4F6] lg:flex lg:relative lg:pb-24 lg:pl-44 lg:pr-40">
         <div className="sidebar-box flex justify-center lg:fixed lg:top-44">
-          <UserSidebar />
+          <UserSidebar userId={userId} />
         </div>
         <div className="small-banner flex lg:hidden justify-center items-center border rounded-lg mx-4 my-4 bg-blue-600 font-medium text-3xl text-white py-6">
           รายการคำสั่งซ่อม
