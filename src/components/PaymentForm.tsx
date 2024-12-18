@@ -26,6 +26,7 @@ const PaymentForm: React.FC = () => {
   const [name, setName] = useState<string>("");
   const [promoCode, setPromoCode] = useState<string>("");
   const [discount, setDiscount] = useState<number>(0);
+  const [selectedPayment, setSelectedPayment] = useState<string>("");
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -103,9 +104,42 @@ const PaymentForm: React.FC = () => {
 
   return (
     <div className="border mt-14 mx-4 rounded-lg">
-      <div className="mx-3 my-2 h-[95px] flex justify-between">
-        <div className="w-[147px] h-[95px] border rounded-sm"></div>
-        <div className="w-[147px] h-[95px] border rounded-sm"></div>
+      <div className="mx-3 mt-2 text-[18px] text-gray-700 font-medium">
+        กรอกข้อมูลบริการ
+      </div>
+      <div className="mx-3 mb-2 h-[95px] flex justify-between">
+        {/* Promptpay Option */}
+        <div className="w-[147px] h-[95px] border rounded-sm flex flex-col justify-center items-center">
+          <img src="/image/qricon.svg" className="w-[35px] h-[35px]"></img>
+          <p className="text-[16px] text-gray-800">พร้อมเพย์</p>
+        </div>
+        {/* Credit Card Option */}
+        <div
+          className={`w-[147px] h-[95px] border rounded-sm flex flex-col justify-center items-center cursor-pointer ${
+            selectedPayment === "creditcard"
+              ? "bg-blue-100 border-blue-600"
+              : ""
+          }`}
+          onClick={() => setSelectedPayment("creditcard")}
+        >
+          {selectedPayment === "creditcard" ? (
+            <>
+              <img
+                src="/image/creditcardclicked.svg"
+                className="w-[35px] h-[35px]"
+              ></img>
+              <p className="text-[16px] text-blue-600">บัตรเครดิต</p>
+            </>
+          ) : (
+            <>
+              <img
+                src="/image/creditcard.svg"
+                className="w-[35px] h-[35px]"
+              ></img>
+              <p className="text-[16px] text-gray-800">บัตรเครดิต</p>
+            </>
+          )}
+        </div>
       </div>
       <form onSubmit={handleSubmit}>
         <div className="mx-3 my-2">
