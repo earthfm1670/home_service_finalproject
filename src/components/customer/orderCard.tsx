@@ -2,30 +2,24 @@ import { CalendarDays, CircleUser } from "lucide-react";
 import React from "react";
 import { OrdersList } from "@/pages/customerservice/[userId]/orderlist";
 
-// interface Orders {
-//   description: string;
-//   type: string;
-//   amount: number;
-//   unit: string;
-// }
 interface OrderCardProps {
   key: string;
   id: string;
   status: string;
-  date: string;
-  time: string;
+  pendingAt: string;
   staff: string;
   totalPrice: number;
+  fromHistory: boolean;
   orders: OrdersList[];
 }
 
 export default function OrderCard({
   id,
   status,
-  date,
-  time,
+  pendingAt,
   staff,
   totalPrice,
+  fromHistory,
   orders,
 }: OrderCardProps) {
   return (
@@ -54,7 +48,18 @@ export default function OrderCard({
             <div className="with-icon flex flex-col gap-1 lg:-mt-1">
               <div className="date-time text-gray-700 flex gap-2">
                 <CalendarDays size={21} color="gray" />
-                วันเวลาดำเนินการ: {date} เวลา {time} น.
+                {fromHistory ? (
+                  <span>วันเวลาดำเนินการสำเร็จ</span>
+                ) : (
+                  <span>วันเวลาดำเนินการ:</span>
+                )}{" "}
+                {new Date(pendingAt).toLocaleDateString("en-GB")} เวลา{" "}
+                {new Date(pendingAt).toLocaleTimeString("en-GB", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                })}{" "}
+                น.
               </div>
               <div className="staff text-gray-700 flex gap-2">
                 <CircleUser size={21} color="gray" />

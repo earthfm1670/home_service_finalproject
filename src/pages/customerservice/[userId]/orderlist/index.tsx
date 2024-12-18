@@ -13,7 +13,7 @@ export interface OrdersList {
   unit: string;
   order_price: number;
 }
-export interface FetchedBooking {
+interface FetchBookingOrderlist {
   booking_id: string;
   user_name: string;
   scheduled_date: string;
@@ -22,14 +22,14 @@ export interface FetchedBooking {
   total_price: number;
   order_list: OrdersList[];
 }
-export interface FetchedData {
-  data: FetchedBooking[];
+interface FetchedData {
+  data: FetchBookingOrderlist[];
 }
-export interface Respond {
+interface Respond {
   data: FetchedData;
 }
 export default function CustomerOrderlist() {
-  const [fetchOrder, setFetchOrder] = useState<FetchedBooking[]>([]);
+  const [fetchOrder, setFetchOrder] = useState<FetchBookingOrderlist[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { authState } = useAuth();
   const user = authState.user?.user_metadata;
@@ -63,7 +63,8 @@ export default function CustomerOrderlist() {
   };
   useEffect(() => {
     fetchData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authState.userId]);
 
   return (
     <>
@@ -96,11 +97,11 @@ export default function CustomerOrderlist() {
                     key={booking_id}
                     id={booking_id}
                     status={status}
-                    date={scheduled_date}
-                    time={scheduled_date}
+                    pendingAt={scheduled_date}
                     staff={staff_name}
                     totalPrice={total_price}
                     orders={order_list}
+                    fromHistory={false}
                   />
                 );
               }

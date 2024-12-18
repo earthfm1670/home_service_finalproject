@@ -23,7 +23,7 @@ export default async function getOrderHistory(
     SELECT 
     bookings.booking_id, 
     users.name as user_name, 
-    scheduled_date, 
+    completed_at, 
     staffs.name as staff_name, 
     booking_status.status_name as status,
     bookings.total_price,
@@ -46,7 +46,7 @@ export default async function getOrderHistory(
     ON sub_services.id = order_list.sub_services_id
     WHERE bookings.user_id=$1
     AND booking_status.status_id=3
-    GROUP BY bookings.booking_id, users.name, scheduled_date, staffs.name, booking_status.status_name;
+    GROUP BY bookings.booking_id, users.name, completed_at, staffs.name, booking_status.status_name;
 `;
   const userIdFromClient = userId;
   try {

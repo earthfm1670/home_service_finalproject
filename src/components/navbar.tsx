@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AuthNavbar from "./navbar/authNavbar";
 import { useRouter } from "next/router";
 
 import { useAuth } from "@/context/authContext";
-//import Image from "next/image";
 
 export function Navbar() {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const router = useRouter();
   const { authState, isLoggedIn } = useAuth();
   const user = authState.user;
@@ -21,7 +21,9 @@ export function Navbar() {
   //   console.log("is staff " + isStaff);
   //   console.log("user role" + user?.user_metadata.role);
   // }, [authState, user]);
-
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
   const redirectToHome = (): void => {
     router.push("/");
   };
@@ -37,7 +39,7 @@ export function Navbar() {
   return (
     <div className="flex justify-between items-center border shadow-lg p-2 px-4 bg-white lg:px-32 ">
       <div className="flex gap-10 cursor-pointer">
-        <img src="/image/homeservicelogo.svg" onClick={redirectToHome}></img>
+        <img src="/image/homeservicelogo.svg" onClick={redirectToHome} />
         <div
           className="hidden lg:block text-[16px] font-medium"
           onClick={redirectToServiceList}>
@@ -49,7 +51,9 @@ export function Navbar() {
           บริการของเรา
         </div>
 
-        {isLoggedIn ? (
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : isLoggedIn ? (
           <div className="flex gap-2 items-center lg:mr-20">
             <p className="hidden lg:block lg:text-[14px] text-gray-700">
               {user?.user_metadata.name || "Guest"}
@@ -61,7 +65,8 @@ export function Navbar() {
               <img
                 src="/image/notibell.svg"
                 alt="notification bell"
-                className="w-full h-full"></img>
+                className="w-full h-full"
+              />
             </div>
           </div>
         ) : (
@@ -76,14 +81,11 @@ export function Navbar() {
   );
 }
 
-{
-  /* backup for not login */
-}
-{
-  /* <div
+/* backup for not login */
+
+/* <div
   onClick={redirectToLogin}
   className="flex justify-center items-center w-[90px] h-[37px] text-[14px] font-medium text-blue-600 bg-white border border-blue-600 px-2 hover:text-blue-400 hover:border-blue-400 rounded-lg cursor-pointer"
 >
   <button>เข้าสู่ระบบ</button>
 </div> */
-}

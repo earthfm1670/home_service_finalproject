@@ -45,6 +45,7 @@ interface AuthContextType {
   logout: () => void;
   isAdmin: boolean;
   isStaff: boolean;
+  isAuthLoading: boolean;
   isLoggedIn: boolean;
 }
 //defined authState
@@ -85,6 +86,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   });
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isStaff, setIsStaff] = useState<boolean>(false);
+  const [isAuthLoading, setIsAuthLoading] = useState<boolean>(false);
 
   //function to validate role
   const roleValidation = (userRole: string): void => {
@@ -125,8 +127,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       ? JSON.parse(localStorage.getItem("user") || "{}")
       : null;
     if (savedToken && savedUser) {
+      console.log("1 loading------------------- ", isAuthLoading);
       const userRole = savedUser.user_metadata.role;
       handleSessionLogin(savedToken, savedUser, userRole);
+      console.log("2 Finish load----------------", isAuthLoading);
+      setIsAuthLoading(false);
+    } else {
+      setIsAuthLoading(false);
     }
   }, []);
 
@@ -195,6 +202,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         isLoggedIn,
         isAdmin,
         isStaff,
+        isAuthLoading,
         adminLogin,
       }}>
       {children}
