@@ -16,6 +16,10 @@ export interface Service {
   maxPrice: number;
   total_usage: number;
   promotionsAndOffers: boolean;
+  id: string;
+  title: string;
+  description: string;
+  sub_services: SubService[];
 }
 
 export interface ServicesResponse {
