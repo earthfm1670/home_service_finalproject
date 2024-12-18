@@ -3,7 +3,7 @@ import AuthNavbar from "./navbar/authNavbar";
 import { useRouter } from "next/router";
 
 import { useAuth } from "@/context/authContext";
-import Image from "next/image";
+//import Image from "next/image";
 
 export function Navbar() {
   const router = useRouter();

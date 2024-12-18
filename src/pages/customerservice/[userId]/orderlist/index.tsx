@@ -5,7 +5,7 @@ import OrderCard from "@/components/customer/orderCard";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import SkeletonCardRender from "@/components/customer/cardSkeletonRender";
-
+import { useRouter } from "next/router";
 export interface OrdersList {
   id: number;
   description: string;
@@ -31,13 +31,17 @@ export interface Respond {
 export default function CustomerOrderlist() {
   const [fetchOrder, setFetchOrder] = useState<FetchedBooking[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
+  const { userId } = router.query;
 
   const fetchData = async () => {
     setIsLoading(true);
     console.log("fetching--------------------------------------------");
     console.log(fetchOrder);
     try {
-      const respond: Respond = await axios.get("/api/customer/orderlist");
+      const respond: Respond = await axios.get(
+        `/api/customer/orderlist/${userId}`
+      );
       if (respond) {
         console.log("respond-----------------------------------------------");
         setIsLoading(false);

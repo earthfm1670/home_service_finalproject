@@ -49,8 +49,8 @@ interface AuthContextType {
 }
 //defined authState
 interface AuthState {
+  userId: string | null;
   user: UserPayload | null;
-  // user: UserPayload | null;
   token: string | null;
 }
 interface AuthProviderProps {
@@ -79,11 +79,44 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   console.log("From Auth Context");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [authState, setAuthState] = useState<AuthState>({
+    userId: null,
     user: null,
     token: null,
   });
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isStaff, setIsStaff] = useState<boolean>(false);
+
+  //function to validate role
+  const roleValidation = (userRole: string): void => {
+    if (userRole === "customer") {
+      console.log("welcom customer");
+      setIsAdmin(false);
+      setIsStaff(false);
+    } else if (userRole === "admin") {
+      console.log("welcom admin");
+      setIsAdmin(true);
+      setIsStaff(false);
+    } else if (userRole === "staff") {
+      console.log("welcom staff");
+      setIsStaff(true);
+      setIsAdmin(false);
+    }
+  };
+
+  //function to set authstate, set loggedIn
+  const handleSessionLogin = (
+    savedToken: string,
+    savedUser: UserPayload,
+    userRole: string
+  ): void => {
+    setAuthState({
+      userId: savedUser.sub,
+      user: savedUser,
+      token: savedToken,
+    });
+    roleValidation(userRole);
+    setIsLoggedIn(true);
+  };
 
   //check localstorage for token/ if have one, set user state base on token payload
   useEffect(() => {
@@ -92,25 +125,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       ? JSON.parse(localStorage.getItem("user") || "{}")
       : null;
     if (savedToken && savedUser) {
-      setAuthState({
-        user: savedUser,
-        token: savedToken,
-      });
-
-      if (authState.user?.user_metadata.role === "customer") {
-        setIsAdmin(false);
-        setIsStaff(false);
-      } else if (authState.user?.user_metadata.role === "admin") {
-        setIsAdmin(true);
-        setIsStaff(false);
-      } else if (authState.user?.user_metadata.role === "staff") {
-        setIsStaff(true);
-        setIsAdmin(false);
-        setIsLoggedIn(true);
-      }
-      if (!savedToken || !savedUser) {
-        setIsLoggedIn(false);
-      }
+      const userRole = savedUser.user_metadata.role;
+      handleSessionLogin(savedToken, savedUser, userRole);
     }
   }, []);
 
@@ -127,23 +143,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       localStorage.setItem("user", JSON.stringify(userInfo));
       localStorage.setItem("token", authToken);
       //setauth state to store user / token
-      setAuthState({
-        user: userInfo,
-        token: authToken,
-      });
-
       const userRole = userInfo.user_metadata.role;
-      if (userRole === "customer") {
-        setIsAdmin(false);
-        setIsStaff(false);
-      } else if (userRole === "admin") {
-        setIsAdmin(true);
-        setIsStaff(false);
-      } else if (userRole === "staff") {
-        setIsStaff(true);
-        setIsAdmin(false);
-      }
-      setIsLoggedIn(true);
+      handleSessionLogin(authToken, userInfo, userRole);
     } catch (error) {
       const err = error as Error;
       console.log(err.message);
@@ -163,11 +164,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       localStorage.setItem("token", authToken);
       //setauth state to store user / token
       // if (userInfo.user_metadata.role === "admin"){} << แก้ type
-      setAuthState({
-        user: userInfo,
-        token: authToken,
-      });
-      setIsAdmin(true);
+      const userRole = userInfo.user_metadata.role;
+      handleSessionLogin(authToken, userInfo, userRole);
     } catch (error) {
       const err = error as Error;
       console.log(err.message);
@@ -179,6 +177,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setAuthState({
+      userId: null,
       user: null,
       token: null,
     });
