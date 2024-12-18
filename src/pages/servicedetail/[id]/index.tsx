@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { GetServerSidePropsContext } from "next";
-import Link from "next/link";
 import { Navbar } from "@/components/navbar";
-import ProgressSteps from "@/components/service-detail/ProgressSteps";
+import ServiceHero from "@/components/service-detail/ServiceHero";
 import ServiceList from "@/components/service-detail/ServiceList";
 import DesktopSummary from "@/components/service-detail/DesktopSummary";
 import MobileBottomBar from "@/components/service-detail/MobileBottomBar";
 import NavigationButtons from "@/components/service-detail/NavigationButtons";
-import ServiceDetailSkeleton from "@/components/service-detail/ServiceDetailSkeleton";
 import type { Service } from "@/types/service";
+import { ServiceHeroSkeleton } from "@/components/service-detail/ServiceHeroSkeleton";
 
 async function getService(
   id: string
@@ -42,7 +41,6 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
     {}
   );
   const [canProceed, setCanProceed] = useState(false);
-  const [currentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(!initialService);
 
   useEffect(() => {
@@ -66,7 +64,7 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
   }, [quantities]);
 
   if (isLoading) {
-    return <ServiceDetailSkeleton />;
+    return <ServiceHeroSkeleton />;
   }
 
   if (!service) {
@@ -107,11 +105,18 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
     return quantities[subServiceId]?.quantity || 0;
   };
 
+  const getPriceDisplay = (subServiceId: number) => {
+    const subService = service?.sub_services.find((s) => s.id === subServiceId);
+    const quantity = quantities[subServiceId]?.quantity || 0;
+    return subService ? subService.unit_price * quantity : 0;
+  };
+
   const handleProceed = () => {
     if (canProceed) {
       const selectedServicesData = {
         serviceId: id,
         serviceName: service.service_name,
+        servicePictureUrl: service.service_picture_url,
         selections: getSelectedServices().map((subService) => ({
           id: subService.id,
           description: subService.description,
@@ -131,38 +136,8 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
   };
   return (
     <div className="min-h-screen bg-gray-100 pb-32">
-      {/* Navbar */}
       <Navbar />
-
-      {/* Hero Section */}
-      <div className="relative h-[168px] w-full lg:h-56">
-        <img
-          src={service.service_picture_url}
-          alt={service.service_name}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-[#163C9366]">
-          <div className="px-4 pt-9 lg:px-32 lg:mt-5">
-            {/* Breadcrumb */}
-            <div className="">
-              <div className="bg-white rounded-md py-2 px-4 inline-flex items-center space-x-2 lg:p-5">
-                <Link
-                  href="/services"
-                  className="text-gray-500 hover:text-blue-600 text-sm"
-                >
-                  บริการของเรา
-                </Link>
-                <span className="text-gray-500 text">&gt;</span>
-                <span className="text-blue-600 font-bold text-3xl">
-                  {service.service_name}
-                </span>
-              </div>
-            </div>
-
-            <ProgressSteps currentStep={currentStep} />
-          </div>
-        </div>
-      </div>
+      <ServiceHero service={service} />
 
       {/* Main Content */}
       <div className="px-4 py-8 mt-4 lg:mt-16 lg:px-32">
@@ -177,6 +152,7 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
             getSelectedServices={getSelectedServices}
             getQuantityDisplay={getQuantityDisplay}
             calculateTotal={calculateTotal}
+            getPriceDisplay={getPriceDisplay}
           />
         </div>
       </div>

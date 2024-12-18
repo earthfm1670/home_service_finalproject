@@ -1,32 +1,15 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Navbar } from "@/components/navbar";
-import ProgressSteps from "@/components/service-detail/ProgressSteps";
 import DesktopSummary from "@/components/service-detail/DesktopSummary";
 import MobileBottomBar from "@/components/service-detail/MobileBottomBar";
 import NavigationButtons from "@/components/service-detail/NavigationButtons";
-import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import type { Service } from "@/types/service";
+import { ServiceInfoSkeleton } from "@/components/service-detail/ServiceInfoSkeleton";
+import ServiceHero from "@/components/service-detail/ServiceHero";
+import { ServiceHeroSkeleton } from "@/components/service-detail/ServiceHeroSkeleton";
+import LocationForm from "@/components/service-detail/LocationForm";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { CalendarIcon, Clock } from "lucide-react";
-import {
-  format,
   isWeekend,
   isAfter,
   isBefore,
@@ -36,15 +19,12 @@ import {
   isSaturday,
   isSunday,
 } from "date-fns";
-import { th } from "date-fns/locale";
-import type { Service } from "@/types/service";
-import ServiceDetailSkeleton from "@/components/service-detail/ServiceDetailSkeleton";
 
 async function getService(
   id: string
 ): Promise<{ data: Service | null; error?: string }> {
   try {
-    const res = await fetch(`http://localhost:3000/api/services/${id}`);
+    const res = await fetch(`/api/services/${id}`);
     if (!res.ok) {
       throw new Error("Failed to fetch service");
     }
@@ -55,19 +35,61 @@ async function getService(
   }
 }
 
-interface LocationPageProps {
+interface ServiceInfoPageProps {
   initialService?: Service | null;
 }
 
-const LocationPage = ({ initialService }: LocationPageProps) => {
+interface Selection {
+  id: number;
+  quantity: number;
+}
+interface Tambon {
+  id: string;
+  name_th: string;
+  name_en: string;
+  zip_code: string;
+}
+
+interface Amphure {
+  id: string;
+  name_th: string;
+  name_en: string;
+  tambon: Tambon[];
+}
+
+interface Province {
+  id: string;
+  name_th: string;
+  name_en: string;
+  amphure: Amphure[];
+}
+
+interface SelectedService {
+  id: number;
+  sub_service_id: number;
+  description: string;
+  quantity: number;
+  unit: string;
+  unit_price: number;
+  total: number;
+}
+
+interface SelectedServicesData {
+  serviceId: string;
+  serviceName: string;
+  selections: SelectedService[];
+  totalAmount: number;
+}
+const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
   const router = useRouter();
   const [service, setService] = useState<Service | null>(
     initialService || null
   );
-  const [selectedServices, setSelectedServices] = useState<any>(null);
-  const [provinces, setProvinces] = useState([]);
-  const [amphures, setAmphures] = useState([]);
-  const [tambons, setTambons] = useState([]);
+  const [selectedServices, setSelectedServices] =
+    useState<SelectedServicesData | null>(null);
+  const [provinces, setProvinces] = useState<Province[]>([]);
+  const [amphures, setAmphures] = useState<Amphure[]>([]);
+  const [tambons, setTambons] = useState<Tambon[]>([]);
   const [selected, setSelected] = useState({
     province_id: "",
     amphure_id: "",
@@ -76,11 +98,11 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [additionalDetails, setAdditionalDetails] = useState<string>("");
   const [address, setAddress] = useState<string>("");
-  const [canProceed, setCanProceed] = useState(false);
-  const currentStep = 2;
   const [selectedTime, setSelectedTime] = useState("09:00");
   const [timeError, setTimeError] = useState("");
   const [dateError, setDateError] = useState<string | null>(null);
+  const [isFormComplete, setIsFormComplete] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const handleTimeChange = (value: string) => {
     const [hours, minutes] = value.split(":").map(Number);
@@ -150,6 +172,7 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
   };
 
   const handleDateSelect = (date: Date | undefined) => {
+    setIsCalendarOpen(false);
     if (date) {
       if (!isDateSelectable(date)) {
         // เงื่อนไขและข้อความแจ้งเตือน
@@ -181,14 +204,18 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
         } else {
           setDateError("วันที่เลือกไม่สามารถให้บริการได้ กรุณาเลือกวันใหม่");
         }
+        setSelectedDate(null); // เซ็ตเป็น null เมื่อวันที่ไม่ถูกต้อง
       } else {
         setSelectedDate(date);
         setDateError(null);
       }
+    } else {
+      setSelectedDate(null); // เซ็ตเป็น null เมื่อไม่มีวันที่ถูกเลือก
+      setDateError(null);
     }
   };
 
-  // ฟังก์ชันจำลองวันหยุดนักขัตฤกษ์
+  // ฟังก์ชันวันหยุดนักขัตฤกษ์
   const isHoliday = (date: Date) => {
     const holidays = [
       // วันหยุดปี 2024
@@ -230,7 +257,6 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
     // ตรวจสอบว่า date ที่เลือกตรงกับวันหยุดหรือไม่
     return holidays.some((holiday) => isSameDay(date, holiday));
   };
-
   useEffect(() => {
     // Load selected services from session storage
     const servicesData = sessionStorage.getItem("selectedServices");
@@ -253,10 +279,10 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
       "https://raw.githubusercontent.com/kongvut/thai-province-data/master/api_province_with_amphure_tambon.json"
     )
       .then((response) => response.json())
-      .then((result) => {
+      .then((result: Province[]) => {
         setProvinces(result);
       });
-  }, []);
+  }, [service]);
 
   useEffect(() => {
     if (selected.province_id) {
@@ -264,6 +290,7 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
         (p) => p.id === selected.province_id
       );
       setAmphures(selectedProvince ? selectedProvince.amphure : []);
+      setSelected((prev) => ({ ...prev, amphure_id: "", tambon_id: "" }));
     }
   }, [selected.province_id, provinces]);
 
@@ -273,322 +300,87 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
         (a) => a.id === selected.amphure_id
       );
       setTambons(selectedAmphure ? selectedAmphure.tambon : []);
+      setSelected((prev) => ({ ...prev, tambon_id: "" }));
     }
   }, [selected.amphure_id, amphures]);
 
+  useEffect(() => {
+    setIsFormComplete(
+      !!selectedDate &&
+        !!selectedTime &&
+        !!address &&
+        !!selected.province_id &&
+        !!selected.amphure_id &&
+        !!selected.tambon_id &&
+        !!selectedServices?.selections &&
+        Array.isArray(selectedServices.selections) &&
+        selectedServices.selections.length > 0
+    );
+  }, [selectedDate, selectedTime, address, selected, selectedServices]);
+
+  if (!service) {
+    return (
+      <>
+        <Navbar />
+        <ServiceHeroSkeleton />
+        <ServiceInfoSkeleton />
+      </>
+    );
+  }
+
   const handleProceed = () => {
-    if (canProceed) {
-      const locationData = {
-        province: provinces.find((p) => p.id === selected.province_id)?.name_th,
-        district: amphures.find((a) => a.id === selected.amphure_id)?.name_th,
-        subDistrict: tambons.find((t) => t.id === selected.tambon_id)?.name_th,
-        additionalDetails,
+    if (isFormComplete && service) {
+      const paymentData = {
+        serviceId: service.id,
+        serviceName: service.title,
+        selectedServices: selectedServices,
         date: selectedDate,
         time: selectedTime,
+        address: address,
+        province:
+          provinces.find((p) => p.id === selected.province_id)?.name_th || "",
+        district:
+          amphures.find((a) => a.id === selected.amphure_id)?.name_th || "",
+        subDistrict:
+          tambons.find((t) => t.id === selected.tambon_id)?.name_th || "",
+        additionalDetails: additionalDetails,
+        totalAmount: selectedServices?.totalAmount || 0,
       };
-      sessionStorage.setItem("selectedLocation", JSON.stringify(locationData));
-      router.push(`/servicedetail/${selectedServices.serviceId}/summary`);
+
+      sessionStorage.setItem("paymentData", JSON.stringify(paymentData));
+      router.push(`/servicedetail/${service.id}/info/payment`);
     }
   };
 
-  const TimeSelector = ({
-    value,
-    onChange,
-  }: {
-    value: string;
-    onChange: (time: string) => void;
-  }) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [selectedHour, setSelectedHour] = useState("00");
-    const [selectedMinute, setSelectedMinute] = useState("00");
-
-    const hours = Array.from({ length: 25 }, (_, i) =>
-      i.toString().padStart(2, "0")
-    );
-    const minutes = Array.from({ length: 60 }, (_, i) =>
-      i.toString().padStart(2, "0")
-    );
-
-    const handleTimeSelect = () => {
-      if (selectedHour && selectedMinute) {
-        onChange(`${selectedHour}:${selectedMinute}`);
-        setIsOpen(false);
-      }
-    };
-
-    return (
-      <div className="relative">
-        <div
-          className="w-full flex justify-between items-center px-3 h-10 rounded-md border border-input bg-white shadow-sm text-sm cursor-pointer"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          <span>{value || "เลือกเวลา"}</span>
-          <Clock className="h-4 w-4" size={18} />
-        </div>
-
-        {isOpen && (
-          <div className="absolute z-50 mt-1 w-full bg-white border rounded-md shadow-lg overflow-hidden lg:w-48">
-            <div className="flex divide-x divide-gray-200">
-              {/* Hours Column */}
-              <div className="flex-1 w-1/2 overflow-y-auto max-h-60">
-                {hours.map((hour) => (
-                  <div
-                    key={`hour-${hour}`}
-                    className={`h-8 flex items-center justify-center cursor-pointer text-base rounded-md
-                      ${
-                        selectedHour === hour
-                          ? "bg-blue-500 text-white hover:bg-blue-600 round-md hover:round-md"
-                          : "hover:bg-gray-100 round-md hover:round-md"
-                      }`}
-                    onClick={() => setSelectedHour(hour)}
-                  >
-                    {hour}
-                  </div>
-                ))}
-              </div>
-
-              {/* Minutes Column */}
-              <div className="flex-1 w-1/2 overflow-y-auto max-h-60">
-                {minutes.map((minute) => (
-                  <div
-                    key={`minute-${minute}`}
-                    className={`h-8 flex items-center justify-center cursor-pointer text-base rounded-md
-                      ${
-                        selectedMinute === minute
-                          ? "bg-blue-500 text-white hover:bg-blue-600 round-md hover:round-md"
-                          : "hover:bg-gray-100 round-md hover:round-md"
-                      }`}
-                    onClick={() => setSelectedMinute(minute)}
-                  >
-                    {minute}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="p-4 border-t flex justify-between items-center">
-              <div className="text-base font-medium">
-                {selectedHour
-                  ? selectedMinute
-                    ? `${selectedHour}:${selectedMinute}`
-                    : `${selectedHour}:--`
-                  : ""}
-              </div>
-              <button
-                className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 text-sm"
-                onClick={handleTimeSelect}
-                disabled={!selectedHour || !selectedMinute}
-              >
-                ยืนยัน
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  if (!service) {
-    return <ServiceDetailSkeleton />;
-  }
-
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-100 pb-32">
       <Navbar />
-
-      {/* Hero Section */}
-      <div className="relative h-[168px] w-full lg:h-56">
-        <img
-          src={service.service_picture_url}
-          alt={service.service_name}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-[#163C9366]">
-          <div className="px-4 pt-9 lg:px-32 lg:mt-5">
-            {/* Breadcrumb */}
-            <div className="bg-white rounded-md py-2 px-4 inline-flex items-center space-x-2 lg:p-5">
-              <Link
-                href="/services"
-                className="text-gray-500 hover:text-blue-600 text-sm"
-              >
-                บริการของเรา
-              </Link>
-              <span className="text-gray-500">&gt;</span>
-              <span className="text-blue-600 font-bold text-3xl">
-                {service.service_name}
-              </span>
-            </div>
-            <ProgressSteps currentStep={currentStep} />
-          </div>
-        </div>
-      </div>
+      <ServiceHero service={service} />
 
       {/* Main Content */}
       <div className="px-4 py-8 mt-4 lg:mt-16 lg:px-32">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Location Form */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardContent className="p-6">
-                <h2 className="text-lg mb-4 text-gray-500">
-                  กรอกข้อมูลผู้บริการ
-                </h2>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>
-                        วันที่สะดวกใช้บริการ
-                        <span className="text-red-500">*</span>
-                      </Label>
-                      <Popover>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              className="w-full justify-between"
-                            >
-                              {selectedDate
-                                ? format(selectedDate, "PPP", { locale: th })
-                                : "เลือกวันที่"}
-                              <CalendarIcon className="h-4 w-4" />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <Calendar
-                              mode="single"
-                              selected={selectedDate || undefined}
-                              onSelect={handleDateSelect}
-                              disabled={(date) => !isDateSelectable(date)}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <PopoverContent>
-                          <Calendar
-                            mode="single"
-                            selected={selectedDate}
-                            onSelect={handleDateSelect}
-                            disabled={isDateSelectable}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      {dateError && (
-                        <p className="text-red-500 text-sm mt-1">{dateError}</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label>
-                        เวลาที่สะดวกใช้บริการ
-                        <span className="text-red-500">*</span>
-                      </Label>
-                      <TimeSelector
-                        value={selectedTime}
-                        onChange={(time) => {
-                          handleTimeChange(time);
-                        }}
-                      />
-                      {timeError && (
-                        <p className="text-red-500 text-sm mt-1">{timeError}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>
-                        ที่อยู่<span className="text-red-500">*</span>
-                      </Label>
-                      <textarea
-                        className="w-full p-2 border rounded-md text-sm"
-                        rows={1}
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        placeholder="กรุณากรอกที่อยู่"
-                      />
-                    </div>
-                    <div>
-                      <Label>
-                        จังหวัด<span className="text-red-500">*</span>
-                      </Label>
-                      <Select
-                        value={selected.province_id}
-                        onValueChange={(value) =>
-                          setSelected({ ...selected, province_id: value })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="เลือกจังหวัด" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {provinces.map((province) => (
-                            <SelectItem key={province.id} value={province.id}>
-                              {province.name_th}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label>
-                        เขต/อำเภอ<span className="text-red-500">*</span>
-                      </Label>
-                      <Select
-                        value={selected.amphure_id}
-                        onValueChange={(value) =>
-                          setSelected({ ...selected, amphure_id: value })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="เลือกเขต / อำเภอ" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {amphures.map((amphure) => (
-                            <SelectItem key={amphure.id} value={amphure.id}>
-                              {amphure.name_th}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <Label>
-                        แขวง/ตำบล <span className="text-red-500">*</span>
-                      </Label>
-                      <Select
-                        value={selected.tambon_id}
-                        onValueChange={(value) =>
-                          setSelected({ ...selected, tambon_id: value })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="เลือกแขวง / ตำบล" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {tambons.map((tambon) => (
-                            <SelectItem key={tambon.id} value={tambon.id}>
-                              {tambon.name_th}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label>ระบุข้อมูลเพิ่มเติม</Label>
-                    <textarea
-                      className="w-full p-2 border rounded-md text-sm"
-                      rows={4}
-                      value={additionalDetails}
-                      onChange={(e) => setAdditionalDetails(e.target.value)}
-                      placeholder="กรุณากรอกรายละเอียดเพิ่มเติม"
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <LocationForm
+            isCalendarOpen={isCalendarOpen}
+            setIsCalendarOpen={setIsCalendarOpen}
+            selectedDate={selectedDate}
+            handleDateSelect={handleDateSelect}
+            isDateSelectable={isDateSelectable}
+            dateError={dateError}
+            selectedTime={selectedTime}
+            handleTimeChange={handleTimeChange}
+            timeError={timeError}
+            address={address}
+            setAddress={setAddress}
+            selected={selected}
+            setSelected={setSelected}
+            provinces={provinces}
+            amphures={amphures}
+            tambons={tambons}
+            additionalDetails={additionalDetails}
+            setAdditionalDetails={setAdditionalDetails}
+          />
 
           {/* Summary Section */}
           <DesktopSummary
@@ -605,12 +397,15 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
               const service = selectedServices?.selections.find(
                 (s) => s.id === id
               );
-              return typeof service?.price === "number" &&
-                !isNaN(service?.price)
-                ? service.price
+              return typeof service?.unit_price === "number" &&
+                !isNaN(service?.unit_price)
+                ? service.unit_price
                 : 0;
             }}
             locationInfo={{
+              date: selectedDate,
+              time: selectedTime,
+              address: address,
               province:
                 provinces.find((p) => p.id === selected.province_id)?.name_th ||
                 "",
@@ -619,11 +414,7 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
                 "",
               subDistrict:
                 tambons.find((t) => t.id === selected.tambon_id)?.name_th || "",
-              address: address,
-              date: selectedDate,
-              time: selectedTime,
-              additionalDetails:
-                additionalDetails.trim() !== "" ? additionalDetails : undefined,
+              additionalDetails: additionalDetails,
             }}
             isServiceInfoPage={true}
             isServiceDetailPage={true}
@@ -632,11 +423,11 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
       </div>
 
       <MobileBottomBar
-        canProceed={canProceed}
+        canProceed={isFormComplete}
         calculateTotal={() => selectedServices?.totalAmount || 0}
         getSelectedServices={() => selectedServices?.selections || []}
         getQuantityDisplay={(id) =>
-          selectedServices?.selections.find((s: any) => s.id === id)
+          selectedServices?.selections.find((s: Selection) => s.id === id)
             ?.quantity || 0
         }
         handleProceed={handleProceed}
@@ -650,17 +441,18 @@ const LocationPage = ({ initialService }: LocationPageProps) => {
             amphures.find((a) => a.id === selected.amphure_id)?.name_th || "",
           subDistrict:
             tambons.find((t) => t.id === selected.tambon_id)?.name_th || "",
-          additionalDetails: additionalDetails, // เพิ่มบรรทัดนี้
+          additionalDetails: additionalDetails,
         }}
         isServiceInfoPage={true}
       />
 
       <NavigationButtons
-        canProceed={canProceed}
+        onBack={() => router.back()}
         handleProceed={handleProceed}
+        canProceed={isFormComplete}
       />
     </div>
   );
 };
 
-export default LocationPage;
+export default ServiceInfoPage;

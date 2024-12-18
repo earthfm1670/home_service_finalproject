@@ -1,13 +1,18 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
-import type { Service } from "@/types/service";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
 
 interface DesktopSummaryProps {
-  getSelectedServices: () => Service["sub_services"];
+  getSelectedServices: () => Array<{
+    id: number;
+    description: string;
+    unit?: string;
+    unit_price: number;
+  }>;
   getQuantityDisplay: (subServiceId: number) => number;
   calculateTotal: () => number;
+  getPriceDisplay: (id: number) => number;
   locationInfo?: {
     province: string;
     district: string;
@@ -17,6 +22,7 @@ interface DesktopSummaryProps {
     time: string;
     additionalDetails?: string;
   };
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   serviceInfo?: {
     name: string;
     description: string;
@@ -24,7 +30,7 @@ interface DesktopSummaryProps {
     unit_price: number;
   };
   isServiceInfoPage?: boolean;
-  isServiceDetailPage?: boolean; // New prop to determine if it's the service info page
+  isServiceDetailPage?: boolean;
 }
 
 export const DesktopSummary: React.FC<DesktopSummaryProps> = ({
@@ -32,6 +38,7 @@ export const DesktopSummary: React.FC<DesktopSummaryProps> = ({
   getQuantityDisplay,
   calculateTotal,
   locationInfo,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   serviceInfo,
   isServiceInfoPage = false,
   isServiceDetailPage = false,
@@ -54,7 +61,7 @@ export const DesktopSummary: React.FC<DesktopSummaryProps> = ({
                   <span className="flex-grow pr-2 break-words">
                     {subService.description}
                   </span>
-                  <span className="flex items-center gap-3 ml-2 text-right whitespace-nowrap">
+                  <span className="flex items-center gap-3 ml-2 text-right text-nowrap">
                     <span>{quantity}</span>
                     {subService.unit && <span>{subService.unit}</span>}
                   </span>
@@ -77,7 +84,7 @@ export const DesktopSummary: React.FC<DesktopSummaryProps> = ({
                   <span>
                     {subService.description} x {quantity || 0}
                   </span>
-                  <span>
+                  <span className="text-nowrap">
                     {total.toLocaleString("th-TH", {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
