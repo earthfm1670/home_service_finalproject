@@ -5,6 +5,7 @@ import { Navbar } from "@/components/navbar";
 import { ProgressStepsNew } from "@/components/service-detail/ProgressSteps";
 import Link from "next/link";
 import MobileSummary from "@/components/service-detail/MobileSummary";
+import MobileBottomBar from "@/components/service-detail/MobileBottomBar";
 
 //stand alone payment page, need to connect to service info later
 const PaymentPage: React.FC = () => {
@@ -13,14 +14,29 @@ const PaymentPage: React.FC = () => {
     service_name: string;
   } | null>(null);
 
-  interface Service {
+  interface SubService {
     id: number;
     description: string;
+    sub_service_id: number;
+    unit: string;
+    unit_price: number;
   }
 
-  const getSelectedServices: () => Service[] = () => [
-    { id: 1, description: "Service A" },
-    { id: 2, description: "Service B" },
+  const getSelectedServices: () => SubService[] = () => [
+    {
+      id: 1,
+      description: "Service A",
+      sub_service_id: 101,
+      unit: "hours",
+      unit_price: 100,
+    },
+    {
+      id: 2,
+      description: "Service B",
+      sub_service_id: 102,
+      unit: "days",
+      unit_price: 200,
+    },
   ];
 
   const getQuantityDisplay = (subServiceId: number) => 2;
@@ -42,7 +58,7 @@ const PaymentPage: React.FC = () => {
 
   return (
     <StripeContext>
-      <div className="flex flex-col">
+      <div className="flex flex-col h-min-screen">
         {/* <h1>Payment Page</h1> */}
         <Navbar />
         {/* Hero Section */}
@@ -75,7 +91,7 @@ const PaymentPage: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="flex-1">
+      <div className="flex-1 overflow-y-auto pb-20">
         <PaymentForm />
       </div>
       <div className="sticky bottom-0 z-10">
@@ -83,6 +99,14 @@ const PaymentPage: React.FC = () => {
           getSelectedServices={getSelectedServices}
           getQuantityDisplay={getQuantityDisplay}
           calculateTotal={calculateTotal}
+        />
+        <MobileBottomBar
+          canProceed
+          calculateTotal={calculateTotal}
+          getSelectedServices={getSelectedServices}
+          getQuantityDisplay={getQuantityDisplay}
+          handleProceed={() => console.log("Proceed")}
+          isServiceInfoPage
         />
       </div>
     </StripeContext>
