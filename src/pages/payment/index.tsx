@@ -12,7 +12,7 @@ const PaymentPage: React.FC = () => {
     service_name: string;
   } | null>(null);
 
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(3);
 
   useEffect(() => {
     //Simulate API call to fetch service data
