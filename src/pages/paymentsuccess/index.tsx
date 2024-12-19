@@ -7,7 +7,7 @@ function PaymentSuccess() {
         <Navbar />
         <div className="h-[475px] border border-black mx-4 my-8 bg-white">
           {/* top div */}
-          <div className="border border-black h-[118px] mx-4 flex flex-col justify-center items-center mt-8 gap-4">
+          <div className="h-[118px] mx-4 flex flex-col justify-center items-center mt-8 gap-4">
             <div className="">
               <img
                 src="/image/paymentsuccess.svg"
@@ -20,7 +20,7 @@ function PaymentSuccess() {
             </p>
           </div>
           {/* bottom div */}
-          <div className="border border-black h-[201px] mx-4 my-6">
+          <div className="h-[201px] mx-4 my-6">
             <div className="flex justify-between">
               <p className="font-normal text-[14px] text-black">
                 9,000 - 18,000 BTU, แบบติดผนัง
