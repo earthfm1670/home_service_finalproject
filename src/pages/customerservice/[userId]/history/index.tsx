@@ -1,22 +1,50 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Navbar } from "@/components/navbar";
 import HomeFooter from "@/components/homefooter";
 import UserSidebar from "@/components/customer/userSidebar";
 import OrderCard from "@/components/customer/orderCard";
 import React, { useEffect, useState } from "react";
-import { FetchedBooking, Respond } from "../orderlist";
+import { OrdersList } from "../orderlist";
 import axios from "axios";
 import SkeletonCardRender from "@/components/customer/cardSkeletonRender";
+import { useAuth } from "@/context/authContext";
 
+interface FetchBookingHistory {
+  booking_id: string;
+  user_name: string;
+  completed_at: string;
+  staff_name: string;
+  status: string;
+  total_price: number;
+  order_list: OrdersList[];
+}
+interface FetchedData {
+  data: FetchBookingHistory[];
+}
+interface Respond {
+  data: FetchedData;
+}
 export default function CustomerHistory() {
-  const [fetchOrder, setFetchOrder] = useState<FetchedBooking[]>([]);
+  const [fetchOrder, setFetchOrder] = useState<FetchBookingHistory[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { authState } = useAuth();
+  const user = authState.user?.user_metadata;
+  const userId = authState.userId;
+  if (!user || !userId) {
+    console.log("No User");
+    console.log(authState);
+    console.log(authState.user?.user_metadata);
+    console.log(user);
+  }
 
   const fetchData = async () => {
     setIsLoading(true);
     console.log("history fetching--------------------------------------------");
     console.log(fetchOrder);
     try {
-      const respond: Respond = await axios.get("/api/customer/history");
+      const respond: Respond = await axios.get(
+        `/api/customer/history/${userId}`
+      );
       if (respond) {
         console.log(
           "history respond-----------------------------------------------"
@@ -33,7 +61,7 @@ export default function CustomerHistory() {
   };
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [authState.userId]);
   return (
     <>
       <Navbar />
@@ -42,7 +70,7 @@ export default function CustomerHistory() {
       </div>
       <div className="template-body bg-[#F3F4F6] lg:flex lg:pb-24 lg:pl-44 lg:pr-40">
         <div className="sidebar-box flex justify-center lg:fixed lg:top-44">
-          <UserSidebar />
+          <UserSidebar userId={userId} />
         </div>
         <div className="small-banner flex lg:hidden justify-center items-center border rounded-lg mx-4 my-4 bg-blue-600 font-medium text-3xl text-white py-6">
           ประวัติการสั่งซ่อม
@@ -55,7 +83,7 @@ export default function CustomerHistory() {
               ({
                 booking_id,
                 status,
-                scheduled_date,
+                completed_at,
                 staff_name,
                 total_price,
                 order_list,
@@ -65,11 +93,11 @@ export default function CustomerHistory() {
                     key={booking_id}
                     id={booking_id}
                     status={status}
-                    date={scheduled_date}
-                    time={scheduled_date}
+                    pendingAt={completed_at}
                     staff={staff_name}
                     totalPrice={total_price}
                     orders={order_list}
+                    fromHistory={true}
                   />
                 );
               }
