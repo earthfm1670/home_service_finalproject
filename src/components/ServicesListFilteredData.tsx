@@ -33,81 +33,7 @@ const ServicesListFilteredData: React.FC = () => {
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setsearchText(event.target.value);
-    if (searchText.length > 0) {
-      const filteredSuggestions: string[] = allServiceNames.filter((item) =>
-        item.toLowerCase().includes(searchText.toLocaleLowerCase())
-      );
-      setSuggestions(filteredSuggestions);
-      setActiveSuggestion(0);
-    } else {
-      setSuggestions([]);
-    }
   };
-
-  const handelKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "ArrowDown") {
-      setActiveSuggestion((prevActive: any) => {
-        const newActive =
-          prevActive + 1 < suggestions.length ? prevActive + 1 : prevActive;
-        scrollIntoView(newActive);
-        return newActive;
-      });
-    } else if (event.key === "ArrowUp") {
-      setActiveSuggestion((prevActive: any) => {
-        const newActive = prevActive - 1 >= 0 ? prevActive - 1 : prevActive;
-        scrollIntoView(newActive);
-        return newActive;
-      });
-    } else if (event.key === "Enter") {
-      if (suggestions[activeSuggestion] || isSuggestionSelected) {
-        if (
-          searchText === suggestions[activeSuggestion] ||
-          isSuggestionSelected
-        ) {
-          handleSearchSubmit();
-          setIsSuggestionSelected(false);
-        } else {
-          setsearchText(suggestions[activeSuggestion]);
-
-          setSuggestions([]);
-          setIsSuggestionSelected(true);
-        }
-      } else if (
-        (!suggestions.length && searchText.length === 0) ||
-        (!isSuggestionSelected && searchText.length > 1)
-      ) {
-        handleSearchSubmit();
-      }
-    } else if (searchText.length <= 2 || event.key === "Escape") {
-      setSuggestions([]);
-    }
-  };
-
-  const scrollIntoView = (index: any) => {
-    if (suggestionRefs.current[index]) {
-      suggestionRefs.current[index].scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-      });
-    }
-  };
-
-  const handleClickOutside = (event: any) => {
-    if (
-      suggestionRefs.current &&
-      !suggestionRefs.current.contains(event.target)
-    ) {
-      setSuggestions([]);
-    }
-  };
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  //-------------------------------- End Function Suggestions --------------------------------------//
 
   const handleSortByChange = (value: string) => {
     setSelecttedSortBy(value);
@@ -191,8 +117,8 @@ const ServicesListFilteredData: React.FC = () => {
           <span className="relative w-[241px] lg:w-[350px] flex justify-center items-center gap-4 ">
             <Search
               size={20}
-              className="absolute left-4 cursor-pointer text-[#b3afa8] lg:left-5 z-10"
-              onClick={handleSearchSubmit}
+              className="absolute left-5 cursor-pointer text-[#b3afa8] lg:left-5 z-10"
+              onClick={handleSearchSummit}
             />
             <div ref={suggestionRefs}>
               <input
