@@ -2,14 +2,12 @@ import React, { useEffect, useState } from "react";
 import AuthNavbar from "./navbar/authNavbar";
 import { useRouter } from "next/router";
 
-
 import { useAuth } from "@/context/authContext";
 //import Image from "next/image";
 
 export function Navbar() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const router = useRouter();
-  const { authState, isLoggedIn } = useAuth();
   const { authState, isLoggedIn } = useAuth();
   const user = authState.user;
 
@@ -60,10 +58,8 @@ export function Navbar() {
           <div className="flex gap-2 items-center lg:mr-20">
             <p className="hidden lg:block lg:text-[14px] text-gray-700">
               {user?.user_metadata.name || "Guest"}
-              {user?.user_metadata.name || "Guest"}
             </p>
             <div className="w-[32px] h-[32px] lg:w-[40px] lg:h-[40px]">
-              <AuthNavbar />
               <AuthNavbar />
             </div>
             <div className="w-[32px] h-[32px] lg:w-[40px] lg:h-[40px]">
@@ -74,13 +70,6 @@ export function Navbar() {
               />
             </div>
           </div>
-        ) : (
-          <div
-            onClick={redirectToLogin}
-            className="flex justify-center items-center lg:mr-16 w-[90px] h-[37px] text-[14px] font-medium text-blue-600 bg-white border border-blue-600 px-2 hover:text-blue-400 hover:border-blue-400 rounded-lg cursor-pointer">
-            <button>เข้าสู่ระบบ</button>
-          </div>
-        )}
         ) : (
           <div
             onClick={redirectToLogin}
