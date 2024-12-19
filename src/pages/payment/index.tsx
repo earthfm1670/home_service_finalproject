@@ -13,7 +13,12 @@ const PaymentPage: React.FC = () => {
     service_name: string;
   } | null>(null);
 
-  const getSelectedServices = () => [
+  interface Service {
+    id: number;
+    description: string;
+  }
+
+  const getSelectedServices: () => Service[] = () => [
     { id: 1, description: "Service A" },
     { id: 2, description: "Service B" },
   ];
