@@ -108,6 +108,7 @@ const ServicesListFilteredData: React.FC = () => {
   }, []);
 
   //-------------------------------- End Function Suggestions --------------------------------------//
+
   const handleSortByChange = (value: string) => {
     setSelecttedSortBy(value);
   };
@@ -125,19 +126,34 @@ const ServicesListFilteredData: React.FC = () => {
   // update ค่า setPlaceholder Dispay size มีการเปลี่ยนแปลงมากหรือน้อยกว่า 1024px
   useEffect(() => {
     const updatePlaceholder = () => {
-      if (window.innerWidth >= 1024) {
-        setPlaceholder("ตามตัวอักษร (Ascending)");
+      if (window.innerWidth <= 1024) {
+        if (selecttedSortBy === "asc" || selecttedSortBy === "desc") {
+          setPlaceholder("ตามตัวอัก...");
+        } else if (selecttedSortBy === "recommended") {
+          setPlaceholder("บริการแนะนำ");
+        } else if (selecttedSortBy === "popular") {
+          setPlaceholder("บริการยอดนิยม");
+        }
       } else {
-        setPlaceholder("ตามตัวอัก...");
+        if (selecttedSortBy === "asc") {
+          setPlaceholder("ตามตัวอักษร (Ascending)");
+        } else if (selecttedSortBy === "desc") {
+          setPlaceholder("ตามตัวอักษร (Descending)");
+        } else if (selecttedSortBy === "recommended") {
+          setPlaceholder("บริการแนะนำ");
+        } else if (selecttedSortBy === "popular") {
+          setPlaceholder("บริการยอดนิยม");
+        }
       }
     };
 
     // updatePlaceholder() จะถูก excute ทุกครั้งที่ Dispay มีการเปลี่ยนแปลงขนาด
     // และ return () ทำหน้าที่ cleanup (ลบค่า event listener) เมื่อ component ถูกเลิกใช้งาน
+
     updatePlaceholder();
     window.addEventListener("resize", updatePlaceholder);
     return () => window.removeEventListener("resize", updatePlaceholder);
-  }, [placeholder]);
+  }, [selecttedSortBy]);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -175,14 +191,14 @@ const ServicesListFilteredData: React.FC = () => {
           <span className="relative w-[241px] lg:w-[350px] flex justify-center items-center gap-4 ">
             <Search
               size={20}
-              className="absolute left-5 cursor-pointer text-[#b3afa8] lg:left-5 z-10"
+              className="absolute left-4 cursor-pointer text-[#b3afa8] lg:left-5 z-10"
               onClick={handleSearchSubmit}
             />
             <div ref={suggestionRefs}>
               <input
                 type="text"
                 placeholder="ค้นหาบริการ..."
-                className="min-w-[241px] w-auto h-11 rounded-lg py-2 pl-12 pr-4 border focus:outline-slate-300 focus:drop-shadow-sm xl:w-[350px]"
+                className="w-full h-11 rounded-lg py-2 pl-12 pr-4 border focus:outline-slate-300 focus:drop-shadow-sm xl:w-[350px]"
                 value={searchText}
                 onChange={handleInputChange}
                 onKeyDown={handelKeyDown}
@@ -343,7 +359,7 @@ const ServicesListFilteredData: React.FC = () => {
             </p>
             <Select onValueChange={handleSortByChange}>
               <SelectTrigger className="py-0 px-0 h-auto border-none shadow-none text-base font-medium focus:ring-0 gap-3 text-gray-950 lg:gap-2">
-                <SelectValue placeholder={placeholder} />
+                <p>{placeholder}</p>
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
@@ -375,7 +391,7 @@ const ServicesListFilteredData: React.FC = () => {
                         : ""
                     }`}
                   >
-                    ตามตัวอักษร (Ascending)
+                    "ตามตัวอักษร (Ascending)"
                   </SelectItem>
                   <SelectItem
                     value="desc"
@@ -385,7 +401,7 @@ const ServicesListFilteredData: React.FC = () => {
                         : ""
                     }`}
                   >
-                    ตามตัวอักษร (Descending)
+                    "ตามตัวอักษร (Descending)"
                   </SelectItem>
                 </SelectGroup>
               </SelectContent>
