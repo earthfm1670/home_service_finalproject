@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Range } from "react-range";
 import { Search } from "lucide-react";
 import { useServices } from "./ServicesContext";
@@ -14,42 +14,112 @@ import {
 
 const ServicesListFilteredData: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [priceRange, setPriceRange] = useState<[number, number]>([200, 1800]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([200, 9900]);
   const [placeholder, setPlaceholder] = useState<string>("ตามตัวอัก...");
   const [selecttedCategory, setSelecttedCategory] =
     useState<string>("บริการทั้งหมด");
   const [selecttedSortBy, setSelecttedSortBy] = useState<string>("popular");
   const [searchText, setsearchText] = useState<string>("");
+  const [suggestions, setSuggestions] = useState<any>([]);
+  const [activeSuggestion, setActiveSuggestion] = useState<any>(0);
+  const [isSuggestionSelected, setIsSuggestionSelected] =
+    useState<boolean>(false);
+  const suggestionRefs = useRef<any>([]);
 
-  const { getServicesData } = useServices(); // ดึงข้อมูลจาก Context
-
+  const { allServiceNames, getServicesData } = useServices(); // ดึงข้อมูลจาก Context
   const handleCategoryChange = (value: string) => {
     setSelecttedCategory(value);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setsearchText(event.target.value);
+    if (searchText.length > 0) {
+      const filteredSuggestions: string[] = allServiceNames.filter((item) =>
+        item.toLowerCase().includes(searchText.toLocaleLowerCase())
+      );
+      setSuggestions(filteredSuggestions);
+      setActiveSuggestion(0);
+    } else {
+      setSuggestions([]);
+    }
   };
 
+  const handelKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "ArrowDown") {
+      setActiveSuggestion((prevActive: any) => {
+        const newActive =
+          prevActive + 1 < suggestions.length ? prevActive + 1 : prevActive;
+        scrollIntoView(newActive);
+        return newActive;
+      });
+    } else if (event.key === "ArrowUp") {
+      setActiveSuggestion((prevActive: any) => {
+        const newActive = prevActive - 1 >= 0 ? prevActive - 1 : prevActive;
+        scrollIntoView(newActive);
+        return newActive;
+      });
+    } else if (event.key === "Enter") {
+      if (suggestions[activeSuggestion] || isSuggestionSelected) {
+        if (
+          searchText === suggestions[activeSuggestion] ||
+          isSuggestionSelected
+        ) {
+          handleSearchSubmit();
+          setIsSuggestionSelected(false);
+        } else {
+          setsearchText(suggestions[activeSuggestion]);
+
+          setSuggestions([]);
+          setIsSuggestionSelected(true);
+        }
+      } else if (
+        (!suggestions.length && searchText.length === 0) ||
+        (!isSuggestionSelected && searchText.length > 1)
+      ) {
+        handleSearchSubmit();
+      }
+    } else if (searchText.length <= 2 || event.key === "Escape") {
+      setSuggestions([]);
+    }
+  };
+
+  const scrollIntoView = (index: any) => {
+    if (suggestionRefs.current[index]) {
+      suggestionRefs.current[index].scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }
+  };
+
+  const handleClickOutside = (event: any) => {
+    if (
+      suggestionRefs.current &&
+      !suggestionRefs.current.contains(event.target)
+    ) {
+      setSuggestions([]);
+    }
+  };
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  //-------------------------------- End Function Suggestions --------------------------------------//
   const handleSortByChange = (value: string) => {
     setSelecttedSortBy(value);
   };
 
   // ส่ง parameter ไปยัง context เมื่อกด button ค้นหา
-  const handleSearchSummit = () => {
-    getServicesData(searchText, selecttedCategory, selecttedSortBy, priceRange);
-  };
-
-  // เรียกใช้ handleSearchSummit เมื่อกด enter on input field
-  const handelKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      handleSearchSummit();
-    }
+  const handleSearchSubmit = () => {
+    getServicesData(selecttedCategory, selecttedSortBy, priceRange, searchText);
   };
 
   // ส่ง parameter ไปยัง getServicesData() ที่ ServicesContext.tsx เพื่อ request data
   useEffect(() => {
-    getServicesData(searchText, selecttedCategory, selecttedSortBy);
+    getServicesData(selecttedCategory, selecttedSortBy, priceRange, searchText);
   }, [selecttedCategory, selecttedSortBy]);
 
   // update ค่า setPlaceholder Dispay size มีการเปลี่ยนแปลงมากหรือน้อยกว่า 1024px
@@ -106,20 +176,43 @@ const ServicesListFilteredData: React.FC = () => {
             <Search
               size={20}
               className="absolute left-5 cursor-pointer text-[#b3afa8] lg:left-5 z-10"
-              onClick={handleSearchSummit}
+              onClick={handleSearchSubmit}
             />
-            <input
-              type="text"
-              placeholder="ค้นหาบริการ..."
-              className="min-w-[241px] w-auto h-11 rounded-lg py-2 pl-12 pr-4 border focus:outline-slate-300 focus:drop-shadow-sm xl:w-[350px]"
-              value={searchText}
-              onChange={handleInputChange}
-              onKeyDown={handelKeyDown}
-            />
+            <div ref={suggestionRefs}>
+              <input
+                type="text"
+                placeholder="ค้นหาบริการ..."
+                className="min-w-[241px] w-auto h-11 rounded-lg py-2 pl-12 pr-4 border focus:outline-slate-300 focus:drop-shadow-sm xl:w-[350px]"
+                value={searchText}
+                onChange={handleInputChange}
+                onKeyDown={handelKeyDown}
+              />
+              {suggestions.length > 0 && (
+                <ul className="absolute top-11 w-full bg-white border- border-gray-300 rounded-lg mt-1 z-10 max-h-52 overflow-y-auto">
+                  {suggestions.map((suggestion: any, index: any) => (
+                    <li
+                      key={index}
+                      ref={(el) => (suggestionRefs.current[index] = el)}
+                      className={`p-2 cursor-pointer hover:bg-blue-700 hover:font-medium hover:text-slate-50 hover:rounded-lg ${
+                        index === activeSuggestion
+                          ? "bg-blue-700 font-medium text-slate-50 rounded-lg"
+                          : ""
+                      }`}
+                      onClick={() => {
+                        setsearchText(suggestion);
+                        setSuggestions([]);
+                      }}
+                    >
+                      {suggestion}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </span>
           <button
             className="w-[86px] h-11 cursor-pointer rounded-lg flex-shrink-0 text-white bg-blue-600 hover:scale-105 lg:absolute lg:left-[940px] xl:left-[1203px]"
-            onClick={handleSearchSummit}
+            onClick={handleSearchSubmit}
           >
             ค้นหา
           </button>
@@ -186,20 +279,20 @@ const ServicesListFilteredData: React.FC = () => {
             </p>
             <Select onOpenChange={toggleDropdown}>
               <SelectTrigger className="py-0 px-0 h-auto border-none shadow-none text-base font-medium focus:ring-0 gap-3 text-gray-950 lg:gap-5">
-                <SelectValue placeholder="0-2000฿" />
+                <SelectValue placeholder="0-10000฿" />
               </SelectTrigger>
               {isOpen && (
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel className="text-sm font-normal text-gray-700">
-                      0 - 2000฿
+                      0 - 10000฿
                     </SelectLabel>
                     <div className="p-4 w-56 h-24">
                       <Range
                         values={priceRange}
                         step={100}
                         min={0}
-                        max={2000}
+                        max={10000}
                         onChange={handleSliderChange}
                         renderTrack={({ props, children }) => (
                           <div
@@ -210,11 +303,11 @@ const ServicesListFilteredData: React.FC = () => {
                               className="absolute h-full bg-blue-500 rounded"
                               style={{
                                 left: `${
-                                  ((priceRange[0] - 0) / (2000 - 0)) * 100
+                                  ((priceRange[0] - 0) / (10000 - 0)) * 100
                                 }%`,
                                 width: `${
                                   ((priceRange[1] - priceRange[0]) /
-                                    (2000 - 0)) *
+                                    (10000 - 0)) *
                                   100
                                 }%`,
                               }}

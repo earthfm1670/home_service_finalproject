@@ -9,11 +9,12 @@ import axios from "axios";
 
 interface ServicesContextProps {
   servicesData: any[];
+  allServiceNames: string[];
   getServicesData: (
-    searchValue?: string,
     selecttedCategory?: string,
     sortBy?: string,
-    priceRange?: [number, number]
+    priceRange?: [number, number],
+    searchValue?: string
   ) => void;
 }
 
@@ -33,18 +34,20 @@ export const ServicesProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [servicesData, setServicesData] = useState<any[]>([]);
+  const [allServiceNames, setAllServiceNames] = useState<string[]>([]);
 
   const getServicesData = async (
-    searchValue = "",
     selectCategory = "บริการทั้งหมด",
     sortBy = "popular",
-    priceRange: [Number, Number] = [0, 0]
+    priceRange: [Number, Number] = [0, 0],
+    searchValue = ""
   ) => {
     try {
       const response = await axios.get(
-        `api/services?limit=9&search=${searchValue}&category=${selectCategory}&sort_by=${sortBy}&min_price=${priceRange[0]}&max_price=${priceRange[1]}`
+        `api/services?category=${selectCategory}&sort_by=${sortBy}&min_price=${priceRange[0]}&max_price=${priceRange[1]}&search=${searchValue}`
       );
       setServicesData(response.data.data);
+      setAllServiceNames(response.data.allServiceNames);
       console.log("API response:", response.data.data); // log api response จาก database
     } catch (error) {
       console.log("Error fetching data:", error);
@@ -56,7 +59,9 @@ export const ServicesProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   return (
-    <ServicesContext.Provider value={{ servicesData, getServicesData }}>
+    <ServicesContext.Provider
+      value={{ servicesData, allServiceNames, getServicesData }}
+    >
       {children}
     </ServicesContext.Provider>
   );

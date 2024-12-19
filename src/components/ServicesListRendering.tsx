@@ -12,6 +12,10 @@ const ServicesListRendering: React.FC = () => {
   const { servicesData, getServicesData } = useServices(); // รับ - ส่ง ข้อมูลจาก Context
   const [serviceID, setServiceID] = useState<Number>(0);
   const router = useRouter();
+  const limitRender = 9;
+
+  const dataRender = servicesData.slice(0, limitRender);
+  // console.log(servicesData);
 
   // ส่ง category ที่คลิกไปที่ context เพื่อ requet category ตามที่คลิกเลือกมาแสดง
   const selectCategory = (value: string) => {
@@ -32,7 +36,7 @@ const ServicesListRendering: React.FC = () => {
     <div className="flex flex-col items-center ">
       <section className="min-w-[375px] w-full h-auto mt-6 pb-14  bg-slate-200 lg:max-w-[1440px] mx-auto flex justify-center">
         <div className="w-full grid grid-cols-1 gap-6 justify-self-center mt-6 sm:grid-cols-2 lg:max-w-[1121px] lg:grid-cols-3 lg:justify-self-center lg:gap-[37px]">
-          {servicesData.map((service, index) => {
+          {dataRender.map((service, index) => {
             const colorCategoryClass =
               categoryBgClassMap[service.category] || " "; // ใช้ค่า default ถ้า category ไม่มีใน map
             return (
