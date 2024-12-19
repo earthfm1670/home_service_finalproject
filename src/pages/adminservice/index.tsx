@@ -77,7 +77,7 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
 
   const fetchUser = async () => {
     try {
-      const response = await axios.get(`/api/services?search=${input}`);
+      const response = await axios.get(`/api/admin/getdataAdmin?search=${input}`);
       // console.log("test response 101");
       if(response.data.data.length !== 0){
         setServicesList(response.data.data);
@@ -128,7 +128,7 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
                       <th className="w-[58px] text-center font-normal">
                         ลำดับ
                       </th>
-                      <th className="w-[226px] text-start pl-6 font-normal">
+                      <th className="max-w-[226px] text-start pl-6 font-normal">
                         ชื่อบริการ
                       </th>
                       <th className="w-[201px] text-start pl-6 font-normal">
@@ -147,7 +147,7 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
                   </thead>
                   <tbody>
                     {serviceList
-                      .sort((a, b) => a.service_id - b.service_id)
+                      // .sort((a, b) => a.service_id - b.service_id)
                       .map((service: Service, index) => (
                         <tr
                           key={service.service_id}
@@ -166,7 +166,7 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
                                 "default-class"
                               }`}
                             >
-                              {[service.category]}
+                              {service.category}
                             </div>
                             {/* <Category category={service.category} /> */}
                           </td>
@@ -231,7 +231,7 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
   );
 };
 
-function IconDrag() {
+export function IconDrag() {
   // change color icon when active
   const [active, setActive] = useState<boolean>(false);
 
@@ -351,7 +351,7 @@ function IconTrash({
       {/* Popup */}
       {showPopup && (
         <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white w-[360px] h-[270px] flex flex-col items-center rounded-xl p-4 gap-3">
+          <div className="bg-white w-[360px] h-auto flex flex-col items-center rounded-xl p-4 gap-3">
             <div className="w-full">
               <div
                 className="w-full flex justify-end "

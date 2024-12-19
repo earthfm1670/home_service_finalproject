@@ -1,10 +1,12 @@
 import { supabase } from "@/utils/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
+import { adminSupabase } from "@/utils/supabase";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  console.log("------------------ Start ------------------")
   if (req.method === "GET") {
     const { id } = req.query; // Dynamic Route จะดึง id จาก req.query
 
@@ -16,12 +18,13 @@ export default async function handler(
 
     try {
       // Query ข้อมูลจาก table 'services' และ join กับ table 'sub_services'
-      const { data, error } = await supabase
+      const { data, error } = await adminSupabase
         .from("services")
         .select(
           `
           *, 
-          sub_services (*)  // นี่คือการ join ข้อมูลจาก sub_services
+          sub_services (*),
+          categories(*)
         `
         )
         .eq("service_id", Number(id)) // แปลง id เป็น number
