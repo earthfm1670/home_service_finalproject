@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import StripeContext from "@/components/StripeContext";
 import PaymentForm from "@/components/PaymentForm";
 import { Navbar } from "@/components/navbar";
-import ProgressSteps from "@/components/service-detail/ProgressSteps";
+import { ProgressStepsNew } from "@/components/service-detail/ProgressSteps";
 import Link from "next/link";
 
 //stand alone payment page, need to connect to service info later
@@ -55,7 +55,7 @@ const PaymentPage: React.FC = () => {
               </div>
             </div>
 
-            <ProgressSteps currentStep={currentStep} />
+            <ProgressStepsNew currentStep={currentStep} />
           </div>
         </div>
       </div>
