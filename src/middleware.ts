@@ -1,34 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import authorizationCheck from "./middleware-stack/authorizationCheck";
+//create axios interceptor for frontend
 export function middleware(req: NextRequest) {
-  if (!req.headers.authorization)
-    return NextResponse.redirect(new URL(`/`, req.url));
+  //1. modify req, add header
+  //handle by axios intercept
+  //2. authorizationCheck(req);
+  authorizationCheck(req);
+  //3. Check Role
+  return NextResponse.next();
 }
-
-// type MiddlewareMap = {
-//   [key: string]: (req: NextRequest) => NextResponse<unknown>;
-// };
-// const middlewareMap: MiddlewareMap = {
-//   "/api/admin": protectAdmin,
-// };
-
-// export async function middleware(req: NextRequest) {
-//   // console.log("MW Testing");
-//   // console.log(req.method);
-//   // console.log(req.url);
-//   // console.log(req.headers.get("origin"));
-//   try {
-//     for (const path in middlewareMap) {
-//       if (req.nextUrl.pathname.startsWith(path)) {
-//         const handler = middlewareMap[path];
-//         if (handler) {
-//           return handler(req);
-//         }
-//       }
-//     }
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
-
-export const config = { matcher: ["/api/admin/"] };

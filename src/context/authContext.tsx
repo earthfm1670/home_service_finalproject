@@ -77,7 +77,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 //creat provider which will be render as **WRAPPER for whole app.
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  console.log("From Auth Context");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [authState, setAuthState] = useState<AuthState>({
     userId: null,
