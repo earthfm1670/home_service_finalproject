@@ -5,7 +5,7 @@ function PaymentSuccess() {
     <>
       <div className="min-h-screen bg-[#F3F4F6]">
         <Navbar />
-        <div className="h-[475px] border border-black mx-4 my-8 bg-white">
+        <div className="h-[475px] border border-gray-300 mx-4 my-8 bg-white rounded-md">
           {/* top div */}
           <div className="h-[118px] mx-4 flex flex-col justify-center items-center mt-8 gap-4">
             <div className="">
