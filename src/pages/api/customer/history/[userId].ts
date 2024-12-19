@@ -51,7 +51,6 @@ export default async function getOrderHistory(
   const userIdFromClient = userId;
   try {
     const respond = await connectionPool.query(query, [userIdFromClient]);
-    console.log(respond);
     if (!respond.rows[0]) {
       return res.status(404).json({ error: "History not found." });
     }

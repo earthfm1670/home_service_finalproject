@@ -6,12 +6,6 @@ export default function CustomerProfile() {
   const { authState } = useAuth();
   const user = authState.user?.user_metadata;
   const userId = authState.userId;
-  if (!user || !userId) {
-    console.log("No User");
-    console.log(authState);
-    console.log(authState.user?.user_metadata);
-    console.log(user);
-  }
   return (
     <>
       <Navbar />
