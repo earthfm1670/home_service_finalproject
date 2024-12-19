@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect, useContext, createContext } from "react";
 import { jwtDecode } from "jwt-decode";
-import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 //define user structure
 interface UserMetadata {
@@ -53,8 +52,6 @@ interface AuthContextType {
 interface AuthState {
   userId: string | null;
   user: UserPayload | null;
-  userId: string | null;
-  user: UserPayload | null;
   token: string | null;
 }
 interface AuthProviderProps {
@@ -82,10 +79,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   console.log("From Auth Context");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  console.log("From Auth Context");
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [authState, setAuthState] = useState<AuthState>({
-    userId: null,
     userId: null,
     user: null,
     token: null,
@@ -133,10 +127,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       ? JSON.parse(localStorage.getItem("user") || "{}")
       : null;
     if (savedToken && savedUser) {
-      console.log("1 loading------------------- ", isAuthLoading);
       const userRole = savedUser.user_metadata.role;
       handleSessionLogin(savedToken, savedUser, userRole);
-      console.log("2 Finish load----------------", isAuthLoading);
+
       setIsAuthLoading(false);
     } else {
       setIsAuthLoading(false);
@@ -152,14 +145,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       //access userInfo
       const userInfo: UserPayload = jwtDecode(authToken);
       // NOT USE const userId = getUserId.userId.user_id;
-      const userInfo: UserPayload = jwtDecode(authToken);
-      // NOT USE const userId = getUserId.userId.user_id;
       //store user info as string in local& store token
       localStorage.setItem("user", JSON.stringify(userInfo));
       localStorage.setItem("token", authToken);
       //setauth state to store user / token
-      const userRole = userInfo.user_metadata.role;
-      handleSessionLogin(authToken, userInfo, userRole);
       const userRole = userInfo.user_metadata.role;
       handleSessionLogin(authToken, userInfo, userRole);
     } catch (error) {
@@ -169,7 +158,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-
   const adminLogin = async (email: string, password: string) => {
     try {
       const response = await axios.post("api/admin/login", { email, password });
@@ -177,14 +165,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const authToken = response.data.access_token;
       //access userInfo
       const userInfo: UserPayload = jwtDecode(authToken);
-      const userInfo: UserPayload = jwtDecode(authToken);
       //store user info as string in local& store token
       localStorage.setItem("user", JSON.stringify(userInfo));
       localStorage.setItem("token", authToken);
       //setauth state to store user / token
       // if (userInfo.user_metadata.role === "admin"){} << แก้ type
-      const userRole = userInfo.user_metadata.role;
-      handleSessionLogin(authToken, userInfo, userRole);
       const userRole = userInfo.user_metadata.role;
       handleSessionLogin(authToken, userInfo, userRole);
     } catch (error) {
@@ -198,7 +183,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setAuthState({
-      userId: null,
       userId: null,
       user: null,
       token: null,
