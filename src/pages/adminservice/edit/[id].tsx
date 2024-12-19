@@ -29,6 +29,7 @@ export default function AdminNavbar() {
   const [inputTitle, setInputTitle] = useState<string>("");
   const [inputCat, setInputCat] = useState<number | undefined>();
   const [inputImage, setInputImage] = useState<File>();
+  console.log("check image when update",inputImage)
   const [nameTopic, setNameTopic] = useState<String>("loading");
   const [URLimage, setURLimage] = useState<String>();
   // const [changeImage,setChangeImage] = useState<Boolean>(false)
@@ -209,27 +210,27 @@ export const AdminserviceIndex = ({
   const handleDeleteImg = async () => {
     setPreview(null);
     setShowPopUpDeleteImg(false);
-    try {
-      const response = await axios.delete(`/api/delete-image`, {
-        params: { serviceId: id },
-      });
+    // try {
+    //   const response = await axios.delete(`/api/delete-image`, {
+    //     params: { serviceId: id },
+    //   });
 
-      console.log("Image deleted successfully", response.data);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        // AxiosError: จัดการข้อผิดพลาดที่เกิดจาก axios
-        if (error.response) {
-          console.error("Error response from server:", error.response.data);
-        } else if (error.request) {
-          console.error("No response received:", error.request);
-        } else {
-          console.error("Unexpected Axios error:", error.message);
-        }
-      } else {
-        // Unknown error: จัดการกรณีที่ไม่ใช่ข้อผิดพลาดของ axios
-        console.error("An unknown error occurred:", error);
-      }
-    }
+    //   console.log("Image deleted successfully", response.data);
+    // } catch (error) {
+    //   if (axios.isAxiosError(error)) {
+    //     // AxiosError: จัดการข้อผิดพลาดที่เกิดจาก axios
+    //     if (error.response) {
+    //       console.error("Error response from server:", error.response.data);
+    //     } else if (error.request) {
+    //       console.error("No response received:", error.request);
+    //     } else {
+    //       console.error("Unexpected Axios error:", error.message);
+    //     }
+    //   } else {
+    //     // Unknown error: จัดการกรณีที่ไม่ใช่ข้อผิดพลาดของ axios
+    //     console.error("An unknown error occurred:", error);
+    //   }
+    // }
   };
 
   const fetchService = async () => {
