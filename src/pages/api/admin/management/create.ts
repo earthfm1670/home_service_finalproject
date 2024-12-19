@@ -193,6 +193,7 @@ export default async function adminCreate(
           created_at: newService.created_at,
           updated_at: newService.updated_at,
         }));
+        console.log(subInsert, "subInsert for check data with push");
 
         const { error: subInsertedError } = await adminSupabase
           .from("sub_services")
