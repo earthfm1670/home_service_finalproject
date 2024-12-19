@@ -53,7 +53,11 @@ function PaymentSuccess() {
               <p className="text-[16px] text-black font-medium">1,550.00 ฿</p>
             </div>
           </div>
-          <div></div>
+          <div>
+            <button className="w-full h-[44px] my-8 bg-blue-600 text-white rounded-lg">
+              เช็ครายการซ่อม
+            </button>
+          </div>
         </div>
       </div>
     </>
