@@ -5,7 +5,8 @@ function PaymentSuccess() {
     <>
       <Navbar />
       <div className="h-[475px] border border-black mx-4 my-8">
-        <div className="border border-black h-[118px] mx-4 flex flex-col justify-center items-center">
+        {/* top div */}
+        <div className="border border-black h-[118px] mx-4 flex flex-col justify-center items-center mt-6">
           <div className="">
             <img
               src="/image/paymentsuccess.svg"
@@ -16,6 +17,36 @@ function PaymentSuccess() {
           <p className="text-blue-950 font-medium text-[20px]">
             ชำระเงินเรียบร้อย !
           </p>
+        </div>
+        {/* bottom div */}
+        <div className="border border-black h-[201px] mx-4 my-6">
+          <div className="flex justify-between">
+            <p className="font-normal text-[14px] text-black">
+              9,000 - 18,000 BTU, แบบติดผนัง
+            </p>
+            <p className="font-normal text-[14px] text-gray-700">2 รายการ</p>
+          </div>
+          <div className="border-t border-gray-300 my-3"></div>
+          <div>
+            <div className="flex justify-between">
+              <p className="text-[14px] text-gray-700 font-normal">วันที่</p>
+              <p className="text-[14px] text-black font-normal">
+                23 เม.ย. 2022
+              </p>
+            </div>
+            <div className="flex justify-between">
+              <p className="text-[14px] text-gray-700 font-normal">เวลา</p>
+              <p className="text-[14px] text-black font-normal">11.00 น.</p>
+            </div>
+            <div className="flex justify-between">
+              <p className="text-[14px] text-gray-700 font-normal">สถานที่</p>
+              <p className="text-[14px] text-black font-normal text-right">
+                444/4 คอนโดสุภาลัย เสนานิคม <br />
+                จตุจักร กรุงเทพฯ
+              </p>
+            </div>
+          </div>
+          <div></div>
         </div>
       </div>
     </>
