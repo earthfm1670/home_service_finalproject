@@ -41,8 +41,7 @@ export default async function handler(
         category_id,
         categories!inner(category),
         service_picture_url,
-        sub_services(unit_price),
-        popularity_score
+        sub_services(unit_price)
       `,
         { count: "exact" }
       );
