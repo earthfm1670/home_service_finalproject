@@ -106,7 +106,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ setDiscount }) => {
   };
 
   return (
-    <div className="border mt-14 mx-4 rounded-lg">
+    <div className="border mt-14 mx-4 rounded-lg bg-white">
       <div className="mx-3 mt-2 text-[18px] text-gray-700 font-medium">
         กรอกข้อมูลบริการ
       </div>
@@ -172,7 +172,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ setDiscount }) => {
       {/* Payment Form */}
       {selectedPayment === "creditcard" ? (
         <>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="bg-white">
             <div className="mx-3 my-2">
               <label className="block">
                 หมายเลขบัตรเครดิต<span className="text-[#C82438]">*</span>
