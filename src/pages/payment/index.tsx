@@ -118,6 +118,21 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
     }
   }
 
+  const isFormComplete = (): boolean => {
+    const isServicesSelected =
+      selectedServices && selectedServices.selections.length > 0;
+    const isPaymentInfoComplete = payment !== null;
+    return isServicesSelected && isPaymentInfoComplete;
+  };
+
+  const handleProceed = () => {
+    if (!isFormComplete()) {
+      alert("Please complete all required fields before proceeding.");
+      return;
+    }
+    router.push("/paymentsuccess");
+  };
+
   return (
     <StripeContext>
       <div className="flex flex-col h-min-screen">
@@ -126,19 +141,30 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
         {/* Hero Section */}
         <ServiceHero service={service} />
       </div>
-      <div className="flex-1 overflow-y-auto pb-20">
+      <div className="flex-1 overflow-y-auto pb-20 bg-black">
         <PaymentForm setDiscount={setDiscount} />
       </div>
       <div className="sticky bottom-0 z-10">
         <div className="px-4 py-8 mt-4 lg:mt-16 lg:px-32">
-          <MobileSummary
+          {/* <MobileSummary
             getSelectedServices={getSelectedServices}
             getQuantityDisplay={getQuantityDisplay}
             calculateTotal={calculateTotal}
             payment={payment}
+          /> */}
+          <MobileBottomBar
+            getSelectedServices={getSelectedServices}
+            getQuantityDisplay={getQuantityDisplay}
+            calculateTotal={calculateTotal}
           />
         </div>
       </div>
+
+      <NavigationButtons
+        onBack={() => router.back()}
+        handleProceed={handleProceed}
+        canProceed={isFormComplete()}
+      />
     </StripeContext>
   );
 };
