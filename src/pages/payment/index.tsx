@@ -9,6 +9,18 @@ import MobileBottomBar from "@/components/service-detail/MobileBottomBar";
 import ServiceHero from "@/components/service-detail/ServiceHero";
 import { useRouter } from "next/router";
 import type { Service } from "@/types/service";
+import DesktopSummary from "@/components/service-detail/DesktopSummary";
+import {
+  isWeekend,
+  isAfter,
+  isBefore,
+  isSameDay,
+  startOfToday,
+  addDays,
+  isSaturday,
+  isSunday,
+} from "date-fns";
+import NavigationButtons from "@/components/service-detail/NavigationButtons";
 
 //stand alone payment page, need to connect to service info later
 const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
@@ -113,39 +125,41 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
         <Navbar />
         {/* Hero Section */}
         <ServiceHero service={service} />
-        <div className="relative h-[168px] w-full lg:h-56">
-          <img
-            src={service.service_picture_url}
-            alt={service.service_name}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-[#163C9366]">
-            <div className="px-4 pt-9 lg:px-32 lg:mt-5">
-              {/* Breadcrumb */}
-              <div className="">
-                <div className="bg-white rounded-md py-2 px-4 inline-flex items-center space-x-2 lg:p-5">
-                  <Link
-                    href="/services"
-                    className="text-gray-500 hover:text-blue-600 text-sm"
-                  >
-                    บริการของเรา
-                  </Link>
-                  <span className="text-gray-500 text">&gt;</span>
-                  <span className="text-blue-600 font-bold text-3xl">
-                    {service.service_name}
-                  </span>
-                </div>
-              </div>
-
-              <ProgressStepsNew currentStep={currentStep} />
-            </div>
-          </div>
-        </div>
       </div>
       <div className="flex-1 overflow-y-auto pb-20">
         <PaymentForm />
       </div>
       <div className="sticky bottom-0 z-10">
+        <div className="px-4 py-8 mt-4 lg:mt-16 lg:px-32">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Location Form */}
+
+            {/* Summary Section */}
+            <DesktopSummary
+              getSelectedServices={() => selectedServices?.selections || []}
+              getQuantityDisplay={(id: number) =>
+                selectedServices?.selections.find((s) => s.id === id)
+                  ?.quantity || 0
+              }
+              calculateTotal={() => {
+                const total = selectedServices?.totalAmount;
+                return typeof total === "number" && !isNaN(total) ? total : 0;
+              }}
+              getPriceDisplay={(id: number) => {
+                const service = selectedServices?.selections.find(
+                  (s) => s.id === id
+                );
+                return typeof service?.unit_price === "number" &&
+                  !isNaN(service?.unit_price)
+                  ? service.unit_price
+                  : 0;
+              }}
+              isServiceInfoPage={true}
+              isServiceDetailPage={true}
+            />
+          </div>
+        </div>
+        {/* divider */}
         <MobileSummary
           getSelectedServices={getSelectedServices}
           getQuantityDisplay={getQuantityDisplay}
