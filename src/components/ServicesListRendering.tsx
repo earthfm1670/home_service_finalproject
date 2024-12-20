@@ -2,7 +2,6 @@ import { useRouter } from "next/router";
 import { useServices } from "./ServicesContext";
 import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
-import Image from "next/image";
 
 const categoryBgClassMap: Record<string, string> = {
   บริการทั่วไป: "text-blue-800 bg-blue-100",
@@ -17,7 +16,6 @@ const ServicesListRendering: React.FC = () => {
   const limitRender = 9;
 
   const dataRender = servicesData.slice(0, limitRender);
-  // console.log(servicesData);
 
   // ส่ง category ที่คลิกไปที่ context เพื่อ requet category ตามที่คลิกเลือกมาแสดง
   const selectCategory = (value: string) => {

@@ -130,9 +130,9 @@ const ServicesListFilteredData: React.FC = () => {
         if (selecttedSortBy === "asc" || selecttedSortBy === "desc") {
           setPlaceholder("ตามตัวอัก...");
         } else if (selecttedSortBy === "recommended") {
-          setPlaceholder("บริการแนะนำ");
+          setPlaceholder("บริการแนะ..");
         } else if (selecttedSortBy === "popular") {
-          setPlaceholder("บริการยอดนิยม");
+          setPlaceholder("บริการยอด..");
         }
       } else {
         if (selecttedSortBy === "asc") {
