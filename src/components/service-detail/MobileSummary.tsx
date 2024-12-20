@@ -18,11 +18,22 @@ interface LocationInfo {
   additionalDetails?: string;
 }
 
+interface PaymentInfo {
+  date: Date | null;
+  time: string | null;
+  address: string;
+  subDistrict: string;
+  district: string;
+  province: string;
+  additionalDetails?: string;
+}
+
 interface MobileSummaryProps {
   getSelectedServices: () => Service["sub_services"];
   getQuantityDisplay: (subServiceId: number) => number;
   calculateTotal: () => number;
   locationInfo?: LocationInfo;
+  payment?: PaymentInfo;
 }
 
 export const MobileSummary = ({
@@ -30,6 +41,7 @@ export const MobileSummary = ({
   getQuantityDisplay,
   calculateTotal,
   locationInfo,
+  payment,
 }: MobileSummaryProps) => {
   const [isOrderSummaryOpen, setIsOrderSummaryOpen] = useState(false);
 
@@ -125,6 +137,57 @@ export const MobileSummary = ({
                   </div>
                 )}
               </div>
+              // Payment
+            )}
+            {payment && (
+              <div className="mt-6 space-y-2 pt-4 border-t">
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-500">วันที่</span>
+                  <span className="text-sm">
+                    {payment.date
+                      ? format(payment.date, "d MMMM yyyy", {
+                          locale: th,
+                        })
+                      : "ยังไม่ได้เลือก"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-500">เวลา</span>
+                  <span className="text-sm">
+                    {payment.time || "ยังไม่ได้เลือก"}
+                  </span>
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-sm text-gray-500 whitespace-nowrap mr-2">
+                    สถานที่
+                  </span>
+                  <span className="text-right flex-1 text-sm">
+                    {payment.address ||
+                    payment.subDistrict ||
+                    payment.district ||
+                    payment.province
+                      ? [
+                          payment.address,
+                          payment.subDistrict,
+                          payment.district,
+                          payment.province,
+                        ]
+                          .filter(Boolean)
+                          .join(", ")
+                      : "ไม่ได้ระบุ"}
+                  </span>
+                </div>
+                {payment.additionalDetails && (
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-500 whitespace-nowrap mr-2">
+                      ข้อมูลเพิ่มเติม
+                    </span>
+                    <span className="text-right flex-1 text-sm">
+                      {payment.additionalDetails}
+                    </span>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </CollapsibleContent>
@@ -135,10 +198,11 @@ export const MobileSummary = ({
         <div className="flex justify-between items-center">
           <span className="text-sm text-gray-600">รวม</span>
           <span className="text-base font-semibold">
-            {calculateTotal().toLocaleString('th-TH', {
+            {calculateTotal().toLocaleString("th-TH", {
               minimumFractionDigits: 2,
-              maximumFractionDigits: 2
-            })} ฿
+              maximumFractionDigits: 2,
+            })}{" "}
+            ฿
           </span>
         </div>
       </div>
