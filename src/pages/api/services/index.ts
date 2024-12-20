@@ -41,8 +41,7 @@ export default async function handler(
         category_id,
         categories!inner(category),
         service_picture_url,
-        sub_services(unit_price),
-        popularity_score
+        sub_services(unit_price)
       `,
         { count: "exact" }
       );
@@ -54,11 +53,6 @@ export default async function handler(
           .select("service_id, unit_price, usage_count, promotions_and_offers");
       if (subServicesDataError) throw subServicesDataError;
 
-      // search filters
-      if (search) {
-        dbQuery = dbQuery.ilike("service_name", `%${search}%`);
-      }
-
       // category filters
       if (category != "บริการทั้งหมด") {
         dbQuery = dbQuery.eq("categories.category", category);
@@ -69,6 +63,9 @@ export default async function handler(
       const { data: services, error } = await dbQuery;
 
       if (error) throw error;
+
+      // Array service_name from services
+      const serviceName = services.map((service) => service.service_name);
 
       // Calculate total_usage from sub_services
       const serviceUsageMap = subServicesData.reduce((map, subService) => {
@@ -148,6 +145,13 @@ export default async function handler(
         );
       }
 
+      // search filters
+      if (search) {
+        processedServices = processedServices.filter((service) =>
+          service.service_name.toLowerCase().includes(search.toLowerCase())
+        );
+      }
+
       //  sort_By filters
       if (sortBy === "recommended") {
         processedServices = processedServices.filter(
@@ -176,6 +180,7 @@ export default async function handler(
 
       res.status(200).json({
         data: paginatedServices,
+        allServiceNames: serviceName,
         totalCount,
         currentPage: page,
         totalPages,
