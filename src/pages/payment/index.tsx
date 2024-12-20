@@ -24,12 +24,12 @@ import NavigationButtons from "@/components/service-detail/NavigationButtons";
 
 //stand alone payment page, need to connect to service info later
 const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
+  const router = useRouter();
   const [service, setService] = useState<Service | null>(
     initialService || null
   );
-  const [selectPaymentData, setSelectPaymentData] =
-    useState<SelectedPaymentData | null>(null);
-  const router = useRouter();
+  const [payment, setPayment] = useState<PaymentInfo | null>(null);
+  const [discount, setDiscount] = useState<number>(0);
 
   const [selectedServices, setSelectedServices] =
     useState<SelectedServicesData | null>(null);
@@ -48,17 +48,12 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
   useEffect(() => {
     // Load selected services from session storage
     const servicesData = sessionStorage.getItem("selectedServices");
-    const paymentData = sessionStorage.getItem("paymentData");
+
     if (servicesData) {
       const parsedData = JSON.parse(servicesData);
       setSelectedServices(parsedData);
 
-      if (paymentData) {
-        const parsedData = JSON.parse(paymentData);
-        setSelectedServices(parsedData);
-      }
-
-      // Fetch service details if not provided as props
+      // Fetch service details if not provided as props (comment)
       if (!service && parsedData.serviceId) {
         getService(parsedData.serviceId).then((result) => {
           if (result.data) {
@@ -67,37 +62,43 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
         });
       }
     }
+
+    const paymentData = sessionStorage.getItem("paymentData");
+    if (paymentData) {
+      const parsedData = JSON.parse(paymentData);
+      setPayment(parsedData);
+    }
   }, [service]);
 
-  const getSelectedServices: () => SubService[] = () => [
-    {
-      id: 1,
-      description: "Service A",
-      sub_service_id: 101,
-      unit: "hours",
-      unit_price: 100,
-    },
-    {
-      id: 2,
-      description: "Service B",
-      sub_service_id: 102,
-      unit: "days",
-      unit_price: 200,
-    },
-  ];
+  // useEffect(() => {
+  //   // Load selected services from session storage
+  //   const servicesData = sessionStorage.getItem("selectedServices");
+  //   const paymentData = sessionStorage.getItem("paymentData");
 
-  const getQuantityDisplay = (subServiceId: number) => 2;
-  const calculateTotal = () => 1500;
+  //   if (servicesData) {
+  //     setSelectedServices(JSON.parse(servicesData));
+  //   }
+
+  //   if (paymentData) {
+  //     setPayment(JSON.parse(paymentData));
+  //   }
+  // }, []);
+
+  const getSelectedServices = () => selectedServices?.selections || [];
+
+  const getQuantityDisplay = (subServiceId: number) => {
+    const service = selectedServices?.selections.find(
+      (s) => s.id === subServiceId
+    );
+    return service?.quantity || 0;
+  };
+
+  const calculateTotal = () => {
+    const totalAmount = selectedServices?.totalAmount || 0;
+    return totalAmount - totalAmount * discount;
+  };
 
   const [currentStep, setCurrentStep] = useState(3);
-
-  // useEffect(() => {
-  //   //Simulate API call to fetch service data
-  //   setService({
-  //     service_picture_url: "https://via.placeholder.com/1920x1080",
-  //     service_name: "Service Name",
-  //   });
-  // }, []);
 
   if (!service) {
     return <div>Loading...</div>;
@@ -132,8 +133,6 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
       <div className="sticky bottom-0 z-10">
         <div className="px-4 py-8 mt-4 lg:mt-16 lg:px-32">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Location Form */}
-
             {/* Summary Section */}
             <DesktopSummary
               getSelectedServices={() => selectedServices?.selections || []}
@@ -164,6 +163,7 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
           getSelectedServices={getSelectedServices}
           getQuantityDisplay={getQuantityDisplay}
           calculateTotal={calculateTotal}
+          payment={payment}
         />
         <MobileBottomBar
           canProceed
