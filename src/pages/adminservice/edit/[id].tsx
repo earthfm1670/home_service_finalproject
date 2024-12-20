@@ -26,10 +26,12 @@ interface SubService {
 
 export default function AdminNavbar() {
   const [inputSubservice, setInputSubservice] = useState<SubService[]>();
+  // console.log("check subservice id and value of subservice when refresh window",inputSubservice)
   const [inputTitle, setInputTitle] = useState<string>("");
   const [inputCat, setInputCat] = useState<number | undefined>();
+  // console.log("this test for receive value inputCat", inputCat);
   const [inputImage, setInputImage] = useState<File>();
-  console.log("check image when update",inputImage)
+  // console.log("check image when update", inputImage);
   const [nameTopic, setNameTopic] = useState<String>("loading");
   const [URLimage, setURLimage] = useState<String>();
   // const [changeImage,setChangeImage] = useState<Boolean>(false)
@@ -37,11 +39,20 @@ export default function AdminNavbar() {
   const [showPopUpDeleteImg, setShowPopUpDeleteImg] = useState<Boolean>(false);
 
   const router = useRouter();
+  const { id } = router.query;
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
     const formData = new FormData();
+    // formData.append("service_id", id: Number)
+
+    const serviceId = Array.isArray(id) ? id[0] : id; // เลือกค่าตัวแรกจากอาร์เรย์ ถ้า id เป็นอาร์เรย์
+
+    if (serviceId) {
+      formData.append("service_id", serviceId.toString()); // แปลงเป็น string ถ้าไม่ใช่
+    }
+
     formData.append("title", inputTitle);
     if (inputCat) {
       formData.append("category_id", inputCat.toString());
@@ -63,8 +74,6 @@ export default function AdminNavbar() {
       "test data for sent request by form data.append",
       formDataObject
     );
-
-    const { id } = router.query;
 
     // Commented out API call
     try {
@@ -98,7 +107,8 @@ export default function AdminNavbar() {
               <div className="h-full flex flex-row items-center gap-6 relative">
                 <button
                   className="bg-white text-defaultColor text-base h-full px-7 flex items-center gap-3 rounded-lg w-32 text-center justify-center border border-defaultColor"
-                  onClick={() => router.push("/adminservice")}
+                  // onClick={() => router.push("/adminservice")}
+                  type="button"
                 >
                   ยกเลิก
                 </button>
@@ -119,6 +129,7 @@ export default function AdminNavbar() {
               setNameTopic={setNameTopic}
               setShowPopUpDeleteImg={setShowPopUpDeleteImg}
               showPopUpDeleteImg={showPopUpDeleteImg}
+              inputTitle={inputTitle}
             />
           </div>
         </div>
@@ -136,6 +147,7 @@ export const AdminserviceIndex = ({
   setNameTopic,
   setShowPopUpDeleteImg,
   showPopUpDeleteImg,
+  inputTitle
 }: any) => {
   const router = useRouter();
   const { id } = router.query;
@@ -183,7 +195,7 @@ export const AdminserviceIndex = ({
   };
 
   const handleInputTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setServiceNameData(event.target.value);
+    // setServiceNameData(event.target.value);
     setInputTitle(event.target.value);
   };
 
@@ -191,6 +203,7 @@ export const AdminserviceIndex = ({
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const value = Number(event.target.value);
+    console.log("value for check inputCat", value);
     setInputCat(value);
   };
 
@@ -244,11 +257,19 @@ export const AdminserviceIndex = ({
       setNameTopic(response.data.service_name);
       setServiceCategoryData(response.data.categories.category);
       setSubservices(response.data.sub_services);
+      console.log(
+        "this test data response get sub_services",
+        response.data.sub_services
+      );
       setPreview(response.data.service_picture_url);
       setCreateAt(response.data.created_at);
       setUpdateAt(response.data.updated_at);
       setInputTitle(response.data.service_name);
-      setInputCat(response.data.categories.id);
+      setInputCat(response.data.category_id);
+      // console.log(
+      //   "check refresh page for catrgories_id",
+      //   response.data.categories_id
+      // );
       setInputSubservice(response.data.sub_services);
     } catch (error) {
       console.log(error);
@@ -266,8 +287,8 @@ export const AdminserviceIndex = ({
 
   useEffect(() => {
     if (id) {
-      fetchService();
       fetchCategories();
+      fetchService();
     }
   }, [id]);
 
@@ -282,7 +303,7 @@ export const AdminserviceIndex = ({
               <input
                 type="text"
                 onChange={handleInputTitle}
-                value={serviceNameData.toString()}
+                value={inputTitle.toString()}
                 className="border border-gray-300 h-11 rounded-lg w-[433px] pl-5"
               />
             </div>
