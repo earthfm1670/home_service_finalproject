@@ -12,20 +12,23 @@ interface PromoCodes {
   [key: string]: number;
 }
 
+interface PaymentFormProps {
+  setDiscount: (discount: number) => void;
+}
+
 const promoCodes: PromoCodes = {
   DISCOUNT10: 0.1,
   DISCOUNT20: 0.2,
   FURRY: 0.99,
 };
 
-const PaymentForm: React.FC = () => {
+const PaymentForm: React.FC<PaymentFormProps> = ({ setDiscount }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
   const [promoCode, setPromoCode] = useState<string>("");
-  const [discount, setDiscount] = useState<number>(0);
   const [selectedPayment, setSelectedPayment] = useState<string>("creditcard");
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
