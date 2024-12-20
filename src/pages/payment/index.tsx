@@ -138,14 +138,6 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
             payment={payment}
           />
         </div>
-        <MobileBottomBar
-          canProceed
-          calculateTotal={calculateTotal}
-          getSelectedServices={getSelectedServices}
-          getQuantityDisplay={getQuantityDisplay}
-          handleProceed={() => console.log("Proceed")}
-          isServiceInfoPage
-        />
       </div>
     </StripeContext>
   );
