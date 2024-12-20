@@ -1,10 +1,17 @@
 import homeservicelogo from "../../../public/image/homeservicelogo.svg";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 export default function AdminSidebar() {
+  const [activeButton, setActiveButton] = useState("");
+  const router = useRouter();
 
-    const router = useRouter()
+  const getButtonClass = (path: string) => {
+    return router.pathname === path
+      ? "bg-[#022B87]" // สีพื้นหลังของปุ่มที่เลือก
+      : "hover:bg-[#022B87]"; // สีพื้นหลังปกติเมื่อไม่ได้เลือก
+  };
 
   return (
     <>
@@ -13,26 +20,40 @@ export default function AdminSidebar() {
         {/* button for div top */}
         <div className="w-full">
           <div className="px-6">
-            <button className="my-10 bg-blue-100 w-full h-11 flex justify-center items-center rounded-lg hover:bg-hoverColor active:bg-pressedColor" onClick={() => router.push("/")}>
+            <button
+              className="my-10 bg-blue-100 w-full h-11 flex justify-center items-center rounded-lg active:bg-pressedColor"
+              onClick={() => router.push("/")}
+            >
               <Image src={homeservicelogo} alt="Homeservice Logo" />
             </button>
           </div>
           {/* button list */}
           <div className="">
-            <div className="hover:bg-[#022B87] w-full">
-              <button className="flex flex-row gap-4 px-6 py-4" onClick={() => router.push("/admincategory")}>
+            <div className={`w-full ${getButtonClass("/admincategory")} cursor-pointer`}
+            onClick={() => router.push("/admincategory")}>
+              <button
+                className="flex flex-row gap-4 px-6 py-4"
+                
+              >
                 <Icon1 />
                 หมวดหมู่
               </button>
             </div>
-            <div className="hover:bg-[#022B87] w-full">
-              <button className="flex flex-row gap-4 px-6 py-4" onClick={() => router.push("/adminservice")}>
+            <div className={`w-full ${getButtonClass("/adminservice")} cursor-pointer`}
+            onClick={() => router.push("/adminservice")}>
+              <button
+                className="flex flex-row gap-4 px-6 py-4"
+                
+              >
                 <Icon2 />
                 บริการ
               </button>
             </div>
-            <div className="hover:bg-[#022B87] w-full">
-              <button className="flex flex-row gap-4 px-6 py-4" onClick={() => router.push("/adminpromotioncode")}>
+            <div
+              className={`w-full ${getButtonClass("/adminpromotioncode")} cursor-pointer`}
+              onClick={() => router.push("/adminpromotioncode")}
+            >
+              <button className="flex flex-row gap-4 px-6 py-4">
                 <Icon3 />
                 Promotion Code
               </button>
@@ -41,11 +62,11 @@ export default function AdminSidebar() {
           {/* button for div tail */}
         </div>
         <div className="hover:bg-[#022B87] w-full my-16">
-              <button className="flex flex-row gap-4 px-6 py-4">
-                <Icon4 />
-                ออกจากระบบ
-              </button>
-            </div>
+          <button className="flex flex-row gap-4 px-6 py-4">
+            <Icon4 />
+            ออกจากระบบ
+          </button>
+        </div>
       </div>
     </>
   );
