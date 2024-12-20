@@ -52,7 +52,7 @@ export const MobileSummary = ({
         onOpenChange={setIsOrderSummaryOpen}
       >
         <CollapsibleTrigger asChild>
-          <div className="w-full bg-white rounded-t-2xl cursor-pointer border">
+          <div className="w-full bg- rounded-t-2xl cursor-pointer border">
             <div className="px-4 py-3">
               <div className="flex justify-between items-center">
                 <span className="text-base text-gray-500">สรุปรายการ</span>
@@ -137,7 +137,7 @@ export const MobileSummary = ({
                 )}
               </div>
             )}
-            // Payment
+            {/* PAYMENT */}
             {payment && (
               <div className="mt-6 space-y-2 pt-4 border-t">
                 <div className="flex justify-between">
