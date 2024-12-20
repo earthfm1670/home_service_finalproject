@@ -6,7 +6,7 @@ import MobileSummary from "@/components/service-detail/MobileSummary";
 import type { Service } from "@/types/service";
 
 interface LocationInfo {
-  date: Date | null;
+  date: Date | string | null;
   time: string | null;
   address: string;
   subDistrict: string;

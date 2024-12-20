@@ -32,10 +32,28 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
   const [discount, setDiscount] = useState<number>(0);
   const [selectedServices, setSelectedServices] =
     useState<SelectedServicesData | null>(null);
+  const [locationInfo, setLocationInfo] = useState({
+    date: "",
+    time: "",
+    address: "",
+    subDistrict: "",
+    district: "",
+    province: "",
+  });
+  const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
+
+  const [selectedDate, setSelectedDate] = useState<Date | string | null>(null);
+  const [selectedTime, setSelectedTime] = useState("09:00");
+  const [address, setAddress] = useState<string>("");
+
+  const [timeError, setTimeError] = useState("");
+  const [dateError, setDateError] = useState<string | null>(null);
+  const [additionalDetails, setAdditionalDetails] = useState<string>("");
 
   interface ServiceInfoPageProps {
     initialService?: Service | null;
   }
+
   interface SubService {
     id: number;
     description: string;
@@ -45,6 +63,11 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
   }
 
   useEffect(() => {
+    const sessionData = {
+      selectedServices: sessionStorage.getItem("selectedServices"),
+      paymentData: sessionStorage.getItem("paymentData"),
+    };
+
     // Load selected services from session storage
     const servicesData = sessionStorage.getItem("selectedServices");
 
@@ -66,22 +89,10 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
     if (paymentData) {
       const parsedData = JSON.parse(paymentData);
       setPayment(parsedData);
+      setLocationInfo(parsedData);
     }
   }, [service]);
-
-  // useEffect(() => {
-  //   // Load selected services from session storage
-  //   const servicesData = sessionStorage.getItem("selectedServices");
-  //   const paymentData = sessionStorage.getItem("paymentData");
-
-  //   if (servicesData) {
-  //     setSelectedServices(JSON.parse(servicesData));
-  //   }
-
-  //   if (paymentData) {
-  //     setPayment(JSON.parse(paymentData));
-  //   }
-  // }, []);
+  // End of useEffect
 
   const getSelectedServices = () => selectedServices?.selections || [];
 
@@ -146,25 +157,16 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
       </div>
       <div className="sticky bottom-0 z-10">
         <div className="px-4 py-8 mt-4 lg:mt-16 lg:px-32">
-          {/* <MobileSummary
-            getSelectedServices={getSelectedServices}
-            getQuantityDisplay={getQuantityDisplay}
-            calculateTotal={calculateTotal}
-            payment={payment}
-          /> */}
           <MobileBottomBar
             getSelectedServices={getSelectedServices}
             getQuantityDisplay={getQuantityDisplay}
             calculateTotal={calculateTotal}
+            canProceed={isFormComplete()}
+            handleProceed={handleProceed}
+            locationInfo={locationInfo}
           />
         </div>
       </div>
-
-      <NavigationButtons
-        onBack={() => router.back()}
-        handleProceed={handleProceed}
-        canProceed={isFormComplete()}
-      />
     </StripeContext>
   );
 };
