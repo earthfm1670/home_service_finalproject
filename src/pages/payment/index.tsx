@@ -6,14 +6,25 @@ import { ProgressStepsNew } from "@/components/service-detail/ProgressSteps";
 import Link from "next/link";
 import MobileSummary from "@/components/service-detail/MobileSummary";
 import MobileBottomBar from "@/components/service-detail/MobileBottomBar";
+import ServiceHero from "@/components/service-detail/ServiceHero";
+import { useRouter } from "next/router";
+import type { Service } from "@/types/service";
 
 //stand alone payment page, need to connect to service info later
-const PaymentPage: React.FC = () => {
-  const [service, setService] = useState<{
-    service_picture_url: string;
-    service_name: string;
-  } | null>(null);
+const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
+  const [service, setService] = useState<Service | null>(
+    initialService || null
+  );
+  const [selectPaymentData, setSelectPaymentData] =
+    useState<SelectedPaymentData | null>(null);
+  const router = useRouter();
 
+  const [selectedServices, setSelectedServices] =
+    useState<SelectedServicesData | null>(null);
+
+  interface ServiceInfoPageProps {
+    initialService?: Service | null;
+  }
   interface SubService {
     id: number;
     description: string;
@@ -21,6 +32,30 @@ const PaymentPage: React.FC = () => {
     unit: string;
     unit_price: number;
   }
+
+  useEffect(() => {
+    // Load selected services from session storage
+    const servicesData = sessionStorage.getItem("selectedServices");
+    const paymentData = sessionStorage.getItem("paymentData");
+    if (servicesData) {
+      const parsedData = JSON.parse(servicesData);
+      setSelectedServices(parsedData);
+
+      if (paymentData) {
+        const parsedData = JSON.parse(paymentData);
+        setSelectedServices(parsedData);
+      }
+
+      // Fetch service details if not provided as props
+      if (!service && parsedData.serviceId) {
+        getService(parsedData.serviceId).then((result) => {
+          if (result.data) {
+            setService(result.data);
+          }
+        });
+      }
+    }
+  }, [service]);
 
   const getSelectedServices: () => SubService[] = () => [
     {
@@ -44,16 +79,31 @@ const PaymentPage: React.FC = () => {
 
   const [currentStep, setCurrentStep] = useState(3);
 
-  useEffect(() => {
-    //Simulate API call to fetch service data
-    setService({
-      service_picture_url: "https://via.placeholder.com/1920x1080",
-      service_name: "Service Name",
-    });
-  }, []);
+  // useEffect(() => {
+  //   //Simulate API call to fetch service data
+  //   setService({
+  //     service_picture_url: "https://via.placeholder.com/1920x1080",
+  //     service_name: "Service Name",
+  //   });
+  // }, []);
 
   if (!service) {
     return <div>Loading...</div>;
+  }
+
+  async function getService(
+    id: string
+  ): Promise<{ data: Service | null; error?: string }> {
+    try {
+      const res = await fetch(`http://localhost:3000/api/services/${id}`);
+      if (!res.ok) {
+        throw new Error("Failed to fetch service");
+      }
+      return res.json();
+    } catch (error) {
+      console.error("Error fetching service:", error);
+      return { data: null, error: "Failed to fetch service" };
+    }
   }
 
   return (
@@ -62,6 +112,7 @@ const PaymentPage: React.FC = () => {
         {/* <h1>Payment Page</h1> */}
         <Navbar />
         {/* Hero Section */}
+        <ServiceHero service={service} />
         <div className="relative h-[168px] w-full lg:h-56">
           <img
             src={service.service_picture_url}
