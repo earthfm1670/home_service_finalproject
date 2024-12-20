@@ -8,11 +8,11 @@ import IconWarning from "@/components/ui/Iconwarning";
 import IconX from "@/components/ui/IconX";
 
 export default function AdminNavbar() {
-  const [input, setInput] = useState("");
+  const [search, setSearch] = useState("");
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(event.target.value);
+    setSearch(event.target.value);
   };
-  console.log(input);
+  console.log(search);
 
   const router = useRouter();
 
@@ -47,7 +47,7 @@ export default function AdminNavbar() {
               </button>
             </div>
           </div>
-          <AdminserviceIndex input={input} />
+          <AdminserviceIndex search={search} />
         </div>
       </div>
     </>
@@ -56,7 +56,7 @@ export default function AdminNavbar() {
 
 //---------------------------------------------------------------------------------------
 
-export const AdminserviceIndex = ({ input }: { input: string | null }) => {
+export const AdminserviceIndex = ({ search }: { search: string | null }) => {
   interface Service {
     id: string;
     service_id: number;
@@ -67,25 +67,22 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
     updated_at: string;
   }
 
-
   // ดึงข้อมูลจาก Context
   // สร้าง state เพื่อมารับข้อมูล service
   // const { getServicesData, servicesData } = useServices();
   // console.log(servicesData, 1);
   const [serviceList, setServicesList] = useState<Service[]>([]);
+  const [serviceListNull, setServicesListNull] = useState<Service[]>([]);
   console.log(serviceList);
 
   const fetchUser = async () => {
     try {
-      const response = await axios.get(`/api/admin/getdataAdmin?search=${input}`);
-      // console.log("test response 101");
-      if(response.data.data.length !== 0){
+      const response = await axios.get(
+        `/api/admin/getdataAdmin?search=${search}`
+      );
         setServicesList(response.data.data);
-      }
-      
-      // console.log(response.data.data, "test response 103");
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching data:", error);
     }
   };
 
@@ -95,7 +92,7 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
     //   setServicesList(servicesData);
     // }
     fetchUser();
-  }, [input]);
+  }, [search]);
 
   // style text category
   // const categoryNameMap: Record<number, string> = {
@@ -207,7 +204,6 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
                             )}
                           </td>
 
-                          
                           <td className="flex flex-row items-center justify-between px-6 py-7 ">
                             <IconTrash
                               id={service.service_id}
