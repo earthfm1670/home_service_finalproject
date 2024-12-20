@@ -30,7 +30,6 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
   );
   const [payment, setPayment] = useState<PaymentInfo | null>(null);
   const [discount, setDiscount] = useState<number>(0);
-
   const [selectedServices, setSelectedServices] =
     useState<SelectedServicesData | null>(null);
 
@@ -132,39 +131,13 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
       </div>
       <div className="sticky bottom-0 z-10">
         <div className="px-4 py-8 mt-4 lg:mt-16 lg:px-32">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Summary Section */}
-            <DesktopSummary
-              getSelectedServices={() => selectedServices?.selections || []}
-              getQuantityDisplay={(id: number) =>
-                selectedServices?.selections.find((s) => s.id === id)
-                  ?.quantity || 0
-              }
-              calculateTotal={() => {
-                const total = selectedServices?.totalAmount;
-                return typeof total === "number" && !isNaN(total) ? total : 0;
-              }}
-              getPriceDisplay={(id: number) => {
-                const service = selectedServices?.selections.find(
-                  (s) => s.id === id
-                );
-                return typeof service?.unit_price === "number" &&
-                  !isNaN(service?.unit_price)
-                  ? service.unit_price
-                  : 0;
-              }}
-              isServiceInfoPage={true}
-              isServiceDetailPage={true}
-            />
-          </div>
+          <MobileSummary
+            getSelectedServices={getSelectedServices}
+            getQuantityDisplay={getQuantityDisplay}
+            calculateTotal={calculateTotal}
+            payment={payment}
+          />
         </div>
-        {/* divider */}
-        <MobileSummary
-          getSelectedServices={getSelectedServices}
-          getQuantityDisplay={getQuantityDisplay}
-          calculateTotal={calculateTotal}
-          payment={payment}
-        />
         <MobileBottomBar
           canProceed
           calculateTotal={calculateTotal}

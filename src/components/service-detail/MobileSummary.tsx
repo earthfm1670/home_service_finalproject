@@ -87,7 +87,6 @@ export const MobileSummary = ({
                 ไม่มีรายการที่เลือก
               </div>
             )}
-
             {locationInfo && (
               <div className="mt-6 space-y-2 pt-4 border-t">
                 <div className="flex justify-between">
@@ -137,8 +136,8 @@ export const MobileSummary = ({
                   </div>
                 )}
               </div>
-              // Payment
             )}
+            // Payment
             {payment && (
               <div className="mt-6 space-y-2 pt-4 border-t">
                 <div className="flex justify-between">
