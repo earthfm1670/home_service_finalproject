@@ -47,6 +47,9 @@ export const MobileSummary = ({
 }: MobileSummaryProps & { discount?: number }) => {
   const [isOrderSummaryOpen, setIsOrderSummaryOpen] = useState(false);
 
+  const preDiscountTotal = calculateTotal();
+  const discountAmount = preDiscountTotal * discount * 100;
+
   return (
     <div className="rounded-t-2xl bg-white shadow-sm">
       <Collapsible
@@ -200,9 +203,9 @@ export const MobileSummary = ({
         {discount > 0 && (
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-gray-600">ส่วนลด</span>
-            <span className="text-sm font-semibold text-green-600">
+            <span className="text-sm font-normal text-[#C82438]">
               -
-              {(calculateTotal() * discount).toLocaleString("th-TH", {
+              {discountAmount.toLocaleString("th-TH", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
