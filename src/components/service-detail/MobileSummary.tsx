@@ -45,7 +45,6 @@ export const MobileSummary = ({
   locationInfo,
   payment,
   discount = 0,
-
   totalAmount,
 }: MobileSummaryProps & {
   discount?: number;
