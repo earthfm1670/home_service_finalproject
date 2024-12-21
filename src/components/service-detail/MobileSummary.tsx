@@ -56,7 +56,7 @@ export const MobileSummary = ({
   } | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const preDiscountTotal = sessionData ? sessionData.totalAmount : 0;
+  const preDiscountTotal = totalAmount;
   const discountAmount = preDiscountTotal * discount;
   console.log(totalAmount);
 
