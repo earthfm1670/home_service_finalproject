@@ -103,7 +103,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ setDiscount }) => {
   };
 
   const customCvcOptions = {
-    ...elementStyle,
+    style: elementStyle,
     placeholder: "XXX",
   };
 
@@ -115,7 +115,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ setDiscount }) => {
       <div className="mx-3 mt-2 text-[18px] text-gray-700 font-medium lg:mx-6 lg:text-[20px] lg:py-6 hidden lg:block">
         ชำระเงิน
       </div>
-      <div className="mx-3 mb-2 h-[95px] flex justify-between lg:justify-center lg:gap-6">
+      <div className="mx-3 mb-2 h-[95px] flex justify-between lg:justify-center lg:gap-6 lg:mb-6">
         {/* Promptpay Option */}
         <div
           className={`w-[147px] h-[95px] lg:w-[331px] lg:h-[86px] border rounded-sm flex flex-col justify-center items-center cursor-pointer ${
@@ -178,20 +178,16 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ setDiscount }) => {
       {selectedPayment === "creditcard" ? (
         <>
           <form onSubmit={handleSubmit} className="bg-white">
-            <div className="mx-3 my-2 lg:mx-6">
+            <div className="mx-3 my-2 lg:mx-6 lg:my-6">
               <label className="block">
                 หมายเลขบัตรเครดิต<span className="text-[#C82438]">*</span>
               </label>
               <CardNumberElement
                 options={customCardNumberOptions}
                 className="block w-full h-[44px] border border-gray-300 rounded-md py-2 px-2"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                }}
               />
             </div>
-            <div className="mx-3 lg:mx-6">
+            <div className="mx-3 lg:mx-6 lg:my-6">
               <label className="block mb-2">
                 ชื่อบนบัตร<span className="text-[#C82438]">*</span>
                 <input
@@ -204,27 +200,31 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ setDiscount }) => {
               </label>
             </div>
             <div>
-              <div className="mx-3 mb-4 lg:mx-6">
-                <label className="block">
-                  วันหมดอายุ<span className="text-[#C82438]">*</span>
-                </label>
-                <CardExpiryElement
-                  options={{ style: elementStyle }}
-                  className="block w-full h-[44px] border border-gray-300 rounded-md py-2 px-2"
-                />
+              {/* div for expiry and cvc */}
+              <div className="lg:flex lg:w-[686px] lg:ml-6 lg:justify-between lg:my-6">
+                <div className="mx-3 mb-4 lg:mx-0">
+                  <label className="block">
+                    วันหมดอายุ<span className="text-[#C82438]">*</span>
+                  </label>
+                  <CardExpiryElement
+                    options={{ style: elementStyle }}
+                    className="block w-full lg:w-[331px] h-[44px] border border-gray-300 rounded-md py-2 px-2"
+                  />
+                </div>
+                <div className="mx-3 mb-4 lg:mx-0">
+                  <label className="block">
+                    รหัส CVC / CVV<span className="text-[#C82438]">*</span>
+                  </label>
+                  <CardCvcElement
+                    options={customCvcOptions}
+                    className="block w-full lg:w-[331px] h-[44px] border border-gray-300 rounded-md py-2 px-2"
+                  />
+                </div>
               </div>
-              <div className="mx-3 mb-4 lg:mx-6">
-                <label className="block">
-                  รหัส CVC / CVV<span className="text-[#C82438]">*</span>
-                </label>
-                <CardCvcElement
-                  options={customCvcOptions}
-                  className="block w-full border border-gray-300 rounded-md py-2 px-2"
-                />
-              </div>
+
               {/* divider line */}
               <div className="border-t border-gray-300 my-6 mb-8 mx-3 lg:mx-6"></div>
-              <div className="mx-3 mb-6 lg:mx-6">
+              <div className="mx-3 mb-6 lg:mx-6 lg:my-6 lg:pb-6">
                 <label>Promotion Code</label>{" "}
                 <div className="flex items-center gap-4">
                   <input
