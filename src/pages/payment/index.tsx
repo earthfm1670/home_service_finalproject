@@ -152,7 +152,7 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
         {/* Hero Section */}
         <ServiceHero service={service} />
       </div>
-      <div className="mt-14 lg:flex lg:mt-28 lg:flex-row lg:justify-center lg:gap-20">
+      <div className="mt-14 lg:flex lg:mt-28 lg:flex-row lg:justify-center lg:gap-4 lg:mr-4">
         <div className=" overflow-y-auto pb-28 lg:pb-10">
           <PaymentForm setDiscount={setDiscount} />
         </div>
