@@ -38,7 +38,7 @@ export default function ServiceHero({ service }: ServiceHeroProps) {
       <div className="absolute inset-0 bg-[#163C9366]">
         <div className="px-4 pt-9 lg:px-32 lg:mt-5">
           {/* Breadcrumb */}
-          <div className="bg-white rounded-md py-2 px-4 inline-flex items-center space-x-2 lg:p-5">
+          <div className="bg-white rounded-md py-2 px-4 inline-flex items-center space-x-2 lg:p-5 lg:ml-8">
             <Link
               href="/services"
               className="text-gray-500 hover:text-blue-600 text-sm"
