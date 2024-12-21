@@ -155,7 +155,7 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
         </div>
 
         <div className="mt-14 lg:flex lg:mt-28 lg:flex-row lg:justify-center lg:gap-4 lg:mr-4">
-          <div className=" overflow-y-auto pb-28 lg:pb-10">
+          <div className="overflow-y-auto pb-28 lg:pb-0">
             <PaymentForm setDiscount={setDiscount} />
           </div>
           <div className="lg:w-[349px] lg:h-[374px]">
@@ -170,7 +170,7 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
             />
           </div>
         </div>
-        <div>
+        <div className="">
           <NavigationButtons
             canProceed={isFormComplete()}
             handleProceed={handleProceed}
