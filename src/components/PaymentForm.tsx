@@ -226,7 +226,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ setDiscount }) => {
               <div className="border-t border-gray-300 my-6 mb-8 mx-3 lg:mx-6"></div>
               <div className="mx-3 mb-6 lg:mx-6 lg:my-6 lg:pb-6">
                 <label>Promotion Code</label>{" "}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-5">
                   <input
                     type="text"
                     value={promoCode}
