@@ -40,6 +40,8 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
     district: "",
     province: "",
   });
+
+  const [totalAmount, setTotalAmount] = useState<number>(0);
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
 
   const [selectedDate, setSelectedDate] = useState<Date | string | null>(null);
@@ -74,6 +76,7 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
     if (servicesData) {
       const parsedData = JSON.parse(servicesData);
       setSelectedServices(parsedData);
+      setTotalAmount(parsedData.totalAmount);
 
       // Fetch service details if not provided as props (comment)
       if (!service && parsedData.serviceId) {
@@ -186,6 +189,7 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
               handleProceed={handleProceed}
               locationInfo={locationInfo}
               discount={discount}
+              totalAmount={totalAmount}
             />
           </div>
         </div>
