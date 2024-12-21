@@ -146,13 +146,14 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
 
   return (
     <StripeContext>
-      <div className="flex flex-col h-min-screen">
-        {/* <h1>Payment Page</h1> */}
-        <Navbar />
-        {/* Hero Section */}
-        <ServiceHero service={service} />
-      </div>
       <div className="bg-gray-100">
+        <div className="flex flex-col h-min-screen">
+          {/* <h1>Payment Page</h1> */}
+          <Navbar />
+          {/* Hero Section */}
+          <ServiceHero service={service} />
+        </div>
+
         <div className="mt-14 lg:flex lg:mt-28 lg:flex-row lg:justify-center lg:gap-4 lg:mr-4">
           <div className=" overflow-y-auto pb-28 lg:pb-10">
             <PaymentForm setDiscount={setDiscount} />
@@ -168,6 +169,12 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
               discount={discount}
             />
           </div>
+        </div>
+        <div>
+          <NavigationButtons
+            canProceed={isFormComplete()}
+            handleProceed={handleProceed}
+          />
         </div>
         <div className="sticky bottom-0 z-10">
           <div className="px-4 py-8 mt-4 lg:mt-16 lg:px-32">
