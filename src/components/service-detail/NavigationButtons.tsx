@@ -29,7 +29,10 @@ export const NavigationButtons = ({
     }
   };
   return (
-    <div className="hidden lg:block fixed bottom-0 left-0 right-0 bg-white border-t">
+    <div
+      className="hidden lg:block fixed bottom-0 left-0 right-0 bg-white border-t"
+      style={{ zIndex: 9999 }}
+    >
       <div className="px-4 py-4 lg:px-32">
         <div className="flex justify-between">
           <Button

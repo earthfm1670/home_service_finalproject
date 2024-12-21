@@ -180,6 +180,8 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
             // canProceed={isFormComplete()}
             canProceed={true}
             handleProceed={handleProceed}
+            backButtonText="ย้อนกลับ"
+            proceedButtonText="ดำเนินการต่อ"
           />
         </div>
         <div className="sticky bottom-0 z-10">
