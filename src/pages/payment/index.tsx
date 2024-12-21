@@ -140,10 +140,10 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
   };
 
   const handleProceed = () => {
-    if (!isFormComplete()) {
-      alert("Please complete all required fields before proceeding.");
-      return;
-    }
+    // if (!isFormComplete()) {
+    //   alert("Please complete all required fields before proceeding.");
+    //   return;
+    // }
     router.push("/paymentsuccess");
   };
 
@@ -166,7 +166,8 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
               getSelectedServices={getSelectedServices}
               getQuantityDisplay={getQuantityDisplay}
               calculateTotal={calculateTotal}
-              canProceed={isFormComplete()}
+              // canProceed={isFormComplete()}
+              canProceed={true}
               handleProceed={handleProceed}
               locationInfo={locationInfo}
               discount={discount}
@@ -176,7 +177,8 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
         </div>
         <div className="">
           <NavigationButtons
-            canProceed={isFormComplete()}
+            // canProceed={isFormComplete()}
+            canProceed={true}
             handleProceed={handleProceed}
           />
         </div>
