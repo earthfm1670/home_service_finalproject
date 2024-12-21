@@ -11,7 +11,7 @@ export const ProgressStepsNew = ({ currentStep }: { currentStep: number }) => {
 
   return (
     <div className="lg:flex lg:justify-center">
-      <Card className="p-4 mt-5 g:p-6 lg:mt-8 lg:p-8 lg:w-[1118px]">
+      <Card className="p-4 mt-5 g:p-6 lg:mt-8 lg:p-8 lg:w-[1119px]">
         <div className="relative">
           {/* Progress Line */}
           <div className="absolute top-5 left-[16%] right-[16%] h-0.5 bg-gray-200" />
