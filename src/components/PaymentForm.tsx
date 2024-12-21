@@ -108,7 +108,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ setDiscount }) => {
   };
 
   return (
-    <div className="border mt-14 mx-4 rounded-lg bg-white lg:w-[735px] lg:mt-28">
+    <div className="border mt-14 mx-4 mb-10 rounded-lg bg-white lg:w-[735px] lg:mt-28">
       <div className="mx-3 mt-2 text-[18px] text-gray-700 font-medium lg:mx-6 lg:text-[20px] lg:py-6 lg:hidden">
         กรอกข้อมูลบริการ
       </div>
