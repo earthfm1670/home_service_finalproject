@@ -38,8 +38,8 @@ export function Navbar() {
   };
 
   return (
-    <div className="flex justify-between items-center border shadow-lg p-2 px-4 bg-white lg:px-32 lg:ml-10 ">
-      <div className="flex gap-10 cursor-pointer lg:items-center">
+    <div className="flex justify-between items-center border shadow-lg p-2 px-4 bg-white lg:px-32 ">
+      <div className="flex gap-10 cursor-pointer lg:items-center lg:ml-8">
         <img
           src="/image/homeservicelogo.svg"
           onClick={redirectToHome}
