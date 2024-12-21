@@ -22,6 +22,7 @@ interface MobileBottomBarProps {
   handleProceed: () => void;
   locationInfo?: LocationInfo;
   isServiceInfoPage?: boolean; // Add this new prop
+  discount: number;
 }
 
 export const MobileBottomBar = ({
@@ -32,6 +33,7 @@ export const MobileBottomBar = ({
   handleProceed,
   locationInfo,
   isServiceInfoPage = false, // Add this new prop with a default value
+  discount,
 }: MobileBottomBarProps) => {
   const router = useRouter();
 
@@ -43,6 +45,7 @@ export const MobileBottomBar = ({
         getQuantityDisplay={getQuantityDisplay}
         calculateTotal={calculateTotal}
         locationInfo={locationInfo}
+        discount={discount}
       />
 
       {/* Navigation Buttons */}

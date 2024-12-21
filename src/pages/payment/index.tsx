@@ -164,6 +164,7 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
             canProceed={isFormComplete()}
             handleProceed={handleProceed}
             locationInfo={locationInfo}
+            discount={discount}
           />
         </div>
       </div>

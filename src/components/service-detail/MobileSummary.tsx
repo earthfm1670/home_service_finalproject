@@ -34,6 +34,7 @@ interface MobileSummaryProps {
   calculateTotal: () => number;
   locationInfo?: LocationInfo;
   payment?: PaymentInfo;
+  discount: number;
 }
 
 export const MobileSummary = ({
@@ -42,7 +43,8 @@ export const MobileSummary = ({
   calculateTotal,
   locationInfo,
   payment,
-}: MobileSummaryProps) => {
+  discount = 0,
+}: MobileSummaryProps & { discount?: number }) => {
   const [isOrderSummaryOpen, setIsOrderSummaryOpen] = useState(false);
 
   return (
@@ -194,6 +196,21 @@ export const MobileSummary = ({
 
       {/* ส่วนแสดงยอดรวมที่อยู่ด้านล่างสุด */}
       <div className="px-4 py-3 bg-white border-t">
+        {/* discount amount */}
+        {discount > 0 && (
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm text-gray-600">ส่วนลด</span>
+            <span className="text-sm font-semibold text-green-600">
+              -
+              {(calculateTotal() * discount).toLocaleString("th-TH", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+              {""} ฿
+            </span>
+          </div>
+        )}
+
         <div className="flex justify-between items-center">
           <span className="text-sm text-gray-600">รวม</span>
           <span className="text-base font-semibold">
