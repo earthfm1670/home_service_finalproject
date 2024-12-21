@@ -152,33 +152,35 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
         {/* Hero Section */}
         <ServiceHero service={service} />
       </div>
-      <div className="mt-14 lg:flex lg:mt-28 lg:flex-row lg:justify-center lg:gap-4 lg:mr-4">
-        <div className=" overflow-y-auto pb-28 lg:pb-10">
-          <PaymentForm setDiscount={setDiscount} />
+      <div className="bg-gray-100">
+        <div className="mt-14 lg:flex lg:mt-28 lg:flex-row lg:justify-center lg:gap-4 lg:mr-4">
+          <div className=" overflow-y-auto pb-28 lg:pb-10">
+            <PaymentForm setDiscount={setDiscount} />
+          </div>
+          <div className="lg:w-[349px] lg:h-[374px]">
+            <DesktopSummary
+              getSelectedServices={getSelectedServices}
+              getQuantityDisplay={getQuantityDisplay}
+              calculateTotal={calculateTotal}
+              canProceed={isFormComplete()}
+              handleProceed={handleProceed}
+              locationInfo={locationInfo}
+              discount={discount}
+            />
+          </div>
         </div>
-        <div className="lg:w-[349px] lg:h-[374px]">
-          <DesktopSummary
-            getSelectedServices={getSelectedServices}
-            getQuantityDisplay={getQuantityDisplay}
-            calculateTotal={calculateTotal}
-            canProceed={isFormComplete()}
-            handleProceed={handleProceed}
-            locationInfo={locationInfo}
-            discount={discount}
-          />
-        </div>
-      </div>
-      <div className="sticky bottom-0 z-10">
-        <div className="px-4 py-8 mt-4 lg:mt-16 lg:px-32">
-          <MobileBottomBar
-            getSelectedServices={getSelectedServices}
-            getQuantityDisplay={getQuantityDisplay}
-            calculateTotal={calculateTotal}
-            canProceed={isFormComplete()}
-            handleProceed={handleProceed}
-            locationInfo={locationInfo}
-            discount={discount}
-          />
+        <div className="sticky bottom-0 z-10">
+          <div className="px-4 py-8 mt-4 lg:mt-16 lg:px-32">
+            <MobileBottomBar
+              getSelectedServices={getSelectedServices}
+              getQuantityDisplay={getQuantityDisplay}
+              calculateTotal={calculateTotal}
+              canProceed={isFormComplete()}
+              handleProceed={handleProceed}
+              locationInfo={locationInfo}
+              discount={discount}
+            />
+          </div>
         </div>
       </div>
     </StripeContext>
