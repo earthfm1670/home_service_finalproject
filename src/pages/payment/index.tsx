@@ -170,6 +170,7 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
               handleProceed={handleProceed}
               locationInfo={locationInfo}
               discount={discount}
+              totalAmount={totalAmount}
             />
           </div>
         </div>
