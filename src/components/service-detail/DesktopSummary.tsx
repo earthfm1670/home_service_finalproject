@@ -87,15 +87,11 @@ export const DesktopSummary: React.FC<DesktopSummaryProps> = ({
                   key={subService.id}
                   className="flex justify-between text-sm"
                 >
-                  <span>
-                    {subService.description} x {quantity || 0}
+                  <span className="text-[14px] font-light text-black">
+                    {subService.description}
                   </span>
-                  <span className="text-nowrap">
-                    {total.toLocaleString("th-TH", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}{" "}
-                    ฿
+                  <span className="text-[14px] font-light text-gray-900">
+                    {quantity} รายการ
                   </span>
                 </div>
               );
