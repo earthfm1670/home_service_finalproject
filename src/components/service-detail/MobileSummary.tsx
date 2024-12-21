@@ -60,33 +60,6 @@ export const MobileSummary = ({
   const discountAmount = preDiscountTotal * discount;
   console.log(totalAmount);
 
-  useEffect(() => {
-    const storedPaymentData = localStorage.getItem("paymentData");
-    console.log("storedPaymentData", storedPaymentData);
-    if (storedPaymentData) {
-      setSessionData(JSON.parse(storedPaymentData));
-    }
-    setLoading(false);
-
-    function checkUserData(event: StorageEvent) {
-      const storedPaymentData = localStorage.getItem("paymentData");
-      console.log(event);
-      if (storedPaymentData) {
-        setSessionData(JSON.parse(storedPaymentData));
-      }
-    }
-
-    window.addEventListener("storage", checkUserData);
-
-    return () => {
-      window.removeEventListener("storage", checkUserData);
-    };
-  }, []);
-
-  useEffect(() => {
-    console.log("sessionData", sessionData);
-  }, [sessionData]);
-
   return (
     <div className="rounded-t-2xl bg-white shadow-sm">
       <Collapsible
@@ -254,7 +227,7 @@ export const MobileSummary = ({
         <div className="flex justify-between items-center">
           <span className="text-sm text-gray-600">รวม</span>
           <span className="text-base font-semibold">
-            {calculateTotal().toLocaleString("th-TH", {
+            {(totalAmount - discountAmount).toLocaleString("th-TH", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}{" "}
