@@ -1,6 +1,42 @@
 import { Navbar } from "@/components/navbar";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 function PaymentSuccess() {
+  const router = useRouter();
+  const { selectedServices, date, time, address } = router.query;
+  const [services, setServices] = useState([]);
+
+  useEffect(() => {
+    if (selectedServices) {
+      try {
+        const parsedServices = JSON.parse(selectedServices as string);
+        console.log("Parsed Services:", parsedServices.selections);
+        setServices(parsedServices.selections || []);
+      } catch (error) {
+        console.error("Failed to parse selected services:", error);
+      }
+    }
+  }, [selectedServices]);
+
+  console.log("Services State:", services);
+
+  const formatDate = (dateString: string) => {
+    const dateObj = new Date(dateString);
+
+    const options: Intl.DateTimeFormatOptions = {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    };
+
+    return new Intl.DateTimeFormat("th-TH", options).format(dateObj);
+  };
+
+  const formattedDate = date ? formatDate(date as string) : "Not available";
+  const formattedTime = time || "Not available";
+  const formattedAddress = address || "Not available";
+
   return (
     <>
       <div className="min-h-screen bg-[#F3F4F6]">
@@ -22,34 +58,49 @@ function PaymentSuccess() {
             </div>
             {/* bottom div */}
             <div className="h-[201px] mx-4 my-6">
-              <div className="flex justify-between lg:my-6">
-                <p className="font-normal text-[14px] text-black">
-                  9,000 - 18,000 BTU, แบบติดผนัง
-                </p>
+              {services.length > 0 ? (
+                <div className="flex justify-between lg:my-6 border-b border-gray-300 pb-2 mb-2">
+                  <p className="font-normal text-[14px] text-black">
+                    {services.map((service) => service.description).join(", ")}
+                  </p>
+                  <p className="font-normal text-[14px] text-gray-700">
+                    {services.reduce(
+                      (total, service) => total + service.quantity,
+                      0
+                    )}{" "}
+                    รายการ
+                  </p>
+                </div>
+              ) : (
+                <p>No services selected.</p>
+              )}
+              {/* <div className="flex justify-between lg:my-6">
+                <p className="font-normal text-[14px] text-black">servicename</p>
                 <p className="font-normal text-[14px] text-gray-700">
                   2 รายการ
                 </p>
-              </div>
+              </div> */}
               {/* divider */}
               <div className="border-t border-gray-300 my-3 lg:my-6"></div>
               <div>
                 <div className="flex justify-between my-2 lg:my-4">
                   <p className="text-[14px] text-gray-700 font-light">วันที่</p>
                   <p className="text-[14px] text-black font-normal">
-                    23 เม.ย. 2022
+                    {formattedDate || "Not available"}
                   </p>
                 </div>
                 <div className="flex justify-between my-2 lg:my-4">
                   <p className="text-[14px] text-gray-700 font-light">เวลา</p>
-                  <p className="text-[14px] text-black font-normal">11.00 น.</p>
+                  <p className="text-[14px] text-black font-normal">
+                    {formattedTime + " น." || "Not available"}
+                  </p>
                 </div>
                 <div className="flex justify-between my-2 lg:my-4">
                   <p className="text-[14px] text-gray-700 font-light">
                     สถานที่
                   </p>
                   <p className="text-[14px] text-black font-normal text-right">
-                    444/4 คอนโดสุภาลัย เสนานิคม <br />
-                    จตุจักร กรุงเทพฯ
+                    {formattedAddress || "Not available"}
                   </p>
                 </div>
                 {/* divider */}
