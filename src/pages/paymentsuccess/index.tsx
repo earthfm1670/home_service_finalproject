@@ -4,8 +4,16 @@ import { useEffect, useState } from "react";
 
 function PaymentSuccess() {
   const router = useRouter();
-  const { selectedServices, date, time, address, totalAmountAfterDiscount } =
-    router.query;
+  const {
+    selectedServices,
+    date,
+    time,
+    address,
+    district,
+    subDistrict,
+    province,
+    totalAmountAfterDiscount,
+  } = router.query;
   const [services, setServices] = useState([]);
 
   useEffect(() => {
@@ -36,7 +44,9 @@ function PaymentSuccess() {
 
   const formattedDate = date ? formatDate(date as string) : "Not available";
   const formattedTime = time || "Not available";
-  const formattedAddress = address || "Not available";
+  const formattedAddress = `${
+    address || "Not available"
+  }, ${subDistrict}, ${district}, ${province}`;
 
   return (
     <>
@@ -82,7 +92,7 @@ function PaymentSuccess() {
                 </p>
               </div> */}
               {/* divider */}
-              <div className="border-t border-gray-300 my-3 lg:my-6"></div>
+              {/* <div className="border-t border-gray-300 my-3 lg:my-6"></div> */}
               <div>
                 <div className="flex justify-between my-2 lg:my-4">
                   <p className="text-[14px] text-gray-700 font-light">วันที่</p>

@@ -159,6 +159,9 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
         date: locationInfo.date,
         time: locationInfo.time,
         address: locationInfo.address,
+        subDistrict: locationInfo.subDistrict,
+        district: locationInfo.district,
+        province: locationInfo.province,
         totalAmountAfterDiscount: discountedTotal.toFixed(2),
       },
     });
