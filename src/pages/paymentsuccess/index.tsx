@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 
 function PaymentSuccess() {
   const router = useRouter();
-  const { selectedServices, date, time, address } = router.query;
+  const { selectedServices, date, time, address, totalAmountAfterDiscount } =
+    router.query;
   const [services, setServices] = useState([]);
 
   useEffect(() => {
@@ -108,7 +109,7 @@ function PaymentSuccess() {
                 <div className="flex justify-between">
                   <p className="text-[16px] text-gray-700 font-light">รวม</p>
                   <p className="text-[16px] text-black font-medium lg:font-semibold">
-                    1,550.00 ฿
+                    {totalAmountAfterDiscount + " ฿" || "0.00 ฿"}
                   </p>
                 </div>
               </div>

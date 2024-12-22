@@ -144,10 +144,14 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
     //   alert("Please complete all required fields before proceeding.");
     //   return;
     // }
+
+    const discountedTotal = calculateTotal();
+
     console.log("Selected Services Before Nav:", selectedServices);
     console.log("date", locationInfo.date);
     console.log("time", locationInfo.time);
     console.log("address", locationInfo.address);
+    console.log("totalAmount", discountedTotal.toFixed(2));
     router.push({
       pathname: "/paymentsuccess",
       query: {
@@ -155,6 +159,7 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
         date: locationInfo.date,
         time: locationInfo.time,
         address: locationInfo.address,
+        totalAmountAfterDiscount: discountedTotal.toFixed(2),
       },
     });
   };
