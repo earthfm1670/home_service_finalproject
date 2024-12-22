@@ -144,7 +144,19 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
     //   alert("Please complete all required fields before proceeding.");
     //   return;
     // }
-    router.push("/paymentsuccess");
+    console.log("Selected Services Before Nav:", selectedServices);
+    console.log("date", locationInfo.date);
+    console.log("time", locationInfo.time);
+    console.log("address", locationInfo.address);
+    router.push({
+      pathname: "/paymentsuccess",
+      query: {
+        selectedServices: JSON.stringify(selectedServices),
+        date: locationInfo.date,
+        time: locationInfo.time,
+        address: locationInfo.address,
+      },
+    });
   };
 
   return (
