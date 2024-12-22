@@ -74,7 +74,7 @@ function PaymentSuccess() {
                   <p className="font-normal text-[14px] text-black">
                     {services.map((service) => service.description).join(", ")}
                   </p>
-                  <p className="font-normal text-[14px] text-gray-700">
+                  <p className="font-normal text-[14px] text-gray-700 flex-shrink-0 text-right">
                     {services.reduce(
                       (total, service) => total + service.quantity,
                       0
@@ -107,7 +107,7 @@ function PaymentSuccess() {
                   </p>
                 </div>
                 <div className="flex justify-between my-2 lg:my-4">
-                  <p className="text-[14px] text-gray-700 font-light">
+                  <p className="text-[14px] text-gray-700 font-light flex-shrink-0">
                     สถานที่
                   </p>
                   <p className="text-[14px] text-black font-normal text-right">
