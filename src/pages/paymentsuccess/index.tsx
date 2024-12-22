@@ -53,10 +53,10 @@ function PaymentSuccess() {
       <div className="min-h-screen bg-[#F3F4F6]">
         <Navbar />
         <div className="lg:flex lg:justify-center">
-          <div className="h-[475px] lg:h-[600px] lg:w-[542px] border border-gray-300 mx-4 my-8 bg-white rounded-md">
+          <div className=" lg:h-[600px] lg:w-[542px] border border-gray-300 mx-4 my-8 bg-white rounded-md">
             {/* top div */}
             <div className="h-[118px] mx-4 flex flex-col justify-center items-center mt-8 lg:my-12 gap-4 lg:gap-6">
-              <div className="">
+              <div>
                 <img
                   src="/image/paymentsuccess.svg"
                   alt="checkmarkicon"
@@ -68,7 +68,7 @@ function PaymentSuccess() {
               </p>
             </div>
             {/* bottom div */}
-            <div className="h-[201px] mx-4 my-6">
+            <div className="flex-grow mx-4 my-6">
               {services.length > 0 ? (
                 <div className="flex justify-between lg:my-6 border-b border-gray-300 pb-2 mb-2">
                   <p className="font-normal text-[14px] text-black">
