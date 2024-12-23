@@ -146,7 +146,7 @@ export const AdminserviceIndex = ({ search }: { search: string | null }) => {
                         <td
                           className={`px-6 cursor-pointer`}
                           onClick={() =>
-                            router.push(`/adminservice/detail/${category.id}`)
+                            router.push(`/admincategory/detail/${category.id}`)
                           }
                         >
                           {category.category}
