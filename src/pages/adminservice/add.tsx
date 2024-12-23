@@ -8,6 +8,17 @@ import IconPicture from "@/components/ui/IconPicture";
 import IconDrag from "@/components/ui/IconDragAddAdmin";
 import IconPlusDefaultColor from "@/components/ui/IconPluseDefaultColor";
 import { stringify } from "querystring";
+import IconWarning from "@/components/ui/Iconwarning";
+import IconX from "@/components/ui/IconX";
+import { Check } from "lucide-react";
+import IconCheck from "@/components/ui/IconCheck";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface SubService {
   description: string;
@@ -16,14 +27,13 @@ interface SubService {
 }
 
 export default function AdminNavbar() {
-  const [inputSubservice, setInputSubservice] = useState<SubService[]>([
-    { description: "", unit: "", pricePerUnit: 0 },
-  ]);
+  const [inputSubservice, setInputSubservice] = useState<SubService[]>([]);
   const [inputTitle, setInputTitle] = useState("");
-  const [inputCat, setInputCat] = useState("");
+  const [inputCat, setInputCat] = useState<number>();
   const [inputImage, setInputImage] = useState<File>();
   const [URLimage, setURLimage] = useState<String>();
-  const [showPopup, setShowPopup] = useState<boolean>(false);
+  const [showPopUpSubmit, setShowPopUpSubmit] = useState<Boolean>(false);
+  const [showPopUpDeleteImg, setShowPopUpDeleteImg] = useState<Boolean>(false);
 
   // console.log("inputImage", inputImage);
 
@@ -54,15 +64,19 @@ export default function AdminNavbar() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    // if (e.key === "Enter") {
+    //   e.preventDefault(); // ปิดการทำงานของ Enter
+    //   return;
+    // }
 
     const formData = new FormData();
     formData.append("title", inputTitle);
-    formData.append("category_id", inputCat);
+    formData.append("category_id", inputCat?.toString() || "");
     if (inputImage) {
       formData.append("image", inputImage);
     }
     formData.append("subservices", JSON.stringify(inputSubservice));
-  
+
     // // วนลูปเพื่อแสดงข้อมูลใน FormData
     // console.log("FormData contents:");
     // for (let [key, value] of formData.entries()) {
@@ -72,11 +86,11 @@ export default function AdminNavbar() {
     // การแสดงข้อมูลข้างใน formdata ได้นั้นต้องใช้วิธีการ loop
     console.log("FormData contents:");
     let formDataObject: { [key: string]: any } = []; // สร้าง object เปล่าเพื่อเก็บข้อมูล
-    
+
     for (let [key, value] of formData.entries()) {
       formDataObject[key] = value;
     }
-    
+
     console.log(formDataObject); // แสดงข้อมูลทั้งหมดในรูปแบบ object
 
     // let base64Image = null;
@@ -116,15 +130,15 @@ export default function AdminNavbar() {
       await axios.post(`/api/admin/management/create`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      router.push("/adminservice");
+      // router.push("/adminservice");
       // setShowPopup(true);
       console.log("fromdata2", formData);
       // console.log("newInputData", newInputData);
+      setShowPopUpSubmit(true);
     } catch (error) {
       console.log(error);
     }
   };
-
 
   //   useEffect(() => {
   // const refresh=() {
@@ -134,7 +148,15 @@ export default function AdminNavbar() {
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        onKeyDown={(e) => {
+          const target = e.target as HTMLElement; // Cast ให้เป็น HTMLElement
+          if (e.key === "Enter" && target.tagName !== "TEXTAREA") {
+            e.preventDefault(); // ป้องกันการกด Enter ยกเว้นใน <textarea>
+          }
+        }}
+      >
         <div className="flex flex-row w-full">
           <div>
             <Adminsidebar />
@@ -159,15 +181,65 @@ export default function AdminNavbar() {
               </div>
             </div>
             <AdminserviceIndex
-              input={setInputSubservice}
+              setInputSubservice={setInputSubservice}
               inputtitle={setInputTitle}
-              inputcat={setInputCat}
+              setInputCat={setInputCat}
               SetInputimage={setInputImage}
               setURLimage={setURLimage}
+              setShowPopUpDeleteImg={setShowPopUpDeleteImg}
+              showPopUpDeleteImg={showPopUpDeleteImg}
             />
           </div>
         </div>
       </form>
+      {/* Popup for submit */}
+      {showPopUpSubmit && (
+        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white w-[360px] h-auto flex flex-col items-center rounded-xl p-3 gap-3 absolute">
+            <div className="w-full">
+              <div
+                className="w-full flex justify-end "
+                onClick={() => {
+                  setShowPopUpSubmit(false);
+                  window.location.reload();
+                }}
+              >
+                <IconX />
+              </div>
+              <div className="flex justify-center ">
+                <div className="bg-green-600 w-10 h-10 rounded-full mx-auto"></div>
+                <div className="absolute top-12">
+                  <IconCheck />
+                </div>
+              </div>
+            </div>
+            <h1 className="font-medium text-xl ">สร้างรายการสำเร็จ</h1>
+            <h1 className="text-center text-gray-500">
+              {/* คุณต้องการลบรายการ ‘{serviceName}’ <br /> */}
+              กรุณากดยืนยันเพื่อกลับสู่หน้าหลัก ?
+            </h1>
+            <div className="flex flex-row gap-3 mb-2 mt-2">
+              <button
+                className="bg-defaultColor text-white w-28 py-2 rounded-lg font-medium"
+                // onClick={handleDeleteImg}
+                onClick={() => router.push("/adminservice")}
+              >
+                ยืนยัน
+              </button>
+              {/* <button
+                className="bg-white text-defaultColor border-[1px] border-defaultColor w-28 py-2 rounded-lg font-medium"
+                onClick={() => {
+                  router.push("/adminservice/add");
+                  setShowPopUpSubmit(false);
+                  window.location.reload()
+                }}
+              >
+                ยกเลิก
+              </button> */}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -175,11 +247,13 @@ export default function AdminNavbar() {
 // ----------------------------------------------------------------------------------------------
 
 export const AdminserviceIndex = ({
-  input,
+  setInputSubservice,
   inputtitle,
-  inputcat,
+  setInputCat,
   SetInputimage,
-  setURLimage
+  setURLimage,
+  showPopUpDeleteImg,
+  setShowPopUpDeleteImg,
 }: any) => {
   const router = useRouter();
 
@@ -188,9 +262,10 @@ export const AdminserviceIndex = ({
 
   // สร้าง state มาส่งข้อมูล
   const [title, setTitle] = useState<string>("");
-  const [category_id, setCategory_id] = useState<string>("");
+  const [category_id, setCategory_id] = useState<number>();
   const [image, setImage] = useState<File>();
   const [subService, setSubService] = useState<string>("");
+  const [fetchDataCategories, setFetchDataCategories] = useState<any>([]);
 
   // State เพื่อจัดการข้อมูล subservice
   const [subservices, setSubservices] = useState<any[]>([
@@ -198,7 +273,7 @@ export const AdminserviceIndex = ({
     { description: "", unit: "", pricePerUnit: 0 },
   ]);
 
-  input(subservices);
+  setInputSubservice(subservices);
 
   const addSubService = () => {
     setSubservices((prevSubservices) => [
@@ -232,9 +307,9 @@ export const AdminserviceIndex = ({
     inputtitle(event.target.value);
   };
 
-  inputcat(category_id);
+  setInputCat(category_id);
 
-  const [preview, setPreview] = useState<String | null>(null); // เก็บ URL ชั่วคราวของรูปภาพ
+  const [preview, setPreview] = useState<string | null>(null); // เก็บ URL ชั่วคราวของรูปภาพ
 
   const handleInputImg = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]; // ดึงไฟล์ที่ผู้ใช้เลือก
@@ -247,6 +322,27 @@ export const AdminserviceIndex = ({
       SetInputimage(file);
     }
   };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`/api/admin/management/getCategories`);
+      setFetchDataCategories(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCategorySelect = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const value = Number(event.target.value);
+    console.log("value for check inputCat", value);
+    setCategory_id(value);
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   // const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
   //   const file = e.target.files?.[0];
@@ -275,7 +371,10 @@ export const AdminserviceIndex = ({
 
   const handleDeleteImg = () => {
     setPreview(null);
+    setShowPopUpDeleteImg(false);
   };
+
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <>
@@ -284,21 +383,48 @@ export const AdminserviceIndex = ({
           {/* กล่องบน */}
           {/* ชื่อบริการ */}
           <div className="w-full bg-white ">
-            <div className="flex items-center justify-between w-[662px]">
+            <div className="flex items-center justify-between w-[662px] text-gray-500 font-medium">
               <label htmlFor="ชื่อบริการ">ชื่อบริการ</label>
               <input
                 type="text"
                 onChange={handleInputTitle}
-                className="border border-gray-300 h-11 rounded-lg w-[433px] pl-5"
+                className="border border-gray-300 h-11 rounded-lg w-[433px] pl-5 text-black font-normal"
               />
             </div>
           </div>
 
           {/* หมวดหมู่ */}
-          <div className="flex items-center justify-between w-[662px]">
+          <div className="flex items-center justify-between w-[662px] text-gray-500 font-medium">
             <label htmlFor="category">หมวดหมู่</label>
-            <div className="relative w-[433px]">
-              <select
+            <div className="w-[433px]">
+              <Select
+                onValueChange={(value: string) => {
+                  handleCategorySelect({
+                    target: { value },
+                  } as React.ChangeEvent<HTMLSelectElement>);
+                  setIsOpen(true)
+                }}
+              >
+                <SelectTrigger className={`w-[433px] pl-5 h-[44px] text-base font-normal ${isOpen ? 'text-black' :'text-gray-600'}`}
+                // onClick={() => }
+                >
+                  <SelectValue placeholder="เลือกหมวดหมู่"/>
+                </SelectTrigger>
+                <SelectContent >
+                  {fetchDataCategories.map(
+                    (fetchDataCategories: any, index: any) => (
+                      <SelectItem
+                        key={fetchDataCategories.id.toString()}
+                        value={fetchDataCategories.id.toString()}
+                      >
+                        {fetchDataCategories.category}
+                      </SelectItem>
+                    )
+                  )}
+                </SelectContent>
+              </Select>
+
+              {/* <select
                 id="category"
                 className="border border-gray-300 h-11 rounded-lg w-full px-5  appearance-none" // ลบลูกศรเดิมและเพิ่ม padding ขวา
                 value={category_id}
@@ -308,19 +434,15 @@ export const AdminserviceIndex = ({
                 <option value="2">บริการทั่วไป</option>
                 <option value="3">บริการห้องครัว</option>
                 <option value="4">บริการห้องน้ำ</option>
-                {/* <option value="bathroom_service">บริการห้องน้ำ</option> */}
-              </select>
-              {/* ลูกศร */}
-              <span className="absolute top-1/2 right-5 transform -translate-y-1/2 text-gray-400 pointer-events-none">
-                &#9662;
-              </span>
+               
+              </select> */}
             </div>
           </div>
 
           <div className=" flex flex-col gap-12">
             {/* Update Image */}
             {/* ข้อความ */}
-            <div className="flex items-start justify-between w-[662px]">
+            <div className="flex items-start justify-between w-[662px] text-gray-500 font-medium">
               <label htmlFor="ชื่อบริการ" className="">
                 รูปภาพ
               </label>
@@ -382,7 +504,8 @@ export const AdminserviceIndex = ({
                       </p>
                       <p
                         className="cursor-pointer text-blue-500 hover:text-blue-700 underline"
-                        onClick={handleDeleteImg}
+                        // onClick={handleDeleteImg}
+                        onClick={() => setShowPopUpDeleteImg(true)}
                       >
                         ลบรูปภาพ
                       </p>
@@ -402,7 +525,7 @@ export const AdminserviceIndex = ({
             {/* กล่องล่าง */}
             <div>
               <div className="">
-                <h1>รายการรับผิดชอบ</h1>
+                <h1 className="text-gray-500 font-medium">รายการรับผิดชอบ</h1>
                 {subservices.map((subservice, index) => (
                   <AddSubService
                     key={index}
@@ -416,7 +539,7 @@ export const AdminserviceIndex = ({
               <div className="">
                 <button
                   type="button"
-                  className=" bg-white text-defaultColor text-base h-10  flex items-center justify-center gap-3 rounded-lg border border-defaultColor px-7 mt-7"
+                  className=" bg-white text-defaultColor text-base h-10  flex items-center justify-center gap-3 rounded-lg border border-defaultColor px-7 mt-7 active:bg-pressedColor active:text-white "
                   onClick={addSubService}
                 >
                   เพิ่มรายการ
@@ -429,6 +552,43 @@ export const AdminserviceIndex = ({
           </div>
         </div>
       </div>
+      {/* Popup for delete image */}
+      {showPopUpDeleteImg && (
+        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white w-[360px] h-auto flex flex-col items-center rounded-xl p-4 gap-3">
+            <div className="w-full">
+              <div
+                className="w-full flex justify-end "
+                onClick={() => setShowPopUpDeleteImg(false)}
+              >
+                <IconX />
+              </div>
+              <div className="flex justify-center">
+                <IconWarning />
+              </div>
+            </div>
+            <h1 className="font-medium text-xl ">ยืนยันการลบรายการ ?</h1>
+            <h1 className="text-center text-gray-500">
+              {/* คุณต้องการลบรายการ ‘{serviceName}’ <br /> */}
+              ใช่หรือไม่
+            </h1>
+            <div className="flex flex-row gap-3">
+              <button
+                className="bg-defaultColor text-white w-28 py-2 rounded-lg font-medium"
+                onClick={handleDeleteImg}
+              >
+                ลบรายการ
+              </button>
+              <button
+                className="bg-white text-defaultColor border-[1px] border-defaultColor w-28 py-2 rounded-lg font-medium"
+                onClick={() => setShowPopUpDeleteImg(false)}
+              >
+                ยกเลิก
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
@@ -463,7 +623,12 @@ export function AddSubService({
         </div>
 
         <div className="flex flex-col py-6">
-          <label htmlFor={`subserviceName-${index}`}>ชื่อบริการ</label>
+          <label
+            htmlFor={`subserviceName-${index}`}
+            className="text-sm text-gray-600"
+          >
+            ชื่อบริการ
+          </label>
           <input
             type="text"
             id={`subserviceName-${index}`}
@@ -475,7 +640,10 @@ export function AddSubService({
           />
         </div>
         <div className="flex flex-col py-6">
-          <label htmlFor={`subservicePrice-${index}`}>
+          <label
+            htmlFor={`subservicePrice-${index}`}
+            className="text-sm text-gray-600"
+          >
             ค่าบริการ / 1 หน่วย
           </label>
           <input
@@ -489,7 +657,12 @@ export function AddSubService({
           />
         </div>
         <div className="flex flex-col py-6">
-          <label htmlFor={`subserviceUnit-${index}`}>หน่วยการบริการ</label>
+          <label
+            htmlFor={`subserviceUnit-${index}`}
+            className="text-sm text-gray-600"
+          >
+            หน่วยการบริการ
+          </label>
           <input
             type="text"
             id={`subserviceUnit-${index}`}
@@ -499,7 +672,7 @@ export function AddSubService({
           />
         </div>
         <h1
-          className="mt-14 active:text-[#FF6347] cursor-pointer"
+          className="mt-[52px] active:text-[#FF6347] cursor-pointer underline font-semibold text-gray-400"
           onClick={() => deleteSubservice(index)}
         >
           ลบรายการ

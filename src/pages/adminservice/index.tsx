@@ -8,11 +8,11 @@ import IconWarning from "@/components/ui/Iconwarning";
 import IconX from "@/components/ui/IconX";
 
 export default function AdminNavbar() {
-  const [input, setInput] = useState("");
+  const [search, setSearch] = useState("");
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(event.target.value);
+    setSearch(event.target.value);
   };
-  console.log(input);
+  console.log(search);
 
   const router = useRouter();
 
@@ -47,7 +47,7 @@ export default function AdminNavbar() {
               </button>
             </div>
           </div>
-          <AdminserviceIndex input={input} />
+          <AdminserviceIndex search={search} />
         </div>
       </div>
     </>
@@ -56,7 +56,7 @@ export default function AdminNavbar() {
 
 //---------------------------------------------------------------------------------------
 
-export const AdminserviceIndex = ({ input }: { input: string | null }) => {
+export const AdminserviceIndex = ({ search }: { search: string | null }) => {
   interface Service {
     id: string;
     service_id: number;
@@ -67,27 +67,26 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
     updated_at: string;
   }
 
-
   // ดึงข้อมูลจาก Context
   // สร้าง state เพื่อมารับข้อมูล service
   // const { getServicesData, servicesData } = useServices();
   // console.log(servicesData, 1);
   const [serviceList, setServicesList] = useState<Service[]>([]);
+  const [serviceListNull, setServicesListNull] = useState<Service[]>([]);
   console.log(serviceList);
 
   const fetchUser = async () => {
     try {
-      const response = await axios.get(`/api/admin/getdataAdmin?search=${input}`);
-      // console.log("test response 101");
-      if(response.data.data.length !== 0){
-        setServicesList(response.data.data);
-      }
-      
-      // console.log(response.data.data, "test response 103");
+      const response = await axios.get(
+        `/api/admin/getdataAdmin?search=${search}`
+      );
+      setServicesList(response.data.data);
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching data:", error);
     }
   };
+
+  const router = useRouter();
 
   // เรียกข้อมูลเมื่อเกิดการ refresh window
   useEffect(() => {
@@ -95,7 +94,7 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
     //   setServicesList(servicesData);
     // }
     fetchUser();
-  }, [input]);
+  }, [search]);
 
   // style text category
   // const categoryNameMap: Record<number, string> = {
@@ -157,7 +156,14 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
                             <IconDrag />
                           </td>
                           <td className="px-auto  text-center">{index + 1}</td>
-                          <td className={`px-6`}>{service.service_name}</td>
+                          <td
+                            className={`px-6 cursor-pointer`}
+                            onClick={() =>
+                              router.push(`/adminservice/detail/${service.service_id}`)
+                            }
+                          >
+                            {service.service_name}
+                          </td>
                           <td className="px-6">
                             {/* {service.category} */}
                             <div
@@ -207,7 +213,6 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
                             )}
                           </td>
 
-                          
                           <td className="flex flex-row items-center justify-between px-6 py-7 ">
                             <IconTrash
                               id={service.service_id}
@@ -354,7 +359,7 @@ function IconTrash({
           <div className="bg-white w-[360px] h-auto flex flex-col items-center rounded-xl p-4 gap-3">
             <div className="w-full">
               <div
-                className="w-full flex justify-end "
+                className="w-full flex justify-end cursor-pointer"
                 onClick={() => setShowPopup(false)}
               >
                 <IconX />
