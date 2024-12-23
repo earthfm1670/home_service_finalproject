@@ -139,21 +139,27 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
       <Navbar />
       <ServiceHero service={service} />
 
-      {/* Main Content */}
-      <div className="px-4 py-8 mt-4 lg:mt-16 lg:px-32">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <ServiceList
-            service={service}
-            handleQuantityChange={handleQuantityChange}
-            getQuantityDisplay={getQuantityDisplay}
-          />
+      {/* Main Content - Aligned with ServiceHero width */}
+      <div className="container mx-auto px-4 lg:px-20 mt-14 lg:mt-28">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-9">
+          {/* Left side - ServiceList */}
+          <div className="lg:col-span-2">
+            <ServiceList
+              service={service}
+              handleQuantityChange={handleQuantityChange}
+              getQuantityDisplay={getQuantityDisplay}
+            />
+          </div>
 
-          <DesktopSummary
-            getSelectedServices={getSelectedServices}
-            getQuantityDisplay={getQuantityDisplay}
-            calculateTotal={calculateTotal}
-            getPriceDisplay={getPriceDisplay}
-          />
+          {/* Right side - DesktopSummary */}
+          <div className="lg:col-span-1">
+            <DesktopSummary
+              getSelectedServices={getSelectedServices}
+              getQuantityDisplay={getQuantityDisplay}
+              calculateTotal={calculateTotal}
+              getPriceDisplay={getPriceDisplay}
+            />
+          </div>
         </div>
       </div>
 

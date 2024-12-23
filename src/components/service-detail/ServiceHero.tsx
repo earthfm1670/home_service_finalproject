@@ -46,7 +46,7 @@ export default function ServiceHero({ service }: ServiceHeroProps) {
               บริการของเรา
             </Link>
             <span className="text-gray-500">&gt;</span>
-            <span className="text-blue-600 font-bold text-2xl lg:text-3xl">
+            <span className="text-blue-600 font-bold text-xl lg:text-3xl">
               {service.service_name}
             </span>
           </div>
