@@ -8,11 +8,11 @@ import IconWarning from "@/components/ui/Iconwarning";
 import IconX from "@/components/ui/IconX";
 
 export default function AdminNavbar() {
-  const [input, setInput] = useState("");
+  const [search, setSearch] = useState("");
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(event.target.value);
+    setSearch(event.target.value);
   };
-  console.log(input);
+  console.log(search);
 
   const router = useRouter();
 
@@ -38,16 +38,16 @@ export default function AdminNavbar() {
               />
               <button
                 className=" bg-defaultColor text-white text-base h-full px-7 flex items-center gap-3 rounded-lg"
-                onClick={() => router.push("/adminservice/add")}
+                onClick={() => router.push("/admincategory/add")}
               >
-                เพิ่มบริการ
+                เพิ่มหมวดหมู่
                 <span>
                   <IconPlus />
                 </span>
               </button>
             </div>
           </div>
-          <AdminserviceIndex input={input} />
+          <AdminserviceIndex search={search} />
         </div>
       </div>
     </>
@@ -56,53 +56,44 @@ export default function AdminNavbar() {
 
 //---------------------------------------------------------------------------------------
 
-export const AdminserviceIndex = ({ input }: { input: string | null }) => {
-  interface Service {
-    id: string;
-    service_id: number;
-    service_name: string;
+export const AdminserviceIndex = ({ search }: { search: string | null }) => {
+  interface Categories {
+    id: number;
     category: string;
-    category_id: any;
     created_at: string;
     updated_at: string;
   }
-
 
   // ดึงข้อมูลจาก Context
   // สร้าง state เพื่อมารับข้อมูล service
   // const { getServicesData, servicesData } = useServices();
   // console.log(servicesData, 1);
-  const [serviceList, setServicesList] = useState<Service[]>([]);
-  console.log(serviceList);
+  // const [serviceList, setServicesList] = useState<Service[]>([]);
+  // const [serviceListNull, setServicesListNull] = useState<Service[]>([]);
+  // console.log(serviceList);
+
+  const [getCategoriesData, setGetCategoriesData] = useState<Categories[]>([]);
 
   const fetchUser = async () => {
     try {
-      const response = await axios.get(`/api/admin/getdataAdmin?search=${input}`);
-      // console.log("test response 101");
-      if(response.data.data.length !== 0){
-        setServicesList(response.data.data);
-      }
-      
-      // console.log(response.data.data, "test response 103");
+      const response = await axios.get(
+        `/api/admincategorise/getCategories?search=${search}`
+      );
+      setGetCategoriesData(response.data.data);
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching data:", error);
     }
   };
+
+  const router = useRouter();
 
   // เรียกข้อมูลเมื่อเกิดการ refresh window
   useEffect(() => {
     // if (servicesData) {
     //   setServicesList(servicesData);
     // }
-    // fetchUser();
-  }, [input]);
-
-  // style text category
-  // const categoryNameMap: Record<number, string> = {
-  //   2: "บริการทั่วไป",
-  //   3: "บริการห้องครัว",
-  //   4: "บริการห้องน้ำ",
-  // };
+    fetchUser();
+  }, [search]);
 
   const categoryBgClassMap: Record<string, string> = {
     บริการทั่วไป: "text-blue-800 bg-blue-100 inline-block px-2 py-1",
@@ -128,16 +119,13 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
                       <th className="w-[58px] text-center font-normal">
                         ลำดับ
                       </th>
-                      <th className="max-w-[226px] text-start pl-6 font-normal">
-                        ชื่อบริการ
+                      <th className="max-w-[262px] text-start pl-6 font-normal">
+                        ชื่อหมวดหมู่
                       </th>
-                      <th className="w-[201px] text-start pl-6 font-normal">
-                        หมวดหมู่
-                      </th>
-                      <th className="w-[230px] text-start pl-6 font-normal">
+                      <th className="w-[245px] text-start pl-6 font-normal">
                         สร้างเมื่อ
                       </th>
-                      <th className="w-[230px] text-start pl-6 font-normal">
+                      <th className="w-[357px] text-start pl-6 font-normal">
                         แก้ไขล่าสุด
                       </th>
                       <th className="w-[120px] text-center font-normal">
@@ -146,80 +134,72 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {serviceList
-                      // .sort((a, b) => a.service_id - b.service_id)
-                      .map((service: Service, index) => (
-                        <tr
-                          key={service.service_id}
-                          className="border-t bg-white h-20 text-black"
+                    {getCategoriesData.map((category: Categories, index) => (
+                      <tr
+                        key={category.id}
+                        className="border-t bg-white h-20 text-black"
+                      >
+                        <td className="px-auto text-center active:bg-gray-600">
+                          <IconDrag />
+                        </td>
+                        <td className="px-auto  text-center">{index + 1}</td>
+                        <td
+                          className={`px-6 cursor-pointer`}
+                          onClick={() =>
+                            router.push(`/adminservice/detail/${category.id}`)
+                          }
                         >
-                          <td className="px-auto text-center active:bg-gray-600">
-                            <IconDrag />
-                          </td>
-                          <td className="px-auto  text-center">{index + 1}</td>
-                          <td className={`px-6`}>{service.service_name}</td>
-                          <td className="px-6">
-                            {/* {service.category} */}
-                            <div
-                              className={`rounded-md py-1 ${
-                                categoryBgClassMap[service.category] ||
-                                "default-class"
-                              }`}
-                            >
-                              {service.category}
-                            </div>
-                            {/* <Category category={service.category} /> */}
-                          </td>
-                          <td className="px-6">
-                            {new Date(service.created_at).toLocaleDateString(
-                              "en-US",
-                              {
-                                year: "numeric",
-                                month: "2-digit",
-                                day: "2-digit",
-                              }
-                            )}{" "}
-                            {new Date(service.created_at).toLocaleTimeString(
-                              "en-US",
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: true,
-                              }
-                            )}
-                          </td>
-                          <td className="px-6">
-                            {new Date(service.updated_at).toLocaleDateString(
-                              "en-US",
-                              {
-                                year: "numeric",
-                                month: "2-digit",
-                                day: "2-digit",
-                              }
-                            )}{" "}
-                            {new Date(service.updated_at).toLocaleTimeString(
-                              "en-US",
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: true,
-                              }
-                            )}
-                          </td>
+                          {category.category}
+                        </td>
+                        <td className="px-6">
+                          {new Date(category.created_at).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "2-digit",
+                              day: "2-digit",
+                            }
+                          )}{" "}
+                          {new Date(category.created_at).toLocaleTimeString(
+                            "en-US",
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            }
+                          )}
+                        </td>
+                        <td className="px-6">
+                          {new Date(category.updated_at).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "2-digit",
+                              day: "2-digit",
+                            }
+                          )}{" "}
+                          {new Date(category.updated_at).toLocaleTimeString(
+                            "en-US",
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            }
+                          )}
+                        </td>
 
-                          
-                          <td className="flex flex-row items-center justify-between px-6 py-7 ">
-                            <IconTrash
-                              id={service.service_id}
-                              updateTable={serviceList}
-                              setUpdateTable={setServicesList}
-                              index={index}
-                              serviceName={service.service_name}
-                            />
-                            <IconEdit id={service.service_id} />
-                          </td>
-                        </tr>
-                      ))}
+                        <td className="flex flex-row items-center justify-between px-6 py-7 ">
+                          <IconTrash
+                            id={category.id}
+                            updateTable={getCategoriesData}
+                            setUpdateTable={setGetCategoriesData}
+                            index={index}
+                            serviceName={category.id}
+                          />
+                          <IconEdit id={category.id} />
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -296,14 +276,15 @@ function IconTrash({
     setActive(true);
   };
 
-  const handleDelete = async (serviceId: string) => {
+  const handleDelete = async (id: string) => {
     try {
       const response = await axios.delete(
-        `/api/admin/management/deleteServices/${serviceId}`
+        `/api/admincategorise/deletecategory/${id}`
       );
 
+
       if (response.status === 201) {
-        console.log(`Service with ID ${serviceId} has been deleted.`);
+        console.log(`Service with ID ${id} has been deleted.`);
 
         // อัปเดตตารางโดยการกรองข้อมูลที่ไม่ถูกลบออก
         setUpdateTable(
@@ -354,7 +335,7 @@ function IconTrash({
           <div className="bg-white w-[360px] h-auto flex flex-col items-center rounded-xl p-4 gap-3">
             <div className="w-full">
               <div
-                className="w-full flex justify-end "
+                className="w-full flex justify-end cursor-pointer"
                 onClick={() => setShowPopup(false)}
               >
                 <IconX />
@@ -417,7 +398,7 @@ function IconEdit(id: any) {
       xmlns="http://www.w3.org/2000/svg"
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
-      onClick={() => router.push(`/adminservice/edit/${id.id}`)}
+      onClick={() => router.push(`/admincategory/edit/${id.id}`)}
     >
       <path
         d="M8 3.99992H3C2.46957 3.99992 1.96086 4.21063 1.58579 4.5857C1.21071 4.96078 1 5.46948 1 5.99992V16.9999C1 17.5304 1.21071 18.0391 1.58579 18.4141C1.96086 18.7892 2.46957 18.9999 3 18.9999H14C14.5304 18.9999 15.0391 18.7892 15.4142 18.4141C15.7893 18.0391 16 17.5304 16 16.9999V11.9999M14.586 2.58592C14.7705 2.3949 14.9912 2.24253 15.2352 2.13772C15.4792 2.0329 15.7416 1.97772 16.0072 1.97542C16.2728 1.97311 16.5361 2.02371 16.7819 2.12427C17.0277 2.22484 17.251 2.37334 17.4388 2.56113C17.6266 2.74891 17.7751 2.97222 17.8756 3.21801C17.9762 3.4638 18.0268 3.72716 18.0245 3.99272C18.0222 4.25828 17.967 4.52072 17.8622 4.76473C17.7574 5.00874 17.605 5.22942 17.414 5.41392L8.828 13.9999H6V11.1719L14.586 2.58592Z"

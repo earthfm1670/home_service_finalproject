@@ -81,14 +81,15 @@ export default function Login() {
   return (
     <>
       <div className="bg-gray-100 min-h-screen">
-        <Navbar />
+        
         {/* div login form */}
         <div className="flex flex-col items-center justify-center w-full">
           <div className="w-[35%] mt-16">
             <Image
               src={homeservicelogo}
               alt="Homeservice Logo"
-              className="w-full"
+              className="w-full cursor-pointer"
+              onClick={() => router.push("/")}
             />
           </div>
           <div className="my-10 rounded-lg border bg-white border-gray-300 max-w-[614px]  w-screen py-7 px-20">

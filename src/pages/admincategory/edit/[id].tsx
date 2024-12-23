@@ -20,28 +20,35 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface Category {
-    category: string;
-  }
+interface Categories {
+  id: number;
+  category: string;
+  created_at: string;
+  updated_at: string;
+}
 
 export default function AdminNavbar() {
   const [showPopUpSubmit, setShowPopUpSubmit] = useState<Boolean>(false);
-  const [inputCategory, setInputCategory] = useState<string>()
-  console.log("input category for check",inputCategory)
-
+  const [inputCategory, setInputCategory] = useState<string>();
+  console.log("input category for check", inputCategory);
+  // setInputCategory(inputCategory)
 
   const router = useRouter();
 
+  const [getCategoriesData, setGetCategoriesData] = useState<Categories[]>([]);
+
+  // const categoryName = getCategoriesData[0].category;
+  // console.log("categoryName",categoryName); // "บริการทั่วไป"
+  
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    
     try {
       const newInputData = {
         category: inputCategory,
       };
-      console.log("new input data for create check",newInputData)
+      console.log("new input data for create check", newInputData);
 
       // await axios.post(`/api/admin/management/create`, newInputData);
       await axios.post(`/api/admincategorise/create`, newInputData, {
@@ -56,10 +63,87 @@ export default function AdminNavbar() {
     }
   };
 
-    const handleInputCategory = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setInputCategory(event.target.value);
+  const handleInputCategory = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputCategory(event.target.value);
   };
 
+  //   const fetchService = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `/api/admin/management/selectedit/${id}`
+  //       );
+  //       console.log("test response fetching data", response.data);
+  //       setDataParams(response.data);
+  //       setServiceNameData(response.data.service_name);
+  //       setNameTopic(response.data.service_name);
+  //       setServiceCategoryData(response.data.categories.category);
+  //       // setSubservices(response.data.sub_services);
+  //       setSubservices(
+  //         response.data.sub_services.map(
+  //           (subService: {
+  //             description: string;
+  //             unit: string;
+  //             unit_price: number;
+  //           }) => ({
+  //             ...subService,
+  //             unit_price:
+  //               subService.unit_price === 0 ? null : subService.unit_price,
+  //           })
+  //         )
+  //       );
+  //       console.log(
+  //         "this test data response get sub_services",
+  //         response.data.sub_services
+  //       );
+  //       setPreview(response.data.service_picture_url);
+  //       setCreateAt(response.data.created_at);
+  //       setUpdateAt(response.data.updated_at);
+  //       setInputTitle(response.data.service_name);
+  //       setInputCat(response.data.category_id);
+  //       // console.log(
+  //       //   "check refresh page for catrgories_id",
+  //       //   response.data.categories_id
+  //       // );
+  //       setInputSubservice(response.data.sub_services);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+
+  const { id } = router.query;
+  console.log("Router ID:", id); // ตรวจสอบค่าที่ได้รับ
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`/api/admincategorise/getCategories`);
+
+      const data: Categories[] = response.data.data;
+      console.log("Response Data:", data);
+      data.forEach((item) =>
+        console.log(
+          "Type:", typeof item.id, "Type:", typeof id
+        )
+      );
+
+      const filteredData = response.data.data.filter((item:Categories) => item.id === Number(id));
+
+      console.log("Filtered Data:", filteredData);
+      console.log("Params ID:", id, "Type:", typeof id);
+
+      setGetCategoriesData(filteredData);
+      
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchData();
+    } else {
+      console.log("ID is undefined, waiting for router to be ready...");
+    }
+  }, [id]);
 
   return (
     <>
@@ -112,7 +196,8 @@ export default function AdminNavbar() {
                       <label htmlFor="ชื่อบริการ">ชื่อหมวดหมู่</label>
                       <input
                         type="text"
-                         onChange={handleInputCategory}
+                        onChange={handleInputCategory}
+                        value={getCategoriesData}
                         className="border border-gray-300 h-11 rounded-lg w-[433px] pl-5 text-black font-normal"
                       />
                     </div>

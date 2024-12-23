@@ -80,11 +80,13 @@ export const AdminserviceIndex = ({ search }: { search: string | null }) => {
       const response = await axios.get(
         `/api/admin/getdataAdmin?search=${search}`
       );
-        setServicesList(response.data.data);
+      setServicesList(response.data.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+
+  const router = useRouter();
 
   // เรียกข้อมูลเมื่อเกิดการ refresh window
   useEffect(() => {
@@ -154,7 +156,14 @@ export const AdminserviceIndex = ({ search }: { search: string | null }) => {
                             <IconDrag />
                           </td>
                           <td className="px-auto  text-center">{index + 1}</td>
-                          <td className={`px-6`}>{service.service_name}</td>
+                          <td
+                            className={`px-6 cursor-pointer`}
+                            onClick={() =>
+                              router.push(`/adminservice/detail/${service.service_id}`)
+                            }
+                          >
+                            {service.service_name}
+                          </td>
                           <td className="px-6">
                             {/* {service.category} */}
                             <div
@@ -350,7 +359,7 @@ function IconTrash({
           <div className="bg-white w-[360px] h-auto flex flex-col items-center rounded-xl p-4 gap-3">
             <div className="w-full">
               <div
-                className="w-full flex justify-end "
+                className="w-full flex justify-end cursor-pointer"
                 onClick={() => setShowPopup(false)}
               >
                 <IconX />
