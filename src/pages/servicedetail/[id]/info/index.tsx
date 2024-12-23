@@ -348,7 +348,7 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
       };
 
       sessionStorage.setItem("paymentData", JSON.stringify(paymentData));
-      router.push(`/servicedetail/${service.id}/info/payment`);
+      router.push(`/payment`);
     }
   };
 

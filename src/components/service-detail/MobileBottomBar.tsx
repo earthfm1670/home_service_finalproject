@@ -6,7 +6,7 @@ import MobileSummary from "@/components/service-detail/MobileSummary";
 import type { Service } from "@/types/service";
 
 interface LocationInfo {
-  date: Date | null;
+  date: Date | string | null;
   time: string | null;
   address: string;
   subDistrict: string;
@@ -22,6 +22,8 @@ interface MobileBottomBarProps {
   handleProceed: () => void;
   locationInfo?: LocationInfo;
   isServiceInfoPage?: boolean; // Add this new prop
+  discount: number;
+  totalAmount: number;
 }
 
 export const MobileBottomBar = ({
@@ -32,6 +34,8 @@ export const MobileBottomBar = ({
   handleProceed,
   locationInfo,
   isServiceInfoPage = false, // Add this new prop with a default value
+  discount,
+  totalAmount,
 }: MobileBottomBarProps) => {
   const router = useRouter();
 
@@ -43,6 +47,8 @@ export const MobileBottomBar = ({
         getQuantityDisplay={getQuantityDisplay}
         calculateTotal={calculateTotal}
         locationInfo={locationInfo}
+        discount={discount}
+        totalAmount={totalAmount}
       />
 
       {/* Navigation Buttons */}

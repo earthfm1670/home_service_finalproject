@@ -6,9 +6,9 @@ import { useRouter } from "next/router";
 interface NavigationButtonsProps {
   canProceed: boolean;
   handleProceed: () => void;
-  onBack?: () => void;  // เพิ่ม prop สำหรับการจัดการการกลับ
-  backButtonText?: string;  // เพิ่ม prop สำหรับข้อความปุ่มย้อนกลับ
-  proceedButtonText?: string;  // เพิ่ม prop สำหรับข้อความปุ่มดำเนินการต่อ
+  onBack?: () => void; // เพิ่ม prop สำหรับการจัดการการกลับ
+  backButtonText?: string; // เพิ่ม prop สำหรับข้อความปุ่มย้อนกลับ
+  proceedButtonText?: string; // เพิ่ม prop สำหรับข้อความปุ่มดำเนินการต่อ
 }
 
 export const NavigationButtons = ({
@@ -19,7 +19,7 @@ export const NavigationButtons = ({
   proceedButtonText = "ดำเนินการต่อ",
 }: NavigationButtonsProps) => {
   const router = useRouter();
-  const isServiceInfoPage = router.pathname.includes('/info');
+  const isServiceInfoPage = router.pathname.includes("/info");
 
   const handleBack = () => {
     if (onBack) {
@@ -29,7 +29,10 @@ export const NavigationButtons = ({
     }
   };
   return (
-    <div className="hidden lg:block fixed bottom-0 left-0 right-0 bg-white border-t">
+    <div
+      className="hidden lg:block fixed bottom-0 left-0 right-0 bg-white border-t"
+      style={{ zIndex: 9999 }}
+    >
       <div className="px-4 py-4 lg:px-32">
         <div className="flex justify-between">
           <Button
@@ -41,9 +44,11 @@ export const NavigationButtons = ({
             }`}
             onClick={handleBack}
           >
-            <ChevronLeft className={`h-4 w-4 mr-2 ${
-              isServiceInfoPage ? "text-blue-500" : "text-grey-500"
-            }`} />
+            <ChevronLeft
+              className={`h-4 w-4 mr-2 ${
+                isServiceInfoPage ? "text-blue-500" : "text-grey-500"
+              }`}
+            />
             {backButtonText}
           </Button>
           <Button

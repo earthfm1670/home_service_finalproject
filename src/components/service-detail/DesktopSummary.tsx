@@ -2,6 +2,9 @@ import React from "react";
 import { Card } from "@/components/ui/card";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter } from "next/router";
 
 interface DesktopSummaryProps {
   getSelectedServices: () => Array<{
@@ -9,6 +12,10 @@ interface DesktopSummaryProps {
     description: string;
     unit?: string;
     unit_price: number;
+    discount: number;
+    totalAmount: number;
+    canProceed: boolean;
+    handleProceed: () => void;
   }>;
   getQuantityDisplay: (subServiceId: number) => number;
   calculateTotal: () => number;
@@ -42,7 +49,14 @@ export const DesktopSummary: React.FC<DesktopSummaryProps> = ({
   serviceInfo,
   isServiceInfoPage = false,
   isServiceDetailPage = false,
+  discount = 0,
+  totalAmount,
+  canProceed,
+  handleProceed,
 }) => {
+  const preDiscountTotal = totalAmount;
+  const discountAmount = preDiscountTotal * discount;
+  const router = useRouter();
   return (
     <div className="hidden lg:block">
       <Card className="p-6 sticky top-4">
@@ -81,15 +95,11 @@ export const DesktopSummary: React.FC<DesktopSummaryProps> = ({
                   key={subService.id}
                   className="flex justify-between text-sm"
                 >
-                  <span>
-                    {subService.description} x {quantity || 0}
+                  <span className="text-[14px] font-light text-black">
+                    {subService.description}
                   </span>
-                  <span className="text-nowrap">
-                    {total.toLocaleString("th-TH", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}{" "}
-                    ฿
+                  <span className="text-[14px] font-light text-gray-900">
+                    {quantity} รายการ
                   </span>
                 </div>
               );
@@ -146,15 +156,34 @@ export const DesktopSummary: React.FC<DesktopSummaryProps> = ({
           </div>
         )}
 
-        <div className="mt-6 pt-4 border-t flex justify-between font-semibold">
-          <span>รวม</span>
-          <span>
-            {calculateTotal().toLocaleString("th-TH", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}{" "}
-            ฿
-          </span>
+        <div className="mt-6 pt-4 border-t">
+          {/* Discount and Total Section */}
+          {discount > 0 && (
+            <div className="flex justify-between items-center mb-2">
+              {/* Discount */}
+              <span className="text-sm text-gray-700 font-normal">ส่วนลด</span>
+              <span className="text-sm font-medium text-[#C82438]">
+                -
+                {discountAmount.toLocaleString("th-TH", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+                {" ฿"}
+              </span>
+            </div>
+          )}
+
+          {/* Total */}
+          <div className="flex justify-between items-center font-semibold">
+            <span className="text-[16px] text-gray-700 font-normal">รวม</span>
+            <span className="text[16px] text-black font-semibold">
+              {calculateTotal().toLocaleString("th-TH", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+              {" ฿"}
+            </span>
+          </div>
         </div>
       </Card>
     </div>

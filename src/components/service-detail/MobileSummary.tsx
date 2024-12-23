@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -18,11 +18,24 @@ interface LocationInfo {
   additionalDetails?: string;
 }
 
+interface PaymentInfo {
+  date: Date | null;
+  time: string | null;
+  address: string;
+  subDistrict: string;
+  district: string;
+  province: string;
+  additionalDetails?: string;
+}
+
 interface MobileSummaryProps {
   getSelectedServices: () => Service["sub_services"];
   getQuantityDisplay: (subServiceId: number) => number;
   calculateTotal: () => number;
   locationInfo?: LocationInfo;
+  payment?: PaymentInfo;
+  discount: number;
+  totalAmount: number;
 }
 
 export const MobileSummary = ({
@@ -30,8 +43,21 @@ export const MobileSummary = ({
   getQuantityDisplay,
   calculateTotal,
   locationInfo,
-}: MobileSummaryProps) => {
+  payment,
+  discount = 0,
+  totalAmount,
+}: MobileSummaryProps & {
+  discount?: number;
+}) => {
   const [isOrderSummaryOpen, setIsOrderSummaryOpen] = useState(false);
+  const [sessionData, setSessionData] = useState<{
+    totalAmount: number;
+  } | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const preDiscountTotal = totalAmount;
+  const discountAmount = preDiscountTotal * discount;
+  console.log(totalAmount);
 
   return (
     <div className="rounded-t-2xl bg-white shadow-sm">
@@ -40,7 +66,7 @@ export const MobileSummary = ({
         onOpenChange={setIsOrderSummaryOpen}
       >
         <CollapsibleTrigger asChild>
-          <div className="w-full bg-white rounded-t-2xl cursor-pointer border">
+          <div className="w-full bg- rounded-t-2xl cursor-pointer border">
             <div className="px-4 py-3">
               <div className="flex justify-between items-center">
                 <span className="text-base text-gray-500">สรุปรายการ</span>
@@ -75,7 +101,6 @@ export const MobileSummary = ({
                 ไม่มีรายการที่เลือก
               </div>
             )}
-
             {locationInfo && (
               <div className="mt-6 space-y-2 pt-4 border-t">
                 <div className="flex justify-between">
@@ -126,19 +151,86 @@ export const MobileSummary = ({
                 )}
               </div>
             )}
+            {/* PAYMENT */}
+            {payment && (
+              <div className="mt-6 space-y-2 pt-4 border-t">
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-500">วันที่</span>
+                  <span className="text-sm">
+                    {payment.date
+                      ? format(payment.date, "d MMMM yyyy", {
+                          locale: th,
+                        })
+                      : "ยังไม่ได้เลือก"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-500">เวลา</span>
+                  <span className="text-sm">
+                    {payment.time || "ยังไม่ได้เลือก"}
+                  </span>
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-sm text-gray-500 whitespace-nowrap mr-2">
+                    สถานที่
+                  </span>
+                  <span className="text-right flex-1 text-sm">
+                    {payment.address ||
+                    payment.subDistrict ||
+                    payment.district ||
+                    payment.province
+                      ? [
+                          payment.address,
+                          payment.subDistrict,
+                          payment.district,
+                          payment.province,
+                        ]
+                          .filter(Boolean)
+                          .join(", ")
+                      : "ไม่ได้ระบุ"}
+                  </span>
+                </div>
+                {payment.additionalDetails && (
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-500 whitespace-nowrap mr-2">
+                      ข้อมูลเพิ่มเติม
+                    </span>
+                    <span className="text-right flex-1 text-sm">
+                      {payment.additionalDetails}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </CollapsibleContent>
       </Collapsible>
 
       {/* ส่วนแสดงยอดรวมที่อยู่ด้านล่างสุด */}
       <div className="px-4 py-3 bg-white border-t">
+        {/* discount amount */}
+        {discount > 0 && (
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm text-gray-600">ส่วนลด</span>
+            <span className="text-sm font-normal text-[#C82438]">
+              -
+              {discountAmount.toLocaleString("th-TH", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+              {""} ฿
+            </span>
+          </div>
+        )}
+
         <div className="flex justify-between items-center">
           <span className="text-sm text-gray-600">รวม</span>
           <span className="text-base font-semibold">
-            {calculateTotal().toLocaleString('th-TH', {
+            {calculateTotal().toLocaleString("th-TH", {
               minimumFractionDigits: 2,
-              maximumFractionDigits: 2
-            })} ฿
+              maximumFractionDigits: 2,
+            })}{" "}
+            ฿
           </span>
         </div>
       </div>
