@@ -8,20 +8,20 @@ export default function AdminSidebar() {
   const router = useRouter();
 
   const getButtonClass = (path: string) => {
-    return router.pathname === path
+    return router.pathname.includes(path)
       ? "bg-[#022B87]" // สีพื้นหลังของปุ่มที่เลือก
-      : "hover:bg-[#022B87]"; // สีพื้นหลังปกติเมื่อไม่ได้เลือก
+      : ""; // สีพื้นหลังปกติเมื่อไม่ได้เลือก
   };
 
   return (
     <>
       {/* sidebar admin */}
-      <div className="flex flex-col bg-[#001C59] min-w-60 h-screen sticky top-0 justify-between text-white">
+      <div className="flex flex-col bg-[#001C59] min-w-60 h-screen sticky top-0 justify-between text-white ">
         {/* button for div top */}
         <div className="w-full">
           <div className="px-6">
             <button
-              className="my-10 bg-blue-100 w-full h-11 flex justify-center items-center rounded-lg active:bg-pressedColor"
+              className="my-10 bg-blue-100 w-full h-11 flex justify-center items-center rounded-lg"
               onClick={() => router.push("/")}
             >
               <Image src={homeservicelogo} alt="Homeservice Logo" />
@@ -29,7 +29,7 @@ export default function AdminSidebar() {
           </div>
           {/* button list */}
           <div className="">
-            <div className={`w-full ${getButtonClass("/admincategory")} cursor-pointer`}
+            <div className={`w-full ${getButtonClass("/admincategory")} cursor-pointer hover:bg-[#022B87]`}
             onClick={() => router.push("/admincategory")}>
               <button
                 className="flex flex-row gap-4 px-6 py-4"
@@ -39,7 +39,7 @@ export default function AdminSidebar() {
                 หมวดหมู่
               </button>
             </div>
-            <div className={`w-full ${getButtonClass("/adminservice")} cursor-pointer`}
+            <div className={`w-full ${getButtonClass("/adminservice")} cursor-pointer hover:bg-[#022B87]`}
             onClick={() => router.push("/adminservice")}>
               <button
                 className="flex flex-row gap-4 px-6 py-4"
@@ -50,7 +50,7 @@ export default function AdminSidebar() {
               </button>
             </div>
             <div
-              className={`w-full ${getButtonClass("/adminpromotioncode")} cursor-pointer`}
+              className={`w-full ${getButtonClass("/adminpromotioncode")} cursor-pointer hover:bg-[#022B87]`}
               onClick={() => router.push("/adminpromotioncode")}
             >
               <button className="flex flex-row gap-4 px-6 py-4">

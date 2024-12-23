@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import IconWarning from "@/components/ui/Iconwarning";
 import IconX from "@/components/ui/IconX";
+import Image from "next/image";
 
 interface SubService {
   description: string;
@@ -26,17 +27,17 @@ interface SubService {
 
 export default function AdminNavbar() {
   const [inputSubservice, setInputSubservice] = useState<SubService[]>([]);
-  // console.log(
-  //   "check subservice id and value of subservice when refresh window",
-  //   inputSubservice
-  // );
-  // const modifyInputSubservice = () => {
-  //   const updatedSubservices = inputSubservice.map((subservice) => ({
-  //     ...subservice,
-  //     unit_price: subservice.unit_price ?? 0, // กำหนดค่า unit_price เป็น 0 ถ้าเป็น null
-  //   }));
-  //   setInputSubservice(updatedSubservices);
-  // };
+  console.log(
+    "check subservice id and value of subservice when refresh window",
+    inputSubservice
+  );
+  const modifyInputSubservice = () => {
+    const updatedSubservices = inputSubservice.map((subservice) => ({
+      ...subservice,
+      unit_price: subservice.unit_price ?? 0, // กำหนดค่า unit_price เป็น 0 ถ้าเป็น null
+    }));
+    setInputSubservice(updatedSubservices);
+  };
   const [inputTitle, setInputTitle] = useState<string>("");
   const [inputCat, setInputCat] = useState<number | undefined>();
   // console.log("this test for receive value inputCat", inputCat);
@@ -86,21 +87,21 @@ export default function AdminNavbar() {
     );
 
     // Commented out API call
-    try {
-      await axios.put(`/api/admin/management/edit/${id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      router.push("/adminservice");
-      console.log("fromdata2", formData);
-    } catch (error) {
-      console.log(error);
-    }
+    // try {
+    //   await axios.put(`/api/admin/management/edit/${id}`, formData, {
+    //     headers: { "Content-Type": "multipart/form-data" },
+    //   });
+    //   router.push("/adminservice");
+    //   console.log("fromdata2", formData);
+    // } catch (error) {
+    //   console.log(error);
+    // }
   };
 
   // // ตัวอย่างการเรียกใช้ modifyInputSubservice
   // useEffect(() => {
   //   modifyInputSubservice(); // เรียกใช้ฟังก์ชัน
-  // }, [handleSubmit]); // เรียกใช้เมื่อ inputSubservice เปลี่ยนแปลง
+  // }, [inputSubservice]); // เรียกใช้เมื่อ inputSubservice เปลี่ยนแปลง
 
   return (
     <>
@@ -131,18 +132,18 @@ export default function AdminNavbar() {
                 </div>
               </div>
               <div className="h-full flex flex-row items-center gap-6 relative">
-                <button
+                {/* <button
                   className="bg-white text-defaultColor text-base h-full px-7 flex items-center gap-3 rounded-lg w-32 text-center justify-center border border-defaultColor"
                   onClick={() => router.push("/adminservice")}
                   type="button"
                 >
                   ยกเลิก
-                </button>
+                </button> */}
                 <button
                   className="bg-defaultColor text-white text-base h-full px-7 flex items-center gap-3 rounded-lg w-32 text-center justify-center"
-                  type="submit"
+                  onClick={() => router.push(`/adminservice/edit/${id}`)}
                 >
-                  ยืนยัน
+                  แก้ไข
                 </button>
               </div>
             </div>
@@ -178,20 +179,20 @@ export const AdminserviceIndex = ({
   const router = useRouter();
   const { id } = router.query;
 
+  const [category_id, setCategory_id] = useState<string>("");
   const [subservices, setSubservices] = useState<any[]>([]);
-  
-   useEffect(() => {
-    const updatedSubservices = subservices.map((subService) => ({
-      ...subService,
-      unit_price: subService.unit_price === "" ? "0" : subService.unit_price,
-    }));
-  
-    setInputSubservice(updatedSubservices);
-  }, [subservices]);
 
-  //  useEffect(() => {
-  //   setInputSubservice(subservices);
-  // }, [subservices]);
+  // setInputSubservice(subservices)
+  useEffect(() => {
+    // ตรวจสอบและกำหนด unit_price ให้เป็น 0 ถ้าค่าเป็น null
+    const updatedSubservices = subservices.map((subservice) => ({
+      ...subservice,
+      unit_price: subservice.unit_price === null ? 0 : subservice.unit_price,
+    }));
+
+    // ส่งข้อมูลที่อัปเดตไปที่ setInputSubservice
+    setInputSubservice(updatedSubservices);
+  }, [subservices]); // เมื่อ subservices เปลี่ยนแปลง จะทำการอัพเดท
 
   const [dataParams, setDataParams] = useState();
   const [serviceNameData, setServiceNameData] = useState<String>("");
@@ -289,7 +290,6 @@ export const AdminserviceIndex = ({
       setServiceNameData(response.data.service_name);
       setNameTopic(response.data.service_name);
       setServiceCategoryData(response.data.categories.category);
-      // setSubservices(response.data.sub_services);
       setSubservices(
         response.data.sub_services.map(
           (subService: {
@@ -346,26 +346,26 @@ export const AdminserviceIndex = ({
           <div className="w-full bg-white ">
             <div className="flex items-center justify-between w-[662px] text-gray-500 font-medium">
               <label htmlFor="ชื่อบริการ">ชื่อบริการ</label>
-              <input
-                type="text"
-                onChange={handleInputTitle}
-                value={inputTitle.toString()}
-                className="border border-gray-300 h-11 rounded-lg w-[433px] pl-5 text-black font-normal"
-              />
+              <div className="border-gray-300 h-11 rounded-lg w-[433px]  text-black font-normal items-center flex">
+                {inputTitle.toString()}
+              </div>
             </div>
           </div>
 
           {/* หมวดหมู่ */}
-          <div className="flex items-center justify-between w-[662px]  text-gray-500 font-medium ">
+          <div className="flex items-center justify-between w-[662px]  text-gray-500 font-medium">
             <label htmlFor="category">หมวดหมู่</label>
-            <Select
+            <div className="border-gray-300 h-11 rounded-lg w-[433px]  text-black font-normal items-center flex">
+              {serviceCategoryData}
+            </div>
+            {/* <Select
               onValueChange={(value: string) => {
                 handleCategorySelect({
                   target: { value },
                 } as React.ChangeEvent<HTMLSelectElement>);
               }}
             >
-              <SelectTrigger className="w-[433px] pl-5 text-base font-normal h-[44px] text-black">
+              <SelectTrigger className="w-[433px] text-base font-normal h-[44px] text-black">
                 <SelectValue placeholder={serviceCategoryData} />
               </SelectTrigger>
               <SelectContent>
@@ -380,7 +380,7 @@ export const AdminserviceIndex = ({
                   )
                 )}
               </SelectContent>
-            </Select>
+            </Select> */}
           </div>
 
           <div className="flex flex-col gap-12">
@@ -462,7 +462,7 @@ export const AdminserviceIndex = ({
             {/* กล่องกลาง */}
             <div>
               <div className="">
-                <h1 className="text-gray-500 font-medium">รายการบริการย่อย</h1>
+                <h1 className="text-gray-500 font-medium mb-5">รายการบริการย่อย</h1>
                 {subservices.map((subservice, index) => (
                   <AddSubService
                     key={index}
@@ -473,10 +473,10 @@ export const AdminserviceIndex = ({
                   />
                 ))}
               </div>
-              <div className="">
+              {/* <div className="">
                 <button
                   type="button"
-                  className="bg-white text-defaultColor text-base h-10 flex items-center justify-center gap-3 rounded-lg border border-defaultColor px-7 mt-7"
+                  className="bg-white text-defaultColor text-base h-10 flex items-center justify-center gap-3 rounded-lg border border-defaultColor px-7 mt-3"
                   onClick={addSubService}
                 >
                   เพิ่มรายการ
@@ -484,10 +484,10 @@ export const AdminserviceIndex = ({
                     <IconPlusDefaultColor />
                   </span>
                 </button>
-              </div>
+              </div> */}
             </div>
             {/* กล่องล่าง */}
-            <div className="h-px w-full bg-gray-300"></div>
+            <div className="h-px w-full bg-gray-300 -mt-8"></div>
             <div className="flex flex-row gap-5 w-[400px]">
               <div className="flex flex-col justify-between w-full gap-5 text-gray-500 font-medium">
                 <div>สร้างเมื่อ</div>
@@ -591,11 +591,7 @@ export function AddSubService({
   return (
     <>
       {/* sub service */}
-      <div className="flex flex-row justify-between">
-        <div className="mt-14">
-          <IconDrag />
-        </div>
-
+      <div className="flex flex-row justify-between w-[980px]">
         <div className="flex flex-col py-6">
           <label
             htmlFor={`subserviceName-${index}`}
@@ -603,7 +599,7 @@ export function AddSubService({
           >
             ชื่อบริการ
           </label>
-          <input
+          {/* <input
             type="text"
             id={`subserviceName-${index}`}
             value={subservice.description}
@@ -611,7 +607,10 @@ export function AddSubService({
               updateSubservice(index, "description", e.target.value)
             }
             className="border border-gray-300 h-11 rounded-lg w-[422px] pl-5"
-          />
+          /> */}
+          <div className="border-gray-300 h-11 rounded-lg w-[422px] items-center flex">
+            {subservice.description}
+          </div>
         </div>
         <div className="flex flex-col py-6">
           <label
@@ -620,7 +619,7 @@ export function AddSubService({
           >
             ค่าบริการ / 1 หน่วย
           </label>
-          <input
+          {/* <input
             type="number"
             id={`subservicePrice-${index}`}
             value={subservice.unit_price !== null ? subservice.unit_price : ""}
@@ -628,7 +627,10 @@ export function AddSubService({
               updateSubservice(index, "unit_price", e.target.value)
             }
             className="border border-gray-300 h-11 rounded-lg w-[240px] pl-5"
-          />
+          /> */}
+          <div className="border-gray-300 h-11 rounded-lg w-[240px] items-center flex">
+            {subservice.unit_price}
+          </div>
         </div>
         <div className="flex flex-col py-6">
           <label
@@ -637,20 +639,17 @@ export function AddSubService({
           >
             หน่วยการบริการ
           </label>
-          <input
+          {/* <input
             type="text"
             id={`subserviceUnit-${index}`}
             value={subservice.unit}
             onChange={(e) => updateSubservice(index, "unit", e.target.value)}
             className="border border-gray-300 h-11 rounded-lg w-[240px] pl-5"
-          />
+          /> */}
+          <div className="border-gray-300 h-11 rounded-lg w-[240px] items-center flex">
+          {subservice.unit}
+          </div>
         </div>
-        <h1
-          className="mt-[52px] hover:text-[#FF6347] cursor-pointer underline text-gray-400 font-semibold"
-          onClick={() => deleteSubservice(index)}
-        >
-          ลบรายการ
-        </h1>
       </div>
     </>
   );
