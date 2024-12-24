@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Range } from "react-range";
 import { Search } from "lucide-react";
 import { useServices } from "./ServicesContext";
@@ -11,6 +11,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+// ฟังก์ชัน debounce เพื่อหน่วงการเรียก fetch ข้อมูล
+type TimerId = ReturnType<typeof setTimeout>;
+const debounce = (func: (...args: any[]) => void, delay: number) => {
+  let timerId: TimerId;
+  return (...args: any[]) => {
+    if (timerId) {
+      clearTimeout(timerId);
+    }
+    timerId = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+};
 
 const ServicesListFilteredData: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -94,7 +108,25 @@ const ServicesListFilteredData: React.FC = () => {
     if (value.length === 2) {
       setPriceRange([value[0], value[1]]);
     }
+    //เรียกใช้ debouncedFetchData เพื่อกำหนด delay ในการส่ง parameter ไปยัง fetchPriceRangeData เพื่อ get data from api
+    debouncedFetchData(selecttedCategory, selecttedSortBy, value, searchText);
   };
+
+  // ฟังก์ชัน fetch ข้อมูล
+  const fetchPriceRangeData = (
+    category: string,
+    sortBy: string,
+    range: [number, number],
+    text: string
+  ) => {
+    getServicesData(category, sortBy, range, text);
+  };
+
+  // ใช้ debounce สำหรับฟังก์ชัน fetchData
+  const debouncedFetchData = useCallback(
+    debounce(fetchPriceRangeData, 1000),
+    []
+  );
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setsearchText(event.target.value);
@@ -310,7 +342,9 @@ const ServicesListFilteredData: React.FC = () => {
             </p>
             <Select onOpenChange={toggleDropdown}>
               <SelectTrigger className="py-0 px-0 h-auto border-none shadow-none text-base font-medium focus:ring-0 gap-3 text-gray-950 lg:gap-5">
-                <SelectValue placeholder="0-10000฿" />
+                <SelectValue
+                  placeholder={`${priceRange[0]}-${priceRange[1]}฿`}
+                />
               </SelectTrigger>
               {isOpen && (
                 <SelectContent>
