@@ -255,33 +255,8 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
       totalAmount: selectedServices?.totalAmount || 0,
     };
 
+    // Save both payment data and form data
     sessionStorage.setItem("paymentData", JSON.stringify(paymentData));
-    sessionStorage.removeItem("serviceInfoFormData");
-    router.push("/payment");
-  };
-
-  // Side effects
-  useEffect(() => {
-    const servicesData = sessionStorage.getItem("selectedServices");
-    if (servicesData) {
-      const parsedData = JSON.parse(servicesData);
-      setSelectedServices(parsedData);
-
-      if (!service && parsedData.serviceId) {
-        getService(parsedData.serviceId).then((result) => {
-          if (result.data) setService(result.data);
-        });
-      }
-    }
-
-    fetch(
-      "https://raw.githubusercontent.com/kongvut/thai-province-data/master/api_province_with_amphure_tambon.json"
-    )
-      .then((response) => response.json())
-      .then((result: Province[]) => setProvinces(result));
-  }, [service]);
-
-  useEffect(() => {
     const formData = {
       selectedDate,
       selectedTime,
@@ -290,27 +265,106 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
       additionalDetails,
     };
     sessionStorage.setItem("serviceInfoFormData", JSON.stringify(formData));
-  }, [selectedDate, selectedTime, address, selected, additionalDetails]);
+    router.push("/payment");
+  };
 
+  // Load data effects
   useEffect(() => {
-    const savedData = sessionStorage.getItem("serviceInfoFormData");
-    if (savedData) {
-      const parsedData = JSON.parse(savedData);
-      setSelectedDate(
-        parsedData.selectedDate ? new Date(parsedData.selectedDate) : null
-      );
-      setSelectedTime(parsedData.selectedTime || "");
-      setAddress(parsedData.address || "");
-      setSelected(
-        parsedData.selected || {
-          province_id: "",
-          amphure_id: "",
-          tambon_id: "",
+    const loadDataFromStorage = async () => {
+      try {
+        // Load services data
+        const servicesData = sessionStorage.getItem("selectedServices");
+        if (servicesData) {
+          const parsedServices = JSON.parse(servicesData);
+          setSelectedServices(parsedServices);
+
+          if (!service && parsedServices.serviceId) {
+            const result = await getService(parsedServices.serviceId);
+            if (result.data) setService(result.data);
+          }
         }
-      );
-      setAdditionalDetails(parsedData.additionalDetails || "");
+
+        // Load form data with priority given to payment data
+        const paymentData = sessionStorage.getItem("paymentData");
+        const formData = sessionStorage.getItem("serviceInfoFormData");
+
+        if (paymentData) {
+          const parsedPaymentData = JSON.parse(paymentData);
+          setSelectedDate(
+            parsedPaymentData.date ? new Date(parsedPaymentData.date) : null
+          );
+          setSelectedTime(parsedPaymentData.time);
+          setAddress(parsedPaymentData.address);
+          setAdditionalDetails(parsedPaymentData.additionalDetails);
+        } else if (formData) {
+          const parsedFormData = JSON.parse(formData);
+          setSelectedDate(
+            parsedFormData.selectedDate
+              ? new Date(parsedFormData.selectedDate)
+              : null
+          );
+          setSelectedTime(parsedFormData.selectedTime);
+          setAddress(parsedFormData.address);
+          setAdditionalDetails(parsedFormData.additionalDetails);
+          setSelected(parsedFormData.selected);
+        }
+
+        // Load provinces data
+        const response = await fetch(
+          "https://raw.githubusercontent.com/kongvut/thai-province-data/master/api_province_with_amphure_tambon.json"
+        );
+        const provinceData = await response.json();
+        setProvinces(provinceData);
+
+        // If we have payment data, we need to match location names with IDs
+        if (paymentData) {
+          const parsedPaymentData = JSON.parse(paymentData);
+          const province = provinceData.find(
+            (p: Province) => p.name_th === parsedPaymentData.province
+          );
+
+          if (province) {
+            const amphure = province.amphure.find(
+              (a) => a.name_th === parsedPaymentData.district
+            );
+            const tambon = amphure?.tambon.find(
+              (t) => t.name_th === parsedPaymentData.subDistrict
+            );
+
+            setSelected({
+              province_id: province.id,
+              amphure_id: amphure?.id || "",
+              tambon_id: tambon?.id || "",
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error loading data:", error);
+      }
+    };
+
+    loadDataFromStorage();
+  }, [service]);
+
+  // Auto-save form data effect
+  useEffect(() => {
+    if (
+      selectedDate ||
+      selectedTime ||
+      address ||
+      selected.province_id ||
+      additionalDetails
+    ) {
+      const formData = {
+        selectedDate,
+        selectedTime,
+        address,
+        selected,
+        additionalDetails,
+      };
+      sessionStorage.setItem("serviceInfoFormData", JSON.stringify(formData));
     }
-  }, []);
+  }, [selectedDate, selectedTime, address, selected, additionalDetails]);
 
   if (!service) {
     return (
