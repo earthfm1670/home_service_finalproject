@@ -5,7 +5,9 @@ export default function authorizationCheck(req: NextRequest) {
     // const url = req.url;
     // const pathName = req.nextUrl;
     console.log("-V--V--V-Header--V--V--V----------------");
-    console.log(req.headers);
+    console.log(req);
+
+    console.log(req.cookies);
     console.log("-A--A--A------------------------");
   } else {
     console.log("No header");

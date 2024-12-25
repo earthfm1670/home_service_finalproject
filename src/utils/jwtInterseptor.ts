@@ -1,4 +1,18 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
+//Solution
+/**
+ * 1. Create new axios interceptor
+ * - Pros: Solid solution for current practics (jwt token, verify token per req, etc.)
+ * - Cons: Have to change all axios across entire wep app.
+ * 
+ * 2. Verify token via cookies
+ * - Pros: Fast and seem to be potential solution for current practics
+ * - Cons: Have to research agin, might have to change auth system (token storing? only?)
+ * 
+ * 3. High Order Function
+ * - Pros: Have solid example, can discus with other group
+ * - Cons: New practics, might have to change auth system (unknow)
+ */
 
 //Add a request interceptor
 axios.interceptors.request.use(
