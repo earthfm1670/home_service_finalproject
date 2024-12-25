@@ -43,19 +43,38 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
   const [canProceed, setCanProceed] = useState(false);
   const [isLoading, setIsLoading] = useState(!initialService);
 
+  // Load service and quantities from storage
   useEffect(() => {
-    if (id && !service) {
-      setIsLoading(true);
-      const serviceId = Array.isArray(id) ? id[0] : id;
-      getService(serviceId).then((result) => {
+    if (!id) return;
+
+    const loadData = async () => {
+      // Load service if not available
+      if (!service) {
+        setIsLoading(true);
+        const serviceId = Array.isArray(id) ? id[0] : id;
+        const result = await getService(serviceId);
         if (result.data) {
           setService(result.data);
         }
         setIsLoading(false);
-      });
-    }
+      }
+
+      // Load quantities from localStorage
+      const savedQuantities = localStorage.getItem(`quantities_${id}`);
+      if (savedQuantities) {
+        try {
+          const parsedQuantities = JSON.parse(savedQuantities);
+          setQuantities(parsedQuantities);
+        } catch (error) {
+          console.error("Error parsing saved quantities:", error);
+        }
+      }
+    };
+
+    loadData();
   }, [id, service]);
 
+  // Check if can proceed whenever quantities change
   useEffect(() => {
     const hasSelectedServices = Object.values(quantities).some(
       (item) => item.quantity > 0
@@ -63,6 +82,34 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
     setCanProceed(hasSelectedServices);
   }, [quantities]);
 
+  const saveQuantities = (newQuantities: Record<number, ServiceQuantity>) => {
+    if (id) {
+      localStorage.setItem(`quantities_${id}`, JSON.stringify(newQuantities));
+    }
+  };
+
+  const handleQuantityChange = (subServiceId: number, change: number) => {
+    setQuantities((prev) => {
+      const currentQuantity = (prev[subServiceId]?.quantity || 0) + change;
+
+      let newQuantities;
+      if (currentQuantity <= 0) {
+        const { [subServiceId]: ignored, ...rest } = prev;
+        void ignored;
+        newQuantities = rest as Record<number, ServiceQuantity>;
+      } else {
+        newQuantities = {
+          ...prev,
+          [subServiceId]: { quantity: currentQuantity },
+        };
+      }
+
+      saveQuantities(newQuantities);
+      return newQuantities;
+    });
+  };
+
+  // Rest of the component remains the same...
   if (isLoading) {
     return <ServiceHeroSkeleton />;
   }
@@ -70,23 +117,6 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
   if (!service) {
     return <div>Service not found</div>;
   }
-
-  const handleQuantityChange = (subServiceId: number, change: number) => {
-    setQuantities((prev) => {
-      const currentQuantity = (prev[subServiceId]?.quantity || 0) + change;
-
-      if (currentQuantity <= 0) {
-        const { [subServiceId]: ignored, ...rest } = prev;
-        void ignored;
-        return rest as Record<number, ServiceQuantity>;
-      }
-
-      return {
-        ...prev,
-        [subServiceId]: { quantity: currentQuantity },
-      };
-    });
-  };
 
   const calculateTotal = () => {
     return service.sub_services.reduce((total, subService) => {
@@ -131,18 +161,19 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
         "selectedServices",
         JSON.stringify(selectedServicesData)
       );
+      // Keep the quantities in localStorage when proceeding
+      saveQuantities(quantities);
       router.push(`/servicedetail/${id}/info`);
     }
   };
+
   return (
     <div className="min-h-screen bg-gray-100 pb-32">
       <Navbar />
       <ServiceHero service={service} />
 
-      {/* Main Content - Aligned with ServiceHero width */}
       <div className="container mx-auto px-4 lg:px-20 mt-14 lg:mt-28">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-9">
-          {/* Left side - ServiceList */}
           <div className="lg:col-span-2">
             <ServiceList
               service={service}
@@ -151,7 +182,6 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
             />
           </div>
 
-          {/* Right side - DesktopSummary */}
           <div className="lg:col-span-1">
             <DesktopSummary
               getSelectedServices={getSelectedServices}

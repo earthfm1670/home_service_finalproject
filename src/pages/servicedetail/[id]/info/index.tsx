@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/navbar";
 import DesktopSummary from "@/components/service-detail/DesktopSummary";
@@ -20,66 +20,70 @@ import {
   isSunday,
 } from "date-fns";
 
-async function getService(
+// Types
+interface ServiceInfoPageProps {
+  initialService?: Service | null;
+}
+
+interface LocationInfo {
+  date: Date | null;
+  time: string;
+  address: string;
+  province: string;
+  district: string;
+  subDistrict: string;
+  additionalDetails: string;
+}
+
+// API Functions
+const getService = async (
   id: string
-): Promise<{ data: Service | null; error?: string }> {
+): Promise<{ data: Service | null; error?: string }> => {
   try {
     const res = await fetch(`/api/services/${id}`);
-    if (!res.ok) {
-      throw new Error("Failed to fetch service");
-    }
+    if (!res.ok) throw new Error("Failed to fetch service");
     return res.json();
   } catch (error) {
     console.error("Error fetching service:", error);
     return { data: null, error: "Failed to fetch service" };
   }
-}
+};
 
-interface ServiceInfoPageProps {
-  initialService?: Service | null;
-}
+// Holiday Data
+const THAI_HOLIDAYS_2024_2025 = [
+  "2024-01-01",
+  "2024-02-10",
+  "2024-04-06",
+  "2024-04-13",
+  "2024-04-14",
+  "2024-04-15",
+  "2024-05-01",
+  "2024-05-06",
+  "2024-05-22",
+  "2024-07-19",
+  "2024-08-12",
+  "2024-10-14",
+  "2024-12-05",
+  "2024-12-10",
+  "2024-12-31",
+  "2025-01-01",
+  "2025-02-19",
+  "2025-04-06",
+  "2025-04-13",
+  "2025-04-14",
+  "2025-04-15",
+  "2025-05-01",
+  "2025-05-05",
+  "2025-05-12",
+  "2025-07-07",
+  "2025-07-08",
+  "2025-08-12",
+  "2025-10-13",
+  "2025-12-05",
+  "2025-12-10",
+  "2025-12-31",
+].map((date) => new Date(date));
 
-interface Selection {
-  id: number;
-  quantity: number;
-}
-interface Tambon {
-  id: string;
-  name_th: string;
-  name_en: string;
-  zip_code: string;
-}
-
-interface Amphure {
-  id: string;
-  name_th: string;
-  name_en: string;
-  tambon: Tambon[];
-}
-
-interface Province {
-  id: string;
-  name_th: string;
-  name_en: string;
-  amphure: Amphure[];
-}
-
-interface SelectedService {
-  id: number;
-  sub_service_id: number;
-  description: string;
-  quantity: number;
-  unit: string;
-  unit_price: number;
-  total: number;
-}
-
-interface SelectedServicesData {
-  serviceId: string;
-  serviceName: string;
-  selections: SelectedService[];
-  totalAmount: number;
-}
 const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
   const router = useRouter();
   const [service, setService] = useState<Service | null>(
@@ -88,43 +92,51 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
   const [selectedServices, setSelectedServices] =
     useState<SelectedServicesData | null>(null);
   const [provinces, setProvinces] = useState<Province[]>([]);
-  const [amphures, setAmphures] = useState<Amphure[]>([]);
-  const [tambons, setTambons] = useState<Tambon[]>([]);
   const [selected, setSelected] = useState({
     province_id: "",
     amphure_id: "",
     tambon_id: "",
   });
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [additionalDetails, setAdditionalDetails] = useState<string>("");
-  const [address, setAddress] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState("09:00");
+  const [address, setAddress] = useState("");
+  const [additionalDetails, setAdditionalDetails] = useState("");
   const [timeError, setTimeError] = useState("");
   const [dateError, setDateError] = useState<string | null>(null);
-  const [isFormComplete, setIsFormComplete] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
-  const handleTimeChange = (value: string) => {
-    const [hours, minutes] = value.split(":").map(Number);
-    const selectedTime = hours + (minutes === 30 ? 0.5 : 0);
-    if (selectedTime >= 9 && selectedTime < 18) {
-      setSelectedTime(value);
-      setTimeError("");
-    } else {
-      setTimeError("โปรดเลือกเวลาทำการ 09:00 - 17:30 น.");
-    }
-  };
+  // Memoized derived state
+  const amphures = useMemo(() => {
+    const selectedProvince = provinces.find(
+      (p) => p.id === selected.province_id
+    );
+    return selectedProvince?.amphure || [];
+  }, [selected.province_id, provinces]);
+
+  const tambons = useMemo(() => {
+    const selectedAmphure = amphures.find((a) => a.id === selected.amphure_id);
+    return selectedAmphure?.tambon || [];
+  }, [selected.amphure_id, amphures]);
+
+  const isFormComplete = useMemo(() => {
+    return !!(
+      selectedDate &&
+      selectedTime &&
+      address &&
+      selected.province_id &&
+      selected.amphure_id &&
+      selected.tambon_id &&
+      selectedServices?.selections?.length
+    );
+  }, [selectedDate, selectedTime, address, selected, selectedServices]);
+
+  // Date validation functions
   const isDateSelectable = (date: Date) => {
     const today = startOfToday();
     const now = new Date();
     const maxDate = calculateMaxSelectableDate(today, 30);
 
-    // ไม่สามารถเลือกวันที่ผ่านมาแล้ว (ยกเว้นวันนี้)
-    if (isBefore(date, today)) {
-      return false;
-    }
-
-    // สามารถเลือกวันนี้ได้ ถ้าเวลาปัจจุบันไม่เกิน 18:00 น.
+    if (isBefore(date, today)) return false;
     if (isSameDay(date, today)) {
       return isBefore(
         now,
@@ -138,32 +150,26 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
         )
       );
     }
-
-    // ไม่สามารถเลือกวันหยุดสุดสัปดาห์ (เฉพาะวันเสาร์และอาทิตย์)
-    if (isSaturday(date) || isSunday(date)) {
+    if (isSaturday(date) || isSunday(date)) return false;
+    if (isAfter(date, maxDate)) return false;
+    if (THAI_HOLIDAYS_2024_2025.some((holiday) => isSameDay(date, holiday)))
       return false;
-    }
-
-    // ไม่สามารถเลือกวันเกินจากช่วง 30 วันทำการ
-    if (isAfter(date, maxDate)) {
-      return false;
-    }
-
-    // ตรวจสอบวันหยุดนักขัตฤกษ์ไทย
-    if (isHoliday(date)) {
-      return false;
-    }
 
     return true;
   };
-  // ฟังก์ชันสำหรับคำนวณวันทำการสูงสุด (30 วันทำการ)
+
   const calculateMaxSelectableDate = (startDate: Date, days: number) => {
     let count = 0;
     let currentDate = startDate;
 
     while (count < days) {
       currentDate = addDays(currentDate, 1);
-      if (!isWeekend(currentDate) && !isHoliday(currentDate)) {
+      if (
+        !isWeekend(currentDate) &&
+        !THAI_HOLIDAYS_2024_2025.some((holiday) =>
+          isSameDay(currentDate, holiday)
+        )
+      ) {
         count++;
       }
     }
@@ -171,152 +177,140 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
     return currentDate;
   };
 
+  // Event handlers
+  const handleTimeChange = (value: string) => {
+    const [hours, minutes] = value.split(":").map(Number);
+    const selectedTime = hours + (minutes === 30 ? 0.5 : 0);
+
+    if (selectedTime >= 9 && selectedTime < 18) {
+      setSelectedTime(value);
+      setTimeError("");
+    } else {
+      setTimeError("โปรดเลือกเวลาทำการ 09:00 - 17:30 น.");
+    }
+  };
+
   const handleDateSelect = (date: Date | undefined) => {
     setIsCalendarOpen(false);
-    if (date) {
-      if (!isDateSelectable(date)) {
-        // เงื่อนไขและข้อความแจ้งเตือน
-        if (isBefore(date, startOfToday())) {
-          setDateError(
-            "กรุณาเลือกวันที่ใหม่ (ไม่สามารถเลือกวันที่ผ่านมาแล้วได้)"
-          );
-        } else if (isWeekend(date)) {
-          setDateError(
-            "วันที่เลือกไม่สามารถให้บริการได้ เนื่องจากเป็นวันหยุดสุดสัปดาห์ (วันจันทร์-ศุกร์เท่านั้น)"
-          );
-        } else if (
-          isAfter(date, calculateMaxSelectableDate(startOfToday(), 30))
-        ) {
-          setDateError(
-            "กรุณาเลือกวันที่ใหม่ (เลือกได้เฉพาะวันที่ภายใน 30 วันทำการจากวันนี้)"
-          );
-        } else if (isHoliday(date)) {
-          setDateError(
-            "วันที่เลือกไม่สามารถให้บริการได้ เนื่องจากเป็นวันหยุดนักขัตฤกษ์"
-          );
-        } else if (
-          isSameDay(date, startOfToday()) &&
-          isAfter(new Date(), new Date(startOfToday().setHours(18, 0, 0, 0)))
-        ) {
-          setDateError(
-            "วันนี้ไม่สามารถเลือกได้ เนื่องจากเวลาที่เลือกเกิน 18:00 น."
-          );
-        } else {
-          setDateError("วันที่เลือกไม่สามารถให้บริการได้ กรุณาเลือกวันใหม่");
-        }
-        setSelectedDate(null); // เซ็ตเป็น null เมื่อวันที่ไม่ถูกต้อง
-      } else {
-        setSelectedDate(date);
-        setDateError(null);
+    if (!date) {
+      setSelectedDate(null);
+      setDateError(null);
+      return;
+    }
+
+    if (!isDateSelectable(date)) {
+      const errorMessages = {
+        past: "กรุณาเลือกวันที่ใหม่ (ไม่สามารถเลือกวันที่ผ่านมาแล้วได้)",
+        weekend:
+          "วันที่เลือกไม่สามารถให้บริการได้ เนื่องจากเป็นวันหยุดสุดสัปดาห์ (วันจันทร์-ศุกร์เท่านั้น)",
+        tooFar:
+          "กรุณาเลือกวันที่ใหม่ (เลือกได้เฉพาะวันที่ภายใน 30 วันทำการจากวันนี้)",
+        holiday:
+          "วันที่เลือกไม่สามารถให้บริการได้ เนื่องจากเป็นวันหยุดนักขัตฤกษ์",
+        afterHours:
+          "วันนี้ไม่สามารถเลือกได้ เนื่องจากเวลาที่เลือกเกิน 18:00 น.",
+      };
+
+      let errorMessage = "วันที่เลือกไม่สามารถให้บริการได้ กรุณาเลือกวันใหม่";
+      if (isBefore(date, startOfToday())) errorMessage = errorMessages.past;
+      else if (isWeekend(date)) errorMessage = errorMessages.weekend;
+      else if (isAfter(date, calculateMaxSelectableDate(startOfToday(), 30)))
+        errorMessage = errorMessages.tooFar;
+      else if (
+        THAI_HOLIDAYS_2024_2025.some((holiday) => isSameDay(date, holiday))
+      )
+        errorMessage = errorMessages.holiday;
+      else if (
+        isSameDay(date, startOfToday()) &&
+        isAfter(new Date(), new Date(startOfToday().setHours(18, 0, 0, 0)))
+      ) {
+        errorMessage = errorMessages.afterHours;
       }
+
+      setDateError(errorMessage);
+      setSelectedDate(null);
     } else {
-      setSelectedDate(null); // เซ็ตเป็น null เมื่อไม่มีวันที่ถูกเลือก
+      setSelectedDate(date);
       setDateError(null);
     }
   };
 
-  // ฟังก์ชันวันหยุดนักขัตฤกษ์
-  const isHoliday = (date: Date) => {
-    const holidays = [
-      // วันหยุดปี 2024
-      new Date("2024-01-01"), // วันขึ้นปีใหม่
-      new Date("2024-02-10"), // วันมาฆบูชา
-      new Date("2024-04-06"), // วันจักรี
-      new Date("2024-04-13"), // วันสงกรานต์
-      new Date("2024-04-14"), // วันสงกรานต์
-      new Date("2024-04-15"), // วันสงกรานต์
-      new Date("2024-05-01"), // วันแรงงาน
-      new Date("2024-05-06"), // วันฉัตรมงคล (ชดเชย)
-      new Date("2024-05-22"), // วันวิสาขบูชา
-      new Date("2024-07-19"), // วันเข้าพรรษา
-      new Date("2024-08-12"), // วันแม่แห่งชาติ
-      new Date("2024-10-14"), // วันคล้ายวันสวรรคต ร.9
-      new Date("2024-12-05"), // วันพ่อแห่งชาติ
-      new Date("2024-12-10"), // วันรัฐธรรมนูญ
-      new Date("2024-12-31"), // วันสิ้นปี
+  const handleProceed = () => {
+    if (!isFormComplete || !service) return;
 
-      // วันหยุดปี 2025
-      new Date("2025-01-01"), // วันขึ้นปีใหม่
-      new Date("2025-02-19"), // วันมาฆบูชา
-      new Date("2025-04-06"), // วันจักรี
-      new Date("2025-04-13"), // วันสงกรานต์
-      new Date("2025-04-14"), // วันสงกรานต์
-      new Date("2025-04-15"), // วันสงกรานต์
-      new Date("2025-05-01"), // วันแรงงาน
-      new Date("2025-05-05"), // วันฉัตรมงคล
-      new Date("2025-05-12"), // วันวิสาขบูชา
-      new Date("2025-07-07"), // วันอาสาฬหบูชา
-      new Date("2025-07-08"), // วันเข้าพรรษา
-      new Date("2025-08-12"), // วันแม่แห่งชาติ
-      new Date("2025-10-13"), // วันคล้ายวันสวรรคต ร.9
-      new Date("2025-12-05"), // วันพ่อแห่งชาติ
-      new Date("2025-12-10"), // วันรัฐธรรมนูญ
-      new Date("2025-12-31"), // วันสิ้นปี
-    ];
+    const paymentData = {
+      serviceId: service.id,
+      serviceName: service.title,
+      selectedServices,
+      date: selectedDate,
+      time: selectedTime,
+      address,
+      province:
+        provinces.find((p) => p.id === selected.province_id)?.name_th || "",
+      district:
+        amphures.find((a) => a.id === selected.amphure_id)?.name_th || "",
+      subDistrict:
+        tambons.find((t) => t.id === selected.tambon_id)?.name_th || "",
+      additionalDetails,
+      totalAmount: selectedServices?.totalAmount || 0,
+    };
 
-    // ตรวจสอบว่า date ที่เลือกตรงกับวันหยุดหรือไม่
-    return holidays.some((holiday) => isSameDay(date, holiday));
+    sessionStorage.setItem("paymentData", JSON.stringify(paymentData));
+    sessionStorage.removeItem("serviceInfoFormData");
+    router.push("/payment");
   };
+
+  // Side effects
   useEffect(() => {
-    // Load selected services from session storage
     const servicesData = sessionStorage.getItem("selectedServices");
     if (servicesData) {
       const parsedData = JSON.parse(servicesData);
       setSelectedServices(parsedData);
 
-      // Fetch service details if not provided as props
       if (!service && parsedData.serviceId) {
         getService(parsedData.serviceId).then((result) => {
-          if (result.data) {
-            setService(result.data);
-          }
+          if (result.data) setService(result.data);
         });
       }
     }
 
-    // Fetch provinces data
     fetch(
       "https://raw.githubusercontent.com/kongvut/thai-province-data/master/api_province_with_amphure_tambon.json"
     )
       .then((response) => response.json())
-      .then((result: Province[]) => {
-        setProvinces(result);
-      });
+      .then((result: Province[]) => setProvinces(result));
   }, [service]);
 
   useEffect(() => {
-    if (selected.province_id) {
-      const selectedProvince = provinces.find(
-        (p) => p.id === selected.province_id
-      );
-      setAmphures(selectedProvince ? selectedProvince.amphure : []);
-      setSelected((prev) => ({ ...prev, amphure_id: "", tambon_id: "" }));
-    }
-  }, [selected.province_id, provinces]);
+    const formData = {
+      selectedDate,
+      selectedTime,
+      address,
+      selected,
+      additionalDetails,
+    };
+    sessionStorage.setItem("serviceInfoFormData", JSON.stringify(formData));
+  }, [selectedDate, selectedTime, address, selected, additionalDetails]);
 
   useEffect(() => {
-    if (selected.amphure_id) {
-      const selectedAmphure = amphures.find(
-        (a) => a.id === selected.amphure_id
+    const savedData = sessionStorage.getItem("serviceInfoFormData");
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      setSelectedDate(
+        parsedData.selectedDate ? new Date(parsedData.selectedDate) : null
       );
-      setTambons(selectedAmphure ? selectedAmphure.tambon : []);
-      setSelected((prev) => ({ ...prev, tambon_id: "" }));
+      setSelectedTime(parsedData.selectedTime || "");
+      setAddress(parsedData.address || "");
+      setSelected(
+        parsedData.selected || {
+          province_id: "",
+          amphure_id: "",
+          tambon_id: "",
+        }
+      );
+      setAdditionalDetails(parsedData.additionalDetails || "");
     }
-  }, [selected.amphure_id, amphures]);
-
-  useEffect(() => {
-    setIsFormComplete(
-      !!selectedDate &&
-        !!selectedTime &&
-        !!address &&
-        !!selected.province_id &&
-        !!selected.amphure_id &&
-        !!selected.tambon_id &&
-        !!selectedServices?.selections &&
-        Array.isArray(selectedServices.selections) &&
-        selectedServices.selections.length > 0
-    );
-  }, [selectedDate, selectedTime, address, selected, selectedServices]);
+  }, []);
 
   if (!service) {
     return (
@@ -328,28 +322,16 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
     );
   }
 
-  const handleProceed = () => {
-    if (isFormComplete && service) {
-      const paymentData = {
-        serviceId: service.id,
-        serviceName: service.title,
-        selectedServices: selectedServices,
-        date: selectedDate,
-        time: selectedTime,
-        address: address,
-        province:
-          provinces.find((p) => p.id === selected.province_id)?.name_th || "",
-        district:
-          amphures.find((a) => a.id === selected.amphure_id)?.name_th || "",
-        subDistrict:
-          tambons.find((t) => t.id === selected.tambon_id)?.name_th || "",
-        additionalDetails: additionalDetails,
-        totalAmount: selectedServices?.totalAmount || 0,
-      };
-
-      sessionStorage.setItem("paymentData", JSON.stringify(paymentData));
-      router.push(`/payment`);
-    }
+  const locationInfo: LocationInfo = {
+    date: selectedDate,
+    time: selectedTime,
+    address,
+    province:
+      provinces.find((p) => p.id === selected.province_id)?.name_th || "",
+    district: amphures.find((a) => a.id === selected.amphure_id)?.name_th || "",
+    subDistrict:
+      tambons.find((t) => t.id === selected.tambon_id)?.name_th || "",
+    additionalDetails,
   };
 
   return (
@@ -357,10 +339,8 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
       <Navbar />
       <ServiceHero service={service} />
 
-      {/* Main Content - Aligned with ServiceHero width */}
       <div className="container mx-auto px-4 lg:px-20 mt-14 lg:mt-28">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-9">
-          {/* Location Form */}
           <LocationForm
             isCalendarOpen={isCalendarOpen}
             setIsCalendarOpen={setIsCalendarOpen}
@@ -382,10 +362,9 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
             setAdditionalDetails={setAdditionalDetails}
           />
 
-          {/* Summary Section */}
           <DesktopSummary
             getSelectedServices={() => selectedServices?.selections || []}
-            getQuantityDisplay={(id: number) =>
+            getQuantityDisplay={(id) =>
               selectedServices?.selections.find((s) => s.id === id)?.quantity ||
               0
             }
@@ -393,29 +372,16 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
               const total = selectedServices?.totalAmount;
               return typeof total === "number" && !isNaN(total) ? total : 0;
             }}
-            getPriceDisplay={(id: number) => {
+            getPriceDisplay={(id) => {
               const service = selectedServices?.selections.find(
                 (s) => s.id === id
               );
               return typeof service?.unit_price === "number" &&
-                !isNaN(service?.unit_price)
+                !isNaN(service.unit_price)
                 ? service.unit_price
                 : 0;
             }}
-            locationInfo={{
-              date: selectedDate,
-              time: selectedTime,
-              address: address,
-              province:
-                provinces.find((p) => p.id === selected.province_id)?.name_th ||
-                "",
-              district:
-                amphures.find((a) => a.id === selected.amphure_id)?.name_th ||
-                "",
-              subDistrict:
-                tambons.find((t) => t.id === selected.tambon_id)?.name_th || "",
-              additionalDetails: additionalDetails,
-            }}
+            locationInfo={locationInfo}
             isServiceInfoPage={true}
             isServiceDetailPage={true}
           />
@@ -427,27 +393,28 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
         calculateTotal={() => selectedServices?.totalAmount || 0}
         getSelectedServices={() => selectedServices?.selections || []}
         getQuantityDisplay={(id) =>
-          selectedServices?.selections.find((s: Selection) => s.id === id)
-            ?.quantity || 0
+          selectedServices?.selections.find((s) => s.id === id)?.quantity || 0
         }
         handleProceed={handleProceed}
-        locationInfo={{
-          date: selectedDate,
-          time: selectedTime,
-          address: address,
-          province:
-            provinces.find((p) => p.id === selected.province_id)?.name_th || "",
-          district:
-            amphures.find((a) => a.id === selected.amphure_id)?.name_th || "",
-          subDistrict:
-            tambons.find((t) => t.id === selected.tambon_id)?.name_th || "",
-          additionalDetails: additionalDetails,
-        }}
+        locationInfo={locationInfo}
         isServiceInfoPage={true}
       />
 
       <NavigationButtons
-        onBack={() => router.back()}
+        onBack={() => {
+          const formData = {
+            selectedDate,
+            selectedTime,
+            address,
+            selected,
+            additionalDetails,
+          };
+          sessionStorage.setItem(
+            "serviceInfoFormData",
+            JSON.stringify(formData)
+          );
+          router.back();
+        }}
         handleProceed={handleProceed}
         canProceed={isFormComplete}
       />
