@@ -1,30 +1,34 @@
-import Adminsidebar from "@/components/admin/adminsidebar";
-import { supabase } from "@/utils/supabase";
+import { AdminSidebar } from "@/components/admin/adminsidebar";
 import { useEffect, useState } from "react";
-import { useServices } from "@/components/ServicesContext";
 import axios from "axios";
 import { useRouter } from "next/router";
 import IconWarning from "@/components/ui/Iconwarning";
 import IconX from "@/components/ui/IconX";
 
-export default function AdminNavbar() {
+export default function AdminService() {
+  // useState hook ใช้เก็บค่าของการค้นหาบริการ
   const [search, setSearch] = useState("");
+
+  // ฟังก์ชันจัดการการเปลี่ยนแปลงค่าจาก input search และส่งค่าลงไปให้ admin index
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
   };
-  console.log(search);
+  // console.log("check state for search sent to endpoint query",search);
 
+  // ใช้ router จาก Next.js เพื่อเปลี่ยนหน้า
   const router = useRouter();
 
   return (
     <>
       <div className="flex flex-row w-full">
         <div>
-          <Adminsidebar />
+          {/*  navebar import เพื่อใช้สำหรับหน้า admin index */}
+          <AdminSidebar />
         </div>
         <div className="w-full flex flex-col">
-          {/* navbar for admin page */}
+          {/* navbar for admin index */}
           <div className="flex flex-row items-center justify-between bg-white sticky top-0 h-20 px-10 py-5 min-w-[1200px] border-b  border-gray-300">
+            {/* หัวข้อที่แสดงใน navbar */}
             <div className="text-xl">บริการ</div>
             <div className="h-full flex flex-row items-center gap-6 relative">
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2 ">
@@ -47,6 +51,7 @@ export default function AdminNavbar() {
               </button>
             </div>
           </div>
+          {/* แสดงข้อมูลที่ได้จาก data base */}
           <AdminserviceIndex search={search} />
         </div>
       </div>
@@ -57,6 +62,7 @@ export default function AdminNavbar() {
 //---------------------------------------------------------------------------------------
 
 export const AdminserviceIndex = ({ search }: { search: string | null }) => {
+  // ประกาศตัวแปรเพื่อมารับข้อมูลจาก Service
   interface Service {
     id: string;
     service_id: number;
@@ -67,14 +73,14 @@ export const AdminserviceIndex = ({ search }: { search: string | null }) => {
     updated_at: string;
   }
 
-  // ดึงข้อมูลจาก Context
-  // สร้าง state เพื่อมารับข้อมูล service
-  // const { getServicesData, servicesData } = useServices();
-  // console.log(servicesData, 1);
-  const [serviceList, setServicesList] = useState<Service[]>([]);
-  const [serviceListNull, setServicesListNull] = useState<Service[]>([]);
-  console.log(serviceList);
+  // ใช้ router จาก Next.js เพื่อเปลี่ยนหน้า
+  const router = useRouter();
 
+  // สร้าง state เพื่อมารับข้อมูล service
+  const [serviceList, setServicesList] = useState<Service[]>([]);
+  // console.log("check data form database for show service && category",serviceList);
+
+  // asynchronous function for get data
   const fetchUser = async () => {
     try {
       const response = await axios.get(
@@ -86,23 +92,12 @@ export const AdminserviceIndex = ({ search }: { search: string | null }) => {
     }
   };
 
-  const router = useRouter();
-
   // เรียกข้อมูลเมื่อเกิดการ refresh window
   useEffect(() => {
-    // if (servicesData) {
-    //   setServicesList(servicesData);
-    // }
     fetchUser();
   }, [search]);
 
-  // style text category
-  // const categoryNameMap: Record<number, string> = {
-  //   2: "บริการทั่วไป",
-  //   3: "บริการห้องครัว",
-  //   4: "บริการห้องน้ำ",
-  // };
-
+  // mapping for style with category
   const categoryBgClassMap: Record<string, string> = {
     บริการทั่วไป: "text-blue-800 bg-blue-100 inline-block px-2 py-1",
     บริการห้องครัว: "text-purple-900 bg-purple-100 inline-block px-2 py-1",
@@ -110,131 +105,125 @@ export const AdminserviceIndex = ({ search }: { search: string | null }) => {
   };
   return (
     <>
-      <div className="">
-        <div className="flex flex-row w-full">
-          {/* sidebar admin */}
-          {/* <Adminsidebar /> */}
-          {/* work space for admin page */}
-          <div className="w-full flex flex-col">
-            {/* <AdminNavbar /> */}
-            {/* list detail for admin page */}
-            <div className="min-h-screen w-full flex justify-center items-start py-12 min-w-[1200px]  bg-gray-100">
-              <div className="flex w-[1120px] border border-gray-300 rounded-lg overflow-x-auto">
-                <table className="w-full text-gray-500">
-                  <thead>
-                    <tr className="h-10 bg-gray-200 text-gray-500">
-                      <th className="w-[55px]"></th>
-                      <th className="w-[58px] text-center font-normal">
-                        ลำดับ
-                      </th>
-                      <th className="max-w-[226px] text-start pl-6 font-normal">
-                        ชื่อบริการ
-                      </th>
-                      <th className="w-[201px] text-start pl-6 font-normal">
-                        หมวดหมู่
-                      </th>
-                      <th className="w-[230px] text-start pl-6 font-normal">
-                        สร้างเมื่อ
-                      </th>
-                      <th className="w-[230px] text-start pl-6 font-normal">
-                        แก้ไขล่าสุด
-                      </th>
-                      <th className="w-[120px] text-center font-normal">
-                        Action
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {serviceList
-                      // .sort((a, b) => a.service_id - b.service_id)
-                      .map((service: Service, index) => (
-                        <tr
-                          key={service.service_id}
-                          className="border-t bg-white h-20 text-black"
+      <div className="w-full flex flex-col">
+        {/* กล่องใหญ่สุดสำหรับพื้นหลังเพื่อวางเนื้อหาแนวตั้งข้างใน */}
+        <div className="min-h-screen w-full flex justify-center items-start py-12 min-w-[1200px]  bg-gray-100">
+          {/* กล่องสำหรับวางเนื้อหา */}
+          <div className="flex w-[1120px] border border-gray-300 rounded-lg overflow-x-auto">
+            {/* create table for handle content */}
+            <table className="w-full text-gray-500">
+              {/* for head of table */}
+              <thead>
+                <tr className="h-10 bg-gray-200 text-gray-500">
+                  <th className="w-[55px]"></th>
+                  <th className="w-[58px] text-center font-normal">ลำดับ</th>
+                  <th className="max-w-[226px] text-start pl-6 font-normal">
+                    ชื่อบริการ
+                  </th>
+                  <th className="w-[201px] text-start pl-6 font-normal">
+                    หมวดหมู่
+                  </th>
+                  <th className="w-[230px] text-start pl-6 font-normal">
+                    สร้างเมื่อ
+                  </th>
+                  <th className="w-[230px] text-start pl-6 font-normal">
+                    แก้ไขล่าสุด
+                  </th>
+                  <th className="w-[120px] text-center font-normal">Action</th>
+                </tr>
+              </thead>
+               {/* for content rendering list form data */}
+              <tbody>
+                {serviceList
+                  // .sort((a, b) => a.service_id - b.service_id)
+                  .map((service: Service, index) => (
+                    <tr
+                      key={service.service_id}
+                      className="border-t bg-white h-20 text-black"
+                    >
+                      <td className="px-auto text-center active:bg-gray-600">
+                        <IconDrag />
+                      </td>
+                      <td className="px-auto  text-center">{index + 1}</td>
+                      <td
+                        className={`px-6 cursor-pointer`}
+                        onClick={() =>
+                          router.push(
+                            `/adminservice/detail/${service.service_id}`
+                          )
+                        }
+                      >
+                        {service.service_name}
+                      </td>
+                      <td className="px-6">
+                        {/* {service.category} */}
+                        <div
+                          className={`rounded-md py-1 ${
+                            categoryBgClassMap[service.category] ||
+                            "default-class"
+                          }`}
                         >
-                          <td className="px-auto text-center active:bg-gray-600">
-                            <IconDrag />
-                          </td>
-                          <td className="px-auto  text-center">{index + 1}</td>
-                          <td
-                            className={`px-6 cursor-pointer`}
-                            onClick={() =>
-                              router.push(`/adminservice/detail/${service.service_id}`)
-                            }
-                          >
-                            {service.service_name}
-                          </td>
-                          <td className="px-6">
-                            {/* {service.category} */}
-                            <div
-                              className={`rounded-md py-1 ${
-                                categoryBgClassMap[service.category] ||
-                                "default-class"
-                              }`}
-                            >
-                              {service.category}
-                            </div>
-                            {/* <Category category={service.category} /> */}
-                          </td>
-                          <td className="px-6">
-                            {new Date(service.created_at).toLocaleDateString(
-                              "en-US",
-                              {
-                                year: "numeric",
-                                month: "2-digit",
-                                day: "2-digit",
-                              }
-                            )}{" "}
-                            {new Date(service.created_at).toLocaleTimeString(
-                              "en-US",
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: true,
-                              }
-                            )}
-                          </td>
-                          <td className="px-6">
-                            {new Date(service.updated_at).toLocaleDateString(
-                              "en-US",
-                              {
-                                year: "numeric",
-                                month: "2-digit",
-                                day: "2-digit",
-                              }
-                            )}{" "}
-                            {new Date(service.updated_at).toLocaleTimeString(
-                              "en-US",
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: true,
-                              }
-                            )}
-                          </td>
+                          {service.category}
+                        </div>
+                      </td>
+                      <td className="px-6">
+                        {new Date(service.created_at).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                          }
+                        )}{" "}
+                        {new Date(service.created_at).toLocaleTimeString(
+                          "en-US",
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          }
+                        )}
+                      </td>
+                      <td className="px-6">
+                        {new Date(service.updated_at).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                          }
+                        )}{" "}
+                        {new Date(service.updated_at).toLocaleTimeString(
+                          "en-US",
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          }
+                        )}
+                      </td>
 
-                          <td className="flex flex-row items-center justify-between px-6 py-7 ">
-                            <IconTrash
-                              id={service.service_id}
-                              updateTable={serviceList}
-                              setUpdateTable={setServicesList}
-                              index={index}
-                              serviceName={service.service_name}
-                            />
-                            <IconEdit id={service.service_id} />
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                      <td className="flex flex-row items-center justify-between px-6 py-7 ">
+                        <IconTrash
+                          id={service.service_id}
+                          setUpdateTable={setServicesList}
+                          index={index}
+                          serviceName={service.service_name}
+                        />
+                        <IconEdit id={service.service_id} />
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
     </>
   );
 };
+
+//---------------------------------------------------------------------------------------
 
 export function IconDrag() {
   // change color icon when active
@@ -281,24 +270,30 @@ export function IconDrag() {
 
 function IconTrash({
   id,
-  updateTable,
   setUpdateTable,
   index,
   serviceName,
 }: any) {
+
   interface Service {
-    service_id: string;
-    // ฟิลด์อื่น ๆ ของ service
+    service_id: number;
   }
+
+  type TableState = Service[];
+
   const [showPopup, setShowPopup] = useState<boolean>(false);
   // console.log(updateTable, "3");
 
-  type TableState = Service[];
+ 
 
   const [active, setActive] = useState<boolean>(false);
 
   const handleMouseDown = () => {
     setActive(true);
+  };
+
+  const handleMouseUp = () => {
+    setActive(false);
   };
 
   const handleDelete = async (serviceId: string) => {
@@ -313,9 +308,9 @@ function IconTrash({
         // อัปเดตตารางโดยการกรองข้อมูลที่ไม่ถูกลบออก
         setUpdateTable(
           (prevTable: TableState) =>
-            prevTable.filter((_, idx: number) => idx !== index) // ใช้ index เพื่อกรองเฉพาะ service ที่ไม่ถูกลบ
+            prevTable.filter((_, idx: number) => idx !== index) 
+          // ใช้ index เพื่อกรองเฉพาะ service ที่ไม่ถูกลบ
         );
-        // setUpdateTable((prev) => !prev)
       } else {
         console.log("Failed to delete the service:", response.data.message);
       }
@@ -324,10 +319,6 @@ function IconTrash({
     } catch (error) {
       console.log("Error deleting the service:", error);
     }
-  };
-
-  const handleMouseUp = () => {
-    setActive(false);
   };
 
   return (
@@ -341,7 +332,6 @@ function IconTrash({
         xmlns="http://www.w3.org/2000/svg"
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
-        // onClick={() => handleDelete(id)}
         onClick={() => setShowPopup(true)}
       >
         <path
@@ -434,9 +424,6 @@ function IconEdit(id: any) {
     </svg>
   );
 }
-
-// navbar ----------------------------------------------------------------------------------------
-// : React.FC
 
 export function IconPlus() {
   return (
