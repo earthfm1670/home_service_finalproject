@@ -271,7 +271,7 @@ function IconTrash({ id, setUpdateTable, index, serviceName }: any) {
     service_id: number;
   }
 
-  type TableState = Service[];
+   type TableState = Service[];
 
   const [showPopup, setShowPopup] = useState<boolean>(false);
   // console.log(updateTable, "3");
