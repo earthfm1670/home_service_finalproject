@@ -56,8 +56,9 @@ export default async function getOrderHistory(
     }
 
     return res.status(200).json({ data: respond.rows });
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    const err = error as Error;
+    console.log(err.message);
     return res.status(500).json({ error: "Internal server error." });
   }
 }

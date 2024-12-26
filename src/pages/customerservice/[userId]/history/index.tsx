@@ -42,7 +42,6 @@ export default function CustomerHistory() {
         setFetchOrder(respond.data.data);
       }
     } catch (err) {
-      console.log("Fetch history error");
       console.log(err);
       setIsLoading(false); //fix to false
     }
