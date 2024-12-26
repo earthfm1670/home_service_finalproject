@@ -5,6 +5,8 @@ import { th } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
+import { useTimer } from "@/context/TimerContext";
 
 interface DesktopSummaryProps {
   getSelectedServices: () => Array<{
@@ -57,6 +59,21 @@ export const DesktopSummary: React.FC<DesktopSummaryProps> = ({
   const preDiscountTotal = totalAmount;
   const discountAmount = preDiscountTotal * discount;
   const router = useRouter();
+  const { timeLeft, startTimer, resetTimer } = useTimer();
+
+  useEffect(() => {
+    if (router.pathname === "/payment") {
+      startTimer();
+    } else if (isServiceInfoPage) {
+      resetTimer();
+    }
+  }, [router.pathname, isServiceInfoPage, startTimer, resetTimer]);
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+  };
   return (
     <div className="hidden lg:block">
       <Card className="p-6 sticky top-4">
@@ -169,6 +186,21 @@ export const DesktopSummary: React.FC<DesktopSummaryProps> = ({
                   maximumFractionDigits: 2,
                 })}
                 {" ฿"}
+              </span>
+            </div>
+          )}
+
+          {/* Countdown Timer */}
+          {router.pathname === "/payment" && (
+            <div className="flex flex-col items-center mb-4 text-center">
+              <span className="text-sm text-gray-700 font-normal mb-1">
+                กรุณาชำระเงินภายใน
+              </span>
+              <span className="text-lg font-semibold text-red-600">
+                {formatTime(timeLeft)}
+              </span>
+              <span className="text-xs text-gray-500">
+                หากไม่ชำระภายในเวลาที่กำหนด รายการสั่งซื้อจะถูกยกเลิก
               </span>
             </div>
           )}
