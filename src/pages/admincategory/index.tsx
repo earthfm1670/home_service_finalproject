@@ -77,7 +77,7 @@ export const AdminserviceIndex = ({ search }: { search: string | null }) => {
   const fetchUser = async () => {
     try {
       const response = await axios.get(
-        `/api/admincategorise/getCategories?search=${search}`
+        `/api/admincategorise/get-categories?search=${search}`
       );
       setGetCategoriesData(response.data.data);
     } catch (error) {

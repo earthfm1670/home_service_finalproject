@@ -1,4 +1,4 @@
-import Adminsidebar from "@/components/admin/adminsidebar";
+import { AdminSidebar } from "@/components/admin/adminsidebar";
 import { useEffect, useState } from "react";
 import { useServices } from "@/components/ServicesContext";
 import { useRouter } from "next/router";
@@ -116,7 +116,7 @@ export default function AdminNavbar() {
       >
         <div className="flex flex-row w-full">
           <div>
-            <Adminsidebar />
+            <AdminSidebar />
           </div>
           <div className="w-full flex flex-col">
             {/* navbar for admin page */}
@@ -324,7 +324,7 @@ export const AdminserviceIndex = ({
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(`/api/admin/management/getCategories`);
+      const response = await axios.get(`/api/admin/management/get-categories`);
       setFetchDataCategories(response.data);
     } catch (error) {
       console.log(error);
@@ -405,7 +405,7 @@ export const AdminserviceIndex = ({
                           <div className="flex flex-row gap-2">
                             <label
                               htmlFor="file-upload"
-                              className="cursor-pointer text-blue-500 hover:text-blue-700"
+                              className="cursor-pointer text-blue-500"
                             >
                               อัพโหลดภาพ
                             </label>
@@ -421,40 +421,17 @@ export const AdminserviceIndex = ({
                             <p className="text-gray-600 text-center ">5MB</p>
                           </div>
                         </div>
-                        <div>
-                          <input
-                            type="file"
-                            id="file-upload"
-                            accept="image/png, image/jpeg"
-                            onChange={handleInputImg}
-                            className="hidden"
-                          />
-                        </div>
+                        <div></div>
                       </div>
                     )}
                   </div>
                 </div>
                 <div>
-                  {preview ? (
-                    <div className="flex flex-row justify-between items-center">
-                      <p className="text-sm text-gray-600">
-                        ขนาดภาพที่แนะนำ: 1440 x 225 PX
-                      </p>
-                      <p
-                        className="cursor-pointer text-blue-500 hover:text-blue-700 underline"
-                        onClick={() => setShowPopUpDeleteImg(true)}
-                      >
-                        ลบรูปภาพ
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="flex flex-row justify-between items-center">
-                      <p className="text-sm text-gray-600">
-                        ขนาดภาพที่แนะนำ: 1440 x 225 PX
-                      </p>
-                      <p></p>
-                    </div>
-                  )}
+                  <div className="flex flex-row justify-between items-center">
+                    <p className="text-sm text-gray-600">
+                      ขนาดภาพที่แนะนำ: 1440 x 225
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -462,7 +439,9 @@ export const AdminserviceIndex = ({
             {/* กล่องกลาง */}
             <div>
               <div className="">
-                <h1 className="text-gray-500 font-medium mb-5">รายการบริการย่อย</h1>
+                <h1 className="text-gray-500 font-medium mb-5">
+                  รายการบริการย่อย
+                </h1>
                 {subservices.map((subservice, index) => (
                   <AddSubService
                     key={index}
@@ -496,20 +475,6 @@ export const AdminserviceIndex = ({
               <div className="flex flex-col justify-between w-full gap-5 ">
                 <div className="flex gap-2">
                   <div>
-                    {new Date(updateAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                    })}
-                  </div>
-                  {new Date(updateAt).toLocaleTimeString("en-US", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}
-                </div>
-                <div className="flex gap-2 ">
-                  <div>
                     {new Date(createAt).toLocaleDateString("en-US", {
                       year: "numeric",
                       month: "2-digit",
@@ -517,6 +482,20 @@ export const AdminserviceIndex = ({
                     })}
                   </div>
                   {new Date(createAt).toLocaleTimeString("en-US", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
+                </div>
+                <div className="flex gap-2 ">
+                  <div>
+                    {new Date(updateAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })}
+                  </div>
+                  {new Date(updateAt).toLocaleTimeString("en-US", {
                     hour: "2-digit",
                     minute: "2-digit",
                     hour12: true,
@@ -647,7 +626,7 @@ export function AddSubService({
             className="border border-gray-300 h-11 rounded-lg w-[240px] pl-5"
           /> */}
           <div className="border-gray-300 h-11 rounded-lg w-[240px] items-center flex">
-          {subservice.unit}
+            {subservice.unit}
           </div>
         </div>
       </div>
