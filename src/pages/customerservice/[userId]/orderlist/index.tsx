@@ -43,20 +43,16 @@ export default function CustomerOrderlist() {
 
   const fetchData = async () => {
     setIsLoading(true);
-    console.log("fetching--------------------------------------------");
-    console.log(fetchOrder);
     try {
       const respond: Respond = await axios.get(
         `/api/customer/orderlist/${userId}`
       );
       if (respond) {
-        console.log("respond-----------------------------------------------");
         setIsLoading(false);
         setFetchOrder(respond.data.data);
         console.log(respond.data.data);
       }
     } catch (err) {
-      console.log("Fetch data error");
       console.log(err);
       setIsLoading(false);
     }

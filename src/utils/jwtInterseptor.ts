@@ -31,8 +31,6 @@ function jwtInterceptor() {
   // // Add a response interceptor | Can use to logout
   axios.interceptors.response.use(
     (res) => {
-      console.log("Interceptor Work");
-      console.log("************************************************");
       return res;
     },
     (error) => {
@@ -41,14 +39,3 @@ function jwtInterceptor() {
   );
 }
 export default jwtInterceptor;
-//*---TechUp-------------------------------------- */
-// axios.interceptors.request.use((req) => {
-//   const token = Boolean(window.localStorage.getItem("token"));
-//   if (token) {
-//     req.headers = {
-//       ...req.headers,
-//       Authorization: `Bearer ${token}`,
-//     };
-//     return req;
-//   }
-// });
