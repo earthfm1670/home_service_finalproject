@@ -32,14 +32,14 @@ export default function CustomerOrderlist() {
   const [fetchOrder, setFetchOrder] = useState<FetchBookingOrderlist[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { authState } = useAuth();
-  const user = authState.user?.user_metadata;
   const userId = authState.userId;
-  if (!user || !userId) {
-    console.log("No User");
-    console.log(authState);
-    console.log(authState.user?.user_metadata);
-    console.log(user);
-  }
+  //const user = authState.user?.user_metadata;
+  // if (!user || !userId) {
+  //   console.log("No User");
+  //   console.log(authState);
+  //   console.log(authState.user?.user_metadata);
+  //   console.log(user);
+  // }
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -50,7 +50,6 @@ export default function CustomerOrderlist() {
       if (respond) {
         setIsLoading(false);
         setFetchOrder(respond.data.data);
-        console.log(respond.data.data);
       }
     } catch (err) {
       console.log(err);
