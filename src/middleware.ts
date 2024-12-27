@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
-import chain from "./middleware-stack/chain";
 import authorizationCheck from "./middleware-stack/authorizationCheck";
 import roleCheck from "./middleware-stack/roleCheck";
-import dummy1 from "./middleware-stack/dummyMW/dummy1";
-import dummy2 from "./middleware-stack/dummyMW/dummy2";
+import pathProtect from "./middleware-stack/pathProtect";
 //create axios interceptor for frontend
 
 // export function middleware() {
@@ -20,11 +18,14 @@ import dummy2 from "./middleware-stack/dummyMW/dummy2";
 //   return NextResponse.next();
 // }
 
-export default function middleware(req: NextRequest) {
+export default async function middleware(req: NextRequest) {
   console.log("From MW***********************************");
-  authorizationCheck(req);
-  roleCheck(req);
-  // dummy1(req);
-  // dummy2(req);
+  await authorizationCheck(req);
+  await roleCheck(req);
+  await pathProtect(req);
+  console.log("PASS ALL MW");
   return NextResponse.next();
 }
+// export const config = {
+//   matcher: ["/api/customer"],
+// };
