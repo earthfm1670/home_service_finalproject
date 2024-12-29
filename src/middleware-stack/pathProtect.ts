@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 //* next do not redirect beacuse cache
 //* remove cache before redirect
@@ -8,12 +7,16 @@ export default async function pathProtect(req: NextRequest) {
   const userRole = req.headers.get("userRole");
   console.log(`url: ${url}`);
   console.log(`path name: ${pathName}`);
+  console.log(`user role: ${userRole}`);
   console.log(`---------------------------`);
   console.log("Path Protect I");
-  //   if (pathName.startsWith("/api/customer")) {
-  //     console.log(`From Path : user can access customer`);
-  //     return NextResponse.redirect(new URL("/", req.url));
-  //   }
+  if (
+    pathName.includes("/customerservice") ||
+    url.includes("/customerservice")
+  ) {
+    console.log(`From Path : user can access customer`);
+    return NextResponse.redirect(new URL("/", req.url));
+  }
   console.log("Path Protect II");
   //   if (pathName.startsWith("/api/admin")) {
   //     console.log(`From Path : user can access admin`);
@@ -21,15 +24,16 @@ export default async function pathProtect(req: NextRequest) {
   //   }
 
   //for handyman path name vv
-  console.log("type check");
-  console.log(new URL("/", req.url));
+  // console.log("type check");
+  // console.log(new URL("/", req.url));
   console.log("Path Protect III");
   return NextResponse.next();
-  //SOLUTION for redirect not working
-  //   const redirectResponse = NextResponse.redirect(new URL("/", req.url));
-  //   redirectResponse.headers.set("x-middleware-cache", "no-cache"); // Set x-middleware-cache to no-cache
-  //   console.log("Path Protect IV");
-  //   return redirectResponse;
-  //NOT WORKING
 }
+
+//SOLUTION for redirect not working
+//   const redirectResponse = NextResponse.redirect(new URL("/", req.url));
+//   redirectResponse.headers.set("x-middleware-cache", "no-cache"); // Set x-middleware-cache to no-cache
+//   console.log("Path Protect IV");
+//   return redirectResponse;
+//NOT WORKING
 //path name: /api/customer/orderlist/a8371d36-b1af-4582-a31d-4edf8fbacb38
