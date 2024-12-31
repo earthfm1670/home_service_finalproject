@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import StripeContext from "@/components/StripeContext";
 import PaymentForm from "@/components/PaymentForm";
 import { Navbar } from "@/components/navbar";
@@ -25,6 +25,7 @@ import NavigationButtons from "@/components/service-detail/NavigationButtons";
 //stand alone payment page, need to connect to service info later
 const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
   const router = useRouter();
+  const formRef = useRef(null);
   const [service, setService] = useState<Service | null>(
     initialService || null
   );
@@ -163,18 +164,23 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
     const isServicesSelected =
       selectedServices && selectedServices.selections.length > 0;
 
-    const isPaymentInfoComplete =
-      payment !== null &&
-      selectedPayment === "creditcard" &&
-      name &&
-      cardNumberElement?.value &&
-      cardExpiryElement?.value &&
-      cardCvcElement?.value;
+    const isPaymentInfoComplete = payment !== null;
+    //  &&
+    // selectedPayment === "creditcard" &&
+    // name &&
+    // cardNumberElement?.value &&
+    // cardExpiryElement?.value &&
+    // cardCvcElement?.value;
 
-    return isServicesSelected && isPaymentInfoComplete;
+    return isServicesSelected;
+    //  && isPaymentInfoComplete;
   };
 
   const handleProceed = () => {
+    if (formRef.current) {
+      formRef.current.handleSubmit(new Event("submit"));
+    }
+
     if (!isFormComplete()) {
       alert("Please complete all required fields before proceeding.");
       return;
@@ -221,14 +227,16 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
               setSelectedPayment={handlePaymentChange}
               calculateTotal={calculateTotal}
               totalAmount={totalAmount}
+              ref={formRef}
             />
           </div>
           <div className="lg:w-[349px] lg:h-[374px]">
             <DesktopSummary
               getSelectedServices={getSelectedServices}
               getQuantityDisplay={getQuantityDisplay}
+              disabled={!isFormComplete()}
               calculateTotal={calculateTotal}
-              canProceed={isFormComplete()}
+              // canProceed={isFormComplete()}
               // canProceed={true}
               handleProceed={handleProceed}
               locationInfo={locationInfo}
@@ -239,7 +247,7 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
         </div>
         <div className="">
           <NavigationButtons
-            disabled={!isFormComplete()}
+            // disabled={!isFormComplete()}
             // canProceed={isFormComplete()}
             canProceed={true}
             handleProceed={handleProceed}

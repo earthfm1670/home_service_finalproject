@@ -14,7 +14,14 @@ const promoCodes: { [key: string]: number } = {
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {
     try {
-      const { amount, promoCode } = req.body;
+      const { amount, promoCode, paymentMethodId } = req.body;
+
+      if (!paymentMethodId) {
+        return res
+          .status(400)
+          .json({ error: "Payment method ID is required." });
+      }
+
       //apply discount based on promo code
       let finalAmount = amount;
       if (promoCode && promoCodes[promoCode]) {
@@ -23,12 +30,17 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
       const finalAmountInSatang = Math.round(finalAmount * 100);
 
+      // Create payment intent with the provided payment method
       const paymentIntent = await stripe.paymentIntents.create({
         amount: finalAmountInSatang,
         currency: "thb",
+        payment_method: paymentMethodId,
+        confirm: true,
       });
-      res.status(200).json(paymentIntent);
+
+      res.status(200).json({ clientSecret: paymentIntent.client_secret });
     } catch (error: any) {
+      console.error("Error creating payment intent:", error.message);
       res.status(500).json({ error: error.message });
     }
   } else {

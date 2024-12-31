@@ -6,7 +6,8 @@ import {
   CardExpiryElement,
   CardCvcElement,
 } from "@stripe/react-stripe-js";
-import React, { useState } from "react";
+import { useRouter } from "next/router";
+import React, { forwardRef, useImperativeHandle, useState } from "react";
 
 interface PromoCodes {
   [key: string]: number;
@@ -27,14 +28,13 @@ const promoCodes: PromoCodes = {
   FURRY: 0.99,
 };
 
-const PaymentForm: React.FC<PaymentFormProps> = ({
-  setDiscount,
-  updateCardDetails,
-  calculateTotal,
-  totalAmount,
-}) => {
+const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
+  PaymentFormHandle,
+  PaymentFormProps
+>(({ setDiscount, updateCardDetails, calculateTotal, totalAmount }, ref) => {
   const stripe = useStripe();
   const elements = useElements();
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
@@ -133,10 +133,18 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     }
 
     try {
-      const cardNumberElement = elements.getElement(CardNumberElement);
+      const cardElement = elements.getElement(CardNumberElement);
+      const { error: paymentMethodError, paymentMethod } =
+        await stripe.createPaymentMethod({
+          type: "card",
+          card: cardElement,
+          billing_details: { name },
+        });
 
-      if (!cardNumberElement) {
-        setError("Card information is incomplete.");
+      if (paymentMethodError) {
+        setError(
+          paymentMethodError.message || "Failed to create payment method."
+        );
         setLoading(false);
         return;
       }
@@ -149,9 +157,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         },
         body: JSON.stringify({
           amount: totalAmount,
-          paymentMethodType: "card",
-          name,
           promoCode,
+          paymentMethodId: paymentMethod.id,
         }),
       });
 
@@ -163,21 +170,19 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         return;
       }
 
-      const clientSecret = data.clientSecret;
+      const { clientSecret } = data;
 
       const { error: stripeError, paymentIntent } =
         await stripe.confirmCardPayment(clientSecret, {
-          payment_method: {
-            card: cardElement,
-            billing_details: { name },
-          },
+          payment_method: paymentMethod.id,
         });
 
       if (stripeError) {
         setError(stripeError.message || "Payment failed. Please try again.");
         setLoading(false);
       } else if (paymentIntent && paymentIntent.status === "succeeded") {
-        alert("Payment successful! Thank you for your purchase");
+        alert("Payment successful! Thank you for your purchase.");
+        console.log("Redirecting to /paymentsuccess...");
         setLoading(false);
       }
     } catch (err) {
@@ -185,25 +190,11 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
       setError("An error occurred during payment. Please try again.");
       setLoading(false);
     }
-
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: "card",
-      card: cardElement,
-      billing_details: {
-        name,
-      },
-    });
-
-    if (error) {
-      setError(error.message || "An error occurred");
-      setLoading(false);
-    } else {
-      // Handle successful payment method creation
-      console.log(paymentMethod);
-      console.log("Promotion Code:", promoCode);
-      setLoading(false);
-    }
   };
+
+  useImperativeHandle(ref, () => ({
+    handleSubmit,
+  }));
 
   const applyPromoCode = (): void => {
     if (promoCodes[promoCode]) {
@@ -386,7 +377,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
               </div>
             </div>
             <button
-              className="mx-3 mb-6 py-2 px-6 rounded-md bg-blue-600 text-white font-medium text-[16px]"
+              className="mx-3 mb-6 py-2 px-6 rounded-md bg-blue-600 text-white font-medium text-[16px] hidden lg:hidden"
               type="submit"
               disabled={loading}
             >
@@ -420,6 +411,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
       )}
     </div>
   );
-};
+});
 
 export default PaymentForm;
