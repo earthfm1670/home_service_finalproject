@@ -269,6 +269,8 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
               locationInfo={locationInfo}
               discount={discount}
               totalAmount={totalAmount}
+              backButtonText="ย้อนกลับ"
+              proceedButtonText="ชำระเงิน"
             />
           </div>
         </div>
