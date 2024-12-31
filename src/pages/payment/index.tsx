@@ -32,6 +32,7 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
   const [discount, setDiscount] = useState<number>(0);
   const [selectedServices, setSelectedServices] =
     useState<SelectedServicesData | null>(null);
+  const [canProceed, setCanProceed] = useState<boolean>(false);
   const [locationInfo, setLocationInfo] = useState({
     date: "",
     time: "",
@@ -51,6 +52,25 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
   const [timeError, setTimeError] = useState("");
   const [dateError, setDateError] = useState<string | null>(null);
   const [additionalDetails, setAdditionalDetails] = useState<string>("");
+
+  const [cardDetails, setCardDetails] = useState({
+    cardNumber: "",
+    cardExpiry: "",
+    cardCvc: "",
+  });
+
+  const [selectedPayment, setSelectedPayment] = useState<string>("creditcard");
+
+  const handlePaymentChange = (paymentType: string) => {
+    setSelectedPayment(paymentType);
+  };
+
+  const updateCardDetails = (field: string, value: string) => {
+    setCardDetails((prevDetails) => ({
+      ...prevDetails,
+      [field]: value,
+    }));
+  };
 
   interface ServiceInfoPageProps {
     initialService?: Service | null;
@@ -132,18 +152,33 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
     }
   }
 
+  // const isFormComplete = (): boolean => {
+  //   const isServicesSelected =
+  //     selectedServices && selectedServices.selections.length > 0;
+  //   const isPaymentInfoComplete = payment !== null;
+  //   return isServicesSelected && isPaymentInfoComplete;
+  // };
+
   const isFormComplete = (): boolean => {
     const isServicesSelected =
       selectedServices && selectedServices.selections.length > 0;
-    const isPaymentInfoComplete = payment !== null;
+
+    const isPaymentInfoComplete =
+      payment !== null &&
+      selectedPayment === "creditcard" &&
+      name &&
+      cardNumberElement?.value &&
+      cardExpiryElement?.value &&
+      cardCvcElement?.value;
+
     return isServicesSelected && isPaymentInfoComplete;
   };
 
   const handleProceed = () => {
-    // if (!isFormComplete()) {
-    //   alert("Please complete all required fields before proceeding.");
-    //   return;
-    // }
+    if (!isFormComplete()) {
+      alert("Please complete all required fields before proceeding.");
+      return;
+    }
 
     const discountedTotal = calculateTotal();
 
@@ -179,15 +214,22 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
 
         <div className="mt-14 lg:flex lg:mt-28 lg:flex-row lg:justify-center lg:gap-5 lg:mr-4">
           <div className="overflow-y-auto pb-28 lg:pb-0">
-            <PaymentForm setDiscount={setDiscount} />
+            <PaymentForm
+              setDiscount={setDiscount}
+              updateCardDetails={updateCardDetails}
+              selectedPayment={selectedPayment}
+              setSelectedPayment={handlePaymentChange}
+              calculateTotal={calculateTotal}
+              totalAmount={totalAmount}
+            />
           </div>
           <div className="lg:w-[349px] lg:h-[374px]">
             <DesktopSummary
               getSelectedServices={getSelectedServices}
               getQuantityDisplay={getQuantityDisplay}
               calculateTotal={calculateTotal}
-              // canProceed={isFormComplete()}
-              canProceed={true}
+              canProceed={isFormComplete()}
+              // canProceed={true}
               handleProceed={handleProceed}
               locationInfo={locationInfo}
               discount={discount}
@@ -197,9 +239,11 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
         </div>
         <div className="">
           <NavigationButtons
+            disabled={!isFormComplete()}
             // canProceed={isFormComplete()}
             canProceed={true}
             handleProceed={handleProceed}
+            // handleProceed={isFormComplete() ? handleProceed : undefined}
             backButtonText="ย้อนกลับ"
             proceedButtonText="ดำเนินการต่อ"
           />
@@ -210,7 +254,9 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
               getSelectedServices={getSelectedServices}
               getQuantityDisplay={getQuantityDisplay}
               calculateTotal={calculateTotal}
-              canProceed={isFormComplete()}
+              disabled={!isFormComplete()}
+              // canProceed={isFormComplete()}
+              canProceed={true}
               handleProceed={handleProceed}
               locationInfo={locationInfo}
               discount={discount}

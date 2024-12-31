@@ -16,6 +16,7 @@ interface LocationInfo {
 }
 interface MobileBottomBarProps {
   canProceed: boolean;
+  disabled: boolean;
   calculateTotal: () => number;
   getSelectedServices: () => Service["sub_services"];
   getQuantityDisplay: (subServiceId: number) => number;
@@ -28,6 +29,7 @@ interface MobileBottomBarProps {
 
 export const MobileBottomBar = ({
   canProceed,
+  disabled,
   calculateTotal,
   getSelectedServices,
   getQuantityDisplay,
