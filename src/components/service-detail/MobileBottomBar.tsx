@@ -16,6 +16,7 @@ interface LocationInfo {
 }
 interface MobileBottomBarProps {
   canProceed: boolean;
+  disabled: boolean;
   calculateTotal: () => number;
   getSelectedServices: () => Service["sub_services"];
   getQuantityDisplay: (subServiceId: number) => number;
@@ -24,10 +25,13 @@ interface MobileBottomBarProps {
   isServiceInfoPage?: boolean; // Add this new prop
   discount: number;
   totalAmount: number;
+  backButtonText: string;
+  proceedButtonText: string;
 }
 
 export const MobileBottomBar = ({
   canProceed,
+  disabled,
   calculateTotal,
   getSelectedServices,
   getQuantityDisplay,
@@ -36,6 +40,8 @@ export const MobileBottomBar = ({
   isServiceInfoPage = false, // Add this new prop with a default value
   discount,
   totalAmount,
+  backButtonText = "ย้อนกลับ",
+  proceedButtonText = "ดำเนินการต่อ",
 }: MobileBottomBarProps) => {
   const router = useRouter();
 
@@ -68,7 +74,7 @@ export const MobileBottomBar = ({
                 isServiceInfoPage ? "text-blue-500" : "text-grey-500"
               }`}
             />
-            ย้อนกลับ
+            {backButtonText}
           </Button>
           <Button
             className={`flex-1 ${
@@ -77,7 +83,7 @@ export const MobileBottomBar = ({
             disabled={!canProceed}
             onClick={handleProceed}
           >
-            ดำเนินการต่อ
+            {proceedButtonText}
             <ChevronRight className="h-4 w-4 ml-2" />
           </Button>
         </div>

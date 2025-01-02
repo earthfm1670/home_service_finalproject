@@ -6,7 +6,8 @@ import {
   CardExpiryElement,
   CardCvcElement,
 } from "@stripe/react-stripe-js";
-import React, { useState } from "react";
+import { useRouter } from "next/router";
+import React, { forwardRef, useImperativeHandle, useState } from "react";
 
 interface PromoCodes {
   [key: string]: number;
@@ -14,6 +15,11 @@ interface PromoCodes {
 
 interface PaymentFormProps {
   setDiscount: (discount: number) => void;
+  updateCardDetails: (field: string, value: string) => void;
+  selectedPayment: string;
+  setSelectedPayment: React.Dispatch<React.SetStateAction<string>>;
+  calculateTotal: () => number;
+  totalAmount: number;
 }
 
 const promoCodes: PromoCodes = {
@@ -22,47 +28,173 @@ const promoCodes: PromoCodes = {
   FURRY: 0.99,
 };
 
-const PaymentForm: React.FC<PaymentFormProps> = ({ setDiscount }) => {
+const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
+  PaymentFormHandle,
+  PaymentFormProps
+>(({ setDiscount, updateCardDetails, calculateTotal, totalAmount }, ref) => {
   const stripe = useStripe();
   const elements = useElements();
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
   const [promoCode, setPromoCode] = useState<string>("");
   const [selectedPayment, setSelectedPayment] = useState<string>("creditcard");
 
+  const [cardNumber, setCardNumber] = useState<number>(0);
+
+  const handleCardChange = (field: string, value: string) => {
+    updateCardDetails(field, value);
+  };
+
+  const handlePaymentMethodChange = (method: string) => {
+    setSelectedPayment(method);
+  };
+
+  const isPaymentFormComplete = (): boolean => {
+    const cardElement = elements?.getElement(CardNumberElement);
+    const expiryElement = elements?.getElement(CardExpiryElement);
+    const cvcElement = elements?.getElement(CardCvcElement);
+
+    const isCreditCardSelected = selectedPayment === "creditcard";
+    const cardComplete = cardElement && !cardElement._empty;
+    const expiryComplete = expiryElement && !expiryElement._empty;
+    const cvcComplete = cvcElement && !cvcElement._empty;
+
+    console.log("isCreditCardSelected:", selectedPayment === "creditcard");
+    console.log("Card complete:", cardElement && !cardElement._empty);
+    console.log("Expiry complete:", expiryElement && !expiryElement._empty);
+    console.log("CVC complete:", cvcElement && !cvcElement._empty);
+    console.log("Name entered:", name !== "");
+
+    // validate all inputs
+
+    if (!isCreditCardSelected) return true;
+
+    if (!cardComplete) {
+      setError("Please enter a valid card number.");
+      alert("Please enter a valid card number.");
+      return false;
+    }
+
+    if (!name.trim()) {
+      setError("Please enter the name on the card.");
+      alert("Please enter the name on the card.");
+      return false;
+    }
+
+    if (!expiryComplete) {
+      setError("Please enter the card's expiration date.");
+      alert("Please enter a the card's expiration date.");
+      return false;
+    }
+
+    if (!cvcComplete) {
+      setError("Please enter the card's CVC.");
+      alert("Please enter the card's CVC");
+      return false;
+    }
+
+    setError(null);
+    return true;
+
+    // return (
+    //   isCreditCardSelected &&
+    //   cardComplete &&
+    //   expiryComplete &&
+    //   cvcComplete &&
+    //   name !== ""
+    // );
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
 
     if (!stripe || !elements) {
-      return;
-    }
-
-    const cardElement = elements.getElement(CardElement);
-
-    if (!cardElement) {
-      return;
-    }
-
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: "card",
-      card: cardElement,
-      billing_details: {
-        name,
-      },
-    });
-
-    if (error) {
-      setError(error.message || "An error occurred");
+      setError("Stripe has not loaded yet. Please try again.");
       setLoading(false);
+      return;
+    }
+
+    // apply promo code and update total amount
+    let discount = 0;
+    if (promoCodes[promoCode]) {
+      discount = promoCodes[promoCode];
+      setDiscount(discount);
     } else {
-      // Handle successful payment method creation
-      console.log(paymentMethod);
-      console.log("Promotion Code:", promoCode);
+      setDiscount(0);
+    }
+
+    if (!isPaymentFormComplete()) {
+      setError("Please fill in all required fields.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const cardElement = elements.getElement(CardNumberElement);
+      const { error: paymentMethodError, paymentMethod } =
+        await stripe.createPaymentMethod({
+          type: "card",
+          card: cardElement,
+          billing_details: { name },
+        });
+
+      if (paymentMethodError) {
+        setError(
+          paymentMethodError.message || "Failed to create payment method."
+        );
+        setLoading(false);
+        return;
+      }
+
+      // send payment data to create payment intent
+      const response = await fetch("/api/create-payment-intent", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: totalAmount,
+          promoCode,
+          paymentMethodId: paymentMethod.id,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.clientSecret) {
+        setError(data.message || "Failed to create payment intent.");
+        setLoading(false);
+        return;
+      }
+
+      const { clientSecret } = data;
+
+      const { error: stripeError, paymentIntent } =
+        await stripe.confirmCardPayment(clientSecret, {
+          payment_method: paymentMethod.id,
+        });
+
+      if (stripeError) {
+        setError(stripeError.message || "Payment failed. Please try again.");
+        setLoading(false);
+      } else if (paymentIntent && paymentIntent.status === "succeeded") {
+        alert("Payment successful! Thank you for your purchase.");
+        console.log("Redirecting to /paymentsuccess...");
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error("Payment error:", err);
+      setError("An error occurred during payment. Please try again.");
       setLoading(false);
     }
   };
+
+  useImperativeHandle(ref, () => ({
+    handleSubmit,
+  }));
 
   const applyPromoCode = (): void => {
     if (promoCodes[promoCode]) {
@@ -121,7 +253,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ setDiscount }) => {
           className={`w-[147px] h-[95px] lg:w-[331px] lg:h-[86px] border rounded-sm flex flex-col justify-center items-center cursor-pointer ${
             selectedPayment === "qrcode" ? "bg-blue-100 border-blue-600" : ""
           }`}
-          onClick={() => setSelectedPayment("qrcode")}
+          onClick={() => handlePaymentMethodChange("qrcode")}
         >
           {selectedPayment === "qrcode" ? (
             <>
@@ -149,7 +281,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ setDiscount }) => {
               ? "bg-blue-100 border-blue-600"
               : ""
           }`}
-          onClick={() => setSelectedPayment("creditcard")}
+          onClick={() => handlePaymentMethodChange("creditcard")}
         >
           {selectedPayment === "creditcard" ? (
             <>
@@ -244,6 +376,13 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ setDiscount }) => {
                 </div>
               </div>
             </div>
+            <button
+              className="mx-3 mb-6 py-2 px-6 rounded-md bg-blue-600 text-white font-medium text-[16px] hidden lg:hidden"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "Processing..." : "Purchase Now"}
+            </button>
           </form>
         </>
       ) : (
@@ -272,6 +411,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ setDiscount }) => {
       )}
     </div>
   );
-};
+});
 
 export default PaymentForm;
