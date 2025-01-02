@@ -51,6 +51,7 @@ interface AuthContextType {
 //defined authState
 interface AuthState {
   userId: string | null;
+  userEmail: string | null;
   user: UserPayload | null;
   token: string | null;
 }
@@ -80,6 +81,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [authState, setAuthState] = useState<AuthState>({
     userId: null,
+    userEmail: null,
     user: null,
     token: null,
   });
@@ -112,6 +114,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   ): void => {
     setAuthState({
       userId: savedUser.sub,
+      userEmail: savedUser.email,
       user: savedUser,
       token: savedToken,
     });
@@ -183,6 +186,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     localStorage.removeItem("token");
     setAuthState({
       userId: null,
+      userEmail: null,
       user: null,
       token: null,
     });
