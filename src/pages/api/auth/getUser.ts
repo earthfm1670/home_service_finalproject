@@ -13,7 +13,7 @@ export default async function getUser(
       .single();
     if (userInfoError) {
       return res
-        .status(409)
+        .status(400)
         .json({ message: "Get user fail", error: userInfoError.message });
     }
     return res

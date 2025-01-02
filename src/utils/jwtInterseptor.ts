@@ -1,4 +1,5 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
+axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_URL;
 //Add a request interceptor
 function jwtInterceptor() {
   axios.interceptors.request.use(
