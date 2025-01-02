@@ -60,6 +60,8 @@ export const DesktopSummary: React.FC<DesktopSummaryProps> = ({
   const discountAmount = preDiscountTotal * discount;
   const router = useRouter();
   const { timeLeft, startTimer, resetTimer } = useTimer();
+  const [isTimerExpired, setIsTimerExpired] = useState(false);
+  const [redirectCountdown, setRedirectCountdown] = useState(5);
 
   useEffect(() => {
     if (router.pathname === "/payment") {
@@ -68,6 +70,19 @@ export const DesktopSummary: React.FC<DesktopSummaryProps> = ({
       resetTimer();
     }
   }, [router.pathname, isServiceInfoPage, startTimer, resetTimer]);
+
+  useEffect(() => {
+    if (timeLeft === 0) {
+      setIsTimerExpired(true);
+      // Set a timeout to navigate back after showing the message for a few seconds
+      const timeoutId = setTimeout(() => {
+        setRedirectCountdown(5);
+        router.back();
+      }, 5000); // 5 seconds delay
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [timeLeft, router]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -190,18 +205,27 @@ export const DesktopSummary: React.FC<DesktopSummaryProps> = ({
             </div>
           )}
 
-          {/* Countdown Timer */}
+          {/* Countdown Timer or Expiration Message */}
           {router.pathname === "/payment" && (
             <div className="flex flex-col items-center mb-4 text-center">
-              <span className="text-sm text-gray-700 font-normal mb-1">
-                กรุณาชำระเงินภายใน
-              </span>
-              <span className="text-lg font-semibold text-red-600">
-                {formatTime(timeLeft)}
-              </span>
-              <span className="text-xs text-gray-500">
-                หากไม่ชำระภายในเวลาที่กำหนด รายการสั่งซื้อจะถูกยกเลิก
-              </span>
+              {isTimerExpired ? (
+                <span className="text-sm text-red-600 font-medium">
+                  คุณไม่ได้ดำเนินการให้เสร็จภายในเวลาที่กำหนด
+                  ระบบจะพาคุณกลับไปที่หน้าก่อนหน้าภายใน {redirectCountdown} วินาที
+                </span>
+              ) : (
+                <>
+                  <span className="text-sm text-gray-700 font-normal mb-1">
+                    กรุณาชำระเงินภายใน
+                  </span>
+                  <span className="text-lg font-semibold text-red-600">
+                    {formatTime(timeLeft)}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    หากไม่ชำระภายในเวลาที่กำหนด รายการสั่งซื้อจะถูกยกเลิก
+                  </span>
+                </>
+              )}
             </div>
           )}
 

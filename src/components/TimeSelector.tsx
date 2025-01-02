@@ -16,6 +16,7 @@ const TimeSelector: React.FC<TimeSelectorProps> = ({
   const [selectedHour, setSelectedHour] = useState("00");
   const [selectedMinute, setSelectedMinute] = useState("00");
   const [error, setError] = useState<string | null>(null);
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
 
   useEffect(() => {
     // Update current time every minute
@@ -37,7 +38,7 @@ const TimeSelector: React.FC<TimeSelectorProps> = ({
     const selectedDateTime = new Date(selectedDate);
     selectedDateTime.setHours(parseInt(hour, 10), parseInt(minute, 10), 0, 0);
 
-    const now = new Date();
+    const now = currentDateTime; // Use the state variable instead of creating a new Date
     const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
 
     // Check if the time is within business hours (9:00 to 18:00)
@@ -88,9 +89,7 @@ const TimeSelector: React.FC<TimeSelectorProps> = ({
         <Clock className="h-4 w-4" size={18} />
       </div>
 
-      {error && (
-        <div className="text-red-500 text-sm mt-1">{error}</div>
-      )}
+      {error && <div className="text-red-500 text-sm mt-1">{error}</div>}
 
       {isOpen && (
         <div className="absolute z-50 mt-1 w-full bg-white border rounded-md shadow-lg overflow-hidden lg:w-48">
