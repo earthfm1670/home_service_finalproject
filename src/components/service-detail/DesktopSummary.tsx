@@ -2,8 +2,6 @@ import React from "react";
 import { Card } from "@/components/ui/card";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { useTimer } from "@/context/TimerContext";
@@ -74,13 +72,21 @@ export const DesktopSummary: React.FC<DesktopSummaryProps> = ({
   useEffect(() => {
     if (timeLeft === 0) {
       setIsTimerExpired(true);
-      // Set a timeout to navigate back after showing the message for a few seconds
-      const timeoutId = setTimeout(() => {
-        setRedirectCountdown(5);
-        router.back();
-      }, 5000); // 5 seconds delay
+      let countdown = 5;
 
-      return () => clearTimeout(timeoutId);
+      const countdownInterval = setInterval(() => {
+        countdown--;
+        setRedirectCountdown(countdown);
+
+        if (countdown === 0) {
+          clearInterval(countdownInterval);
+          router.back();
+        }
+      }, 1000);
+
+      return () => {
+        clearInterval(countdownInterval);
+      };
     }
   }, [timeLeft, router]);
 
@@ -210,8 +216,8 @@ export const DesktopSummary: React.FC<DesktopSummaryProps> = ({
             <div className="flex flex-col items-center mb-4 text-center">
               {isTimerExpired ? (
                 <span className="text-sm text-red-600 font-medium">
-                  คุณไม่ได้ดำเนินการให้เสร็จภายในเวลาที่กำหนด
-                  ระบบจะพาคุณกลับไปที่หน้าก่อนหน้าภายใน {redirectCountdown} วินาที
+                  กำลังพาคุณกลับไปยังหน้าเลือกบริการใน {redirectCountdown}{" "}
+                  วินาที
                 </span>
               ) : (
                 <>
