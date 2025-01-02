@@ -2,11 +2,10 @@ import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
-export default async function authorizationCheck(req: NextRequest) {
+export default async function isToken(req: NextRequest) {
   //1. access authorization
   const authorization = req.headers.get("Authorization");
   if (!authorization || !authorization.startsWith(`Bearer `)) {
-    console.log("user has NO token--------------------------------");
     return NextResponse.next();
   }
 
