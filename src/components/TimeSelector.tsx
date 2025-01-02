@@ -1,25 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Clock } from "lucide-react";
 
 interface TimeSelectorProps {
   value: string;
   onChange: (time: string) => void;
+  selectedDate: Date;
 }
 
-const TimeSelector: React.FC<TimeSelectorProps> = ({ value, onChange }) => {
+const TimeSelector: React.FC<TimeSelectorProps> = ({
+  value,
+  onChange,
+  selectedDate,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedHour, setSelectedHour] = useState("00");
   const [selectedMinute, setSelectedMinute] = useState("00");
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
 
-  const hours = Array.from({ length: 25 }, (_, i) =>
+  useEffect(() => {
+    // Update current time every minute
+    const timer = setInterval(() => setCurrentDateTime(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const hours = Array.from({ length: 24 }, (_, i) =>
     i.toString().padStart(2, "0")
   );
   const minutes = Array.from({ length: 60 }, (_, i) =>
     i.toString().padStart(2, "0")
   );
 
+  const isTimeDisabled = (hour: string, minute: string) => {
+    const selectedDateTime = new Date(selectedDate);
+    selectedDateTime.setHours(parseInt(hour, 10), parseInt(minute, 10), 0, 0);
+
+    const now = new Date();
+    const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
+
+    // Check if the time is within business hours (9:00 to 18:00)
+    const isWithinBusinessHours =
+      selectedDateTime.getHours() >= 9 && selectedDateTime.getHours() < 18;
+
+    // If the selected date is today, check if it's at least one hour from now
+    if (selectedDate.toDateString() === now.toDateString()) {
+      return selectedDateTime < oneHourLater || !isWithinBusinessHours;
+    }
+
+    // If the selected date is in the future, only check business hours
+    return !isWithinBusinessHours;
+  };
+
   const handleTimeSelect = () => {
-    if (selectedHour && selectedMinute) {
+    if (
+      selectedHour &&
+      selectedMinute &&
+      !isTimeDisabled(selectedHour, selectedMinute)
+    ) {
       onChange(`${selectedHour}:${selectedMinute}`);
       setIsOpen(false);
     }
@@ -47,9 +83,13 @@ const TimeSelector: React.FC<TimeSelectorProps> = ({ value, onChange }) => {
                     ${
                       selectedHour === hour
                         ? "bg-blue-500 text-white hover:bg-blue-600 round-md hover:round-md"
+                        : isTimeDisabled(hour, "00")
+                        ? "text-gray-300 cursor-not-allowed"
                         : "hover:bg-gray-100 round-md hover:round-md"
                     }`}
-                  onClick={() => setSelectedHour(hour)}
+                  onClick={() =>
+                    !isTimeDisabled(hour, "00") && setSelectedHour(hour)
+                  }
                 >
                   {hour}
                 </div>
@@ -65,9 +105,14 @@ const TimeSelector: React.FC<TimeSelectorProps> = ({ value, onChange }) => {
                     ${
                       selectedMinute === minute
                         ? "bg-blue-500 text-white hover:bg-blue-600 round-md hover:round-md"
+                        : isTimeDisabled(selectedHour, minute)
+                        ? "text-gray-300 cursor-not-allowed"
                         : "hover:bg-gray-100 round-md hover:round-md"
                     }`}
-                  onClick={() => setSelectedMinute(minute)}
+                  onClick={() =>
+                    !isTimeDisabled(selectedHour, minute) &&
+                    setSelectedMinute(minute)
+                  }
                 >
                   {minute}
                 </div>
@@ -84,9 +129,13 @@ const TimeSelector: React.FC<TimeSelectorProps> = ({ value, onChange }) => {
                 : ""}
             </div>
             <button
-              className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 text-sm"
+              className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 text-sm disabled:bg-gray-300 disabled:cursor-not-allowed"
               onClick={handleTimeSelect}
-              disabled={!selectedHour || !selectedMinute}
+              disabled={
+                !selectedHour ||
+                !selectedMinute ||
+                isTimeDisabled(selectedHour, selectedMinute)
+              }
             >
               ยืนยัน
             </button>

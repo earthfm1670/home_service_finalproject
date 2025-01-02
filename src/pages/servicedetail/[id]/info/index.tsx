@@ -182,11 +182,11 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
     const [hours, minutes] = value.split(":").map(Number);
     const selectedTime = hours + (minutes === 30 ? 0.5 : 0);
 
-    if (selectedTime >= 9 && selectedTime < 18) {
+    if (selectedTime >= 9 && selectedTime <= 18) {
       setSelectedTime(value);
       setTimeError("");
     } else {
-      setTimeError("โปรดเลือกเวลาทำการ 09:00 - 17:30 น.");
+      setTimeError("โปรดเลือกเวลาทำการ 09:00 - 18:00 น.");
     }
   };
 
