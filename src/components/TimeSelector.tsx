@@ -4,7 +4,7 @@ import { Clock } from "lucide-react";
 interface TimeSelectorProps {
   value: string;
   onChange: (time: string) => void;
-  selectedDate: Date;
+  selectedDate: Date | null;
 }
 
 const TimeSelector: React.FC<TimeSelectorProps> = ({
@@ -15,7 +15,7 @@ const TimeSelector: React.FC<TimeSelectorProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [selectedHour, setSelectedHour] = useState("00");
   const [selectedMinute, setSelectedMinute] = useState("00");
-  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Update current time every minute
@@ -31,6 +31,9 @@ const TimeSelector: React.FC<TimeSelectorProps> = ({
   );
 
   const isTimeDisabled = (hour: string, minute: string) => {
+    if (!selectedDate) {
+      return true; // Disable all times if no date is selected
+    }
     const selectedDateTime = new Date(selectedDate);
     selectedDateTime.setHours(parseInt(hour, 10), parseInt(minute, 10), 0, 0);
 
@@ -51,6 +54,12 @@ const TimeSelector: React.FC<TimeSelectorProps> = ({
   };
 
   const handleTimeSelect = () => {
+    if (!selectedDate) {
+      setError("โปรดเลือกวันที่ต้องการจองบริการก่อนเลือกเวลา");
+      return;
+    }
+
+    setError(null);
     if (
       selectedHour &&
       selectedMinute &&
@@ -61,15 +70,27 @@ const TimeSelector: React.FC<TimeSelectorProps> = ({
     }
   };
 
+  const handleOpenClick = () => {
+    if (!selectedDate) {
+      setError("โปรดเลือกวันที่ต้องการจองบริการก่อนเลือกเวลา");
+    } else {
+      setError(null);
+      setIsOpen(!isOpen);
+    }
+  };
   return (
     <div className="relative">
       <div
         className="w-full flex justify-between items-center px-3 h-10 rounded-md border border-input bg-white shadow-sm text-sm cursor-pointer"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleOpenClick}
       >
         <span>{value || "กรุณาเลือกเวลา"}</span>
         <Clock className="h-4 w-4" size={18} />
       </div>
+
+      {error && (
+        <div className="text-red-500 text-sm mt-1">{error}</div>
+      )}
 
       {isOpen && (
         <div className="absolute z-50 mt-1 w-full bg-white border rounded-md shadow-lg overflow-hidden lg:w-48">
