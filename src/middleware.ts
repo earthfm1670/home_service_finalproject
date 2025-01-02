@@ -8,8 +8,7 @@ export default async function middleware(req: NextRequest) {
   if (!authorization || !authorization.startsWith(`Bearer `)) {
     console.log("No Authorization");
     console.log(req.headers.get("Authorization"));
-    // return NextResponse.redirect(new URL("/login", req.url));
-    return NextResponse.next();
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
   // // 2. check if token format is valid
@@ -29,26 +28,24 @@ export default async function middleware(req: NextRequest) {
   // 4. validate token, if not, redirect to login
   console.log(`Auth check. II`);
 
-  // let expired = false;
-  // try {
-  //   const { payload } = await jwtVerify(
-  //     trimedToken,
-  //     new TextEncoder().encode(secretKey)
-  //   );
-  //   console.log(payload);
-  //   expired = false;
-  // } catch (err) {
-  //   const error = err as Error;
-  //   expired = true;
-  //   console.log(error.message);
-  // }
+  let expired = false;
+  try {
+    const { payload } = await jwtVerify(
+      trimedToken,
+      new TextEncoder().encode(secretKey)
+    );
+    expired = false;
+    console.log(payload);
+  } catch (err) {
+    const error = err as Error;
+    expired = true;
+    console.log(error.message);
+  }
 
-  // console.log(`token expired? : `, expired);
-  // if (expired) {
-  //   window.localStorage.removeItem("token");
-  //   window.localStorage.removeItem("user");
-  //   NextResponse.redirect(new URL("/login", req.url));
-  // }
+  console.log(`token expired? : `, expired);
+  if (expired) {
+    NextResponse.redirect(new URL("/login", req.url));
+  }
 
   console.log(`Auth check. III`);
   console.log("user has token---------------------------------------");
@@ -56,9 +53,9 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/customerservice/:path*", "/adminservice/:path*"],
+  matcher: ["/api/customer/:path*", "/api/admin/:path*"],
 };
-
+//"/api/auth/getUser"
 //-----------------------------------------------
 //VV ทำงานได้เฉย
 // export default async function middleware(req: NextRequest) {
