@@ -2,20 +2,10 @@ import { Navbar } from "@/components/navbar";
 import HomeFooter from "@/components/homefooter";
 import UserSidebar from "@/components/customer/userSidebar";
 import { useAuth } from "@/context/authContext";
-import axiosInstance from "@/utils/axiosInstance";
 import { useEffect, useState } from "react";
 import profileSkeleton from "@/components/customer/profileSkeleton";
-/**
- * 
- * address: null
-email: "user001@example.com"
-name: "User One"
-phone_number: "0123456789"
-profile_picture_url: null
-registration_date: "2024-12-15T09:56:53.784786"
-role_id: 1
-user_id: "a8371d36-b1af-4582-a31d-4edf8fbacb38"
- */
+import axios from "axios";
+
 interface UserInfo {
   userId: null | string;
   userName: null | string;
@@ -35,7 +25,7 @@ export default function CustomerProfile() {
   });
   const fetchUser = async () => {
     try {
-      const respond = await axiosInstance.post("api/auth/getUser", {
+      const respond = await axios.post("api/auth/getUser", {
         email,
       });
       console.log(respond);
