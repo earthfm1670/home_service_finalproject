@@ -6,7 +6,8 @@ export default async function isToken(req: NextRequest) {
   //1. access authorization
   const authorization = req.headers.get("Authorization");
   if (!authorization || !authorization.startsWith(`Bearer `)) {
-    return NextResponse.next();
+    console.log(`Unauthorized`);
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
   // 2. check if token is valid
@@ -23,26 +24,27 @@ export default async function isToken(req: NextRequest) {
   }
   console.log(`Auth check. II`);
   // 3. set payload and userRole to req
-  // const payload = await new Promise<any>((resolve, reject) => {
-  //   jwt.verify(trimedToken, secretKey, (err, decode) => {
-  //     console.log(`Auth check. III`);
-  //     if (err) {
-  //       console.log(`Auth check.IV`);
-  //       reject(`Auth check. III ${err.message}`);
-  //     } else {
-  //       resolve(decode);
-  //     }
-  //   });
-  // });
-  const { payload } = await jwtVerify(
-    trimedToken,
-    new TextEncoder().encode(secretKey)
-  );
-  req.headers.set(`userRole`, JSON.stringify(payload));
-  //response.headers.set(`userPayload`, JSON.stringify(payload)); << not work
-  console.log(`Auth check. III`);
-  console.log("user has token---------------------------------------");
-  return NextResponse.next();
+  try {
+    const { payload } = await jwtVerify(
+      trimedToken,
+      new TextEncoder().encode(secretKey)
+    );
+    const userRole = payload.user_metadata?.role;
+    console.log(userRole);
+    req.headers.set(`userRole`, JSON.stringify(userRole));
+    console.log(`Auth check. III`);
+    console.log("user has token---------------------------------------");
+    return NextResponse.next();
+  } catch (e) {
+    const error = e as Error;
+    console.log(`Auth check. fail`);
+    console.log(error.message);
+    if (error.message.includes("exp")) {
+      console.log("Token Expired");
+      return NextResponse.next();
+    }
+    return NextResponse.next();
+  }
 }
 //PASS
 
