@@ -120,6 +120,7 @@ const LocationForm: React.FC<LocationFormProps> = ({
                   onChange={(time) => {
                     handleTimeChange(time);
                   }}
+                  selectedDate={selectedDate} // Pass the selectedDate to TimeSelector
                 />
                 {timeError && (
                   <p className="text-red-500 text-sm mt-1">{timeError}</p>

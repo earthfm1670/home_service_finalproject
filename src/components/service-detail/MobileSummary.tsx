@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import { useTimer } from "@/context/TimerContext";
 import {
   Collapsible,
   CollapsibleContent,
@@ -54,10 +56,37 @@ export const MobileSummary = ({
     totalAmount: number;
   } | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
   const preDiscountTotal = totalAmount;
   const discountAmount = preDiscountTotal * discount;
-  console.log(totalAmount);
+  const router = useRouter();
+  const { timeLeft, isTimerExpired } = useTimer();
+  const [redirectCountdown, setRedirectCountdown] = useState(5);
+  const [isExpired, setIsExpired] = useState(false);
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+  };
+
+  useEffect(() => {
+    if (timeLeft === 0) {
+      setIsExpired(true);
+      let countdown = 5;
+
+      const countdownInterval = setInterval(() => {
+        countdown--;
+        setRedirectCountdown(countdown);
+
+        if (countdown === 0) {
+          clearInterval(countdownInterval);
+          router.back();
+        }
+      }, 1000);
+
+      return () => clearInterval(countdownInterval);
+    }
+  }, [timeLeft, router]);
 
   return (
     <div className="rounded-t-2xl bg-white shadow-sm">
@@ -222,7 +251,24 @@ export const MobileSummary = ({
             </span>
           </div>
         )}
-
+        {router.pathname === "/payment" && (
+          <div className="flex justify-between items-center mb-4">
+            {isExpired ? (
+              <span className="text-sm text-red-500">
+                กำลังพาคุณกลับไปยังหน้าเลือกบริการใน {redirectCountdown} วินาที
+              </span>
+            ) : (
+              <>
+                <span className="text-sm text-gray-600">
+                  กรุณาชำระเงินภายใน
+                </span>
+                <span className="text-lg font-semibold text-red-600">
+                  {formatTime(timeLeft)}
+                </span>
+              </>
+            )}
+          </div>
+        )}
         <div className="flex justify-between items-center">
           <span className="text-sm text-gray-600">รวม</span>
           <span className="text-base font-semibold">
