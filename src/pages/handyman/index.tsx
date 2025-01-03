@@ -1,10 +1,10 @@
 import React from "react";
-import Main from "@/components/handyman/main";
+import HandymanComponent from "@/components/handyman/HandymanComponent";
 
 const Handyman: React.FC = () => {
   return (
     <>
-      <Main />
+      <HandymanComponent />
     </>
   );
 };
