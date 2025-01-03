@@ -6,7 +6,7 @@ import { AddSubService } from "./adminserviceAddSubservice";
 // import icon
 import IconPicture from "@/components/ui/IconPicture";
 import IconPlusDefaultColor from "@/components/ui/IconPluseDefaultColor";
-import IconWarning from "@/components/ui/Iconwarning";
+
 import {
   Select,
   SelectContent,
@@ -14,7 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import IconX from "@/components/ui/IconX";
+
+import { AdminDeletePopUp } from "@/components/admin/admin-delete-popup";
 
 // ----------------------------------------------------------------------------------------
 
@@ -32,15 +33,19 @@ interface AdminServiceAddIndexProps {
   setTitleEmpty: (value: boolean) => void;
   setCategoryEmpty: (value: boolean) => void;
   setSubserviceEmpty: (value: boolean[]) => void;
+  setImageEmpty: (value: boolean) => void;
 }
 
 export const AdminserviceAddIndex = ({
+  // input for sent value
   setInputSubservice,
   inputtitle,
   setInputCat,
   SetInputimage,
+  // alert popup for delete image
   showPopUpDeleteImg,
   setShowPopUpDeleteImg,
+  // check empty for alert warning
   titleEmpty,
   categoryEmpty,
   imageEmpty,
@@ -48,10 +53,8 @@ export const AdminserviceAddIndex = ({
   setTitleEmpty,
   setCategoryEmpty,
   setSubserviceEmpty,
+  setImageEmpty,
 }: AdminServiceAddIndexProps) => {
-  // State สำหรับเก็บ category_id ที่เลือกจาก Select
-  const [category_id, setCategory_id] = useState<number>();
-
   // State สำหรับเก็บข้อมูล Category ที่ดึงมาจาก API
   const [fetchDataCategories, setFetchDataCategories] = useState<any>([]);
 
@@ -61,43 +64,83 @@ export const AdminserviceAddIndex = ({
     { description: "", unit: "", pricePerUnit: 0 },
   ]);
 
+  // State สำหรับเก็บ URL ของภาพที่ผู้ใช้เลือก
+  const [preview, setPreview] = useState<string | null>(null);
+
+  // State สำหรับเก็บ category_id ที่เลือกจาก Select
+  const [category_id, setCategory_id] = useState<number>();
+
   // ส่งข้อมูล subservices ไปยังฟังก์ชัน setInputSubservice
   setInputSubservice(subservices);
 
+  // ส่งข้อมูล category_id ไปยังฟังก์ชัน setInputCat
+  setInputCat(category_id);
+
+  // สำหรับแสดง string ของ select ก่อนใช้กับหลังใช้
+  const [isOpenTrigger, setIsOpenTrigger] = useState(false);
+
   // ฟังก์ชันสำหรับเพิ่ม subservice ใหม่
   const addSubService = () => {
+    // เรียก setSubservices เพื่ออัปเดตค่า subservices
+    // การเพิ่ม subservice ใหม่เข้าไปในอาร์เรย์โดยการคัดลอกค่าเดิมทั้งหมดและเพิ่มอ็อบเจ็กต์ใหม่
     setSubservices((prevSubservices) => [
-      ...prevSubservices,
-      { description: "", unit: "", pricePerUnit: 0 },
+      ...prevSubservices, // คัดลอกค่าของ subservices ที่มีอยู่
+      { description: "", unit: "", pricePerUnit: 0 }, // เพิ่ม subservice ใหม่ที่มีค่าเริ่มต้นเป็นค่าว่าง
     ]);
   };
 
   // ฟังก์ชันสำหรับลบ subservice ตาม index โดยที่ index > 1
   const deleteSubservice = (index: number) => {
-    // ลบรายการตาม index
+    // ตรวจสอบว่า subservices ยังมีมากกว่าหนึ่งรายการอยู่หรือไม่
     if (subservices.length > 1) {
+      // ใช้ฟังก์ชัน filter เพื่อกรอง subservice ที่ไม่ตรงกับ index ที่จะลบ
       const updatedSubservices = subservices.filter((_, idx) => idx !== index);
+      // อัปเดตค่า subservices ด้วยค่าใหม่ที่กรองแล้ว
       setSubservices(updatedSubservices);
     }
   };
 
   // ฟังก์ชันสำหรับอัปเดตข้อมูลของ subservice ตาม index และฟิลด์ที่ต้องการ
   const updateSubservice = (
-    index: number,
-    field: string,
-    value: string | number
+    index: number, // index ของ subservice ที่ต้องการอัปเดต
+    field: string, // ชื่อฟิลด์ที่ต้องการอัปเดต เช่น "description", "unit", "pricePerUnit"
+    value: string | number // ค่าใหม่ที่จะอัปเดตในฟิลด์ที่เลือก
   ) => {
+    // ถ้าฟิลด์คือ "pricePerUnit" และค่า value เป็น "" (string) ให้ตั้งค่าเป็น 0
+    if (field === "pricePerUnit" && value === "") {
+      value = 0;
+    }
+    if (field === "pricePerUnit" && value === "0") {
+      value = 0;
+    }
+
     // การอัปเดตข้อมูล subservices
-    // prevSubservices คือค่าปัจจุบันของ subservices ก่อนการอัปเดต
     setSubservices((prevSubservices) => {
+      // คัดลอกค่าเดิมของ subservices
       const updatedSubservices = [...prevSubservices];
+      // อัปเดตฟิลด์ที่เลือกใน subservice ตาม index ที่ระบุ
       updatedSubservices[index] = {
-        ...updatedSubservices[index],
-        [field]: value,
+        ...updatedSubservices[index], // คัดลอกข้อมูลเดิมของ subservice
+        [field]: value, // อัปเดตฟิลด์ที่ระบุด้วยค่าใหม่
       };
+
+      // ตรวจสอบว่า subservice ที่อัปเดตมีค่าครบทั้ง 3 ฟิลด์หรือไม่
+      const isSubserviceComplete =
+        updatedSubservices[index].description !== "" &&
+        updatedSubservices[index].unit !== "" &&
+        updatedSubservices[index].pricePerUnit !== 0;
+
+      // ถ้าครบทั้ง 3 ฟิลด์ ให้ตั้งค่า setSubserviceEmpty[index] เป็น false
+      if (isSubserviceComplete) {
+        const updatedEmptyState = [...subserviceEmpty];
+        updatedEmptyState[index] = false; // ตั้งค่าเป็น false สำหรับ subservice ที่กรอกครบ
+        setSubserviceEmpty(updatedEmptyState);
+      } 
+
       return updatedSubservices;
     });
   };
+  console.log("check update update subservice", subservices);
 
   // ฟังก์ชันจัดการการกรอกชื่อบริการ
   const handleInputTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,15 +148,10 @@ export const AdminserviceAddIndex = ({
     setTitleEmpty(false);
   };
 
-  // ส่งข้อมูล category_id ไปยังฟังก์ชัน setInputCat
-  setInputCat(category_id);
-
-  // State สำหรับเก็บ URL ของภาพที่ผู้ใช้เลือก
-  const [preview, setPreview] = useState<string | null>(null);
-
   const handleInputImg = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]; // ดึงไฟล์ที่ผู้ใช้เลือก
     console.log(event, "event for image");
+    console.log(file, "file for image");
     if (file) {
       const previewURL = URL.createObjectURL(file); // การแปลง file เป็น url เพื่อแสดงในกล่อง
       // const previewURL = URL.revokeObjectURL(preview); // การลบ url เมื่อไม่ได้ใช้งาน ยังไม่ค่อยเข้าใจ
@@ -148,9 +186,11 @@ export const AdminserviceAddIndex = ({
   const handleDeleteImg = () => {
     setPreview(null);
     setShowPopUpDeleteImg(false);
-  };
 
-  const [isOpen, setIsOpen] = useState(false);
+    // เนื่องจากสถานะคงค้างข้างใน file ของ input image ทำให้ต้องมีการ set null อีกครั้ง
+    SetInputimage(null);
+    setImageEmpty(false);
+  };
 
   return (
     <>
@@ -192,12 +232,12 @@ export const AdminserviceAddIndex = ({
                   handleCategorySelect({
                     target: { value },
                   } as React.ChangeEvent<HTMLSelectElement>);
-                  setIsOpen(true);
+                  setIsOpenTrigger(true);
                 }}
               >
                 <SelectTrigger
                   className={`w-[433px] pl-5 h-[44px] text-base font-normal ${
-                    isOpen ? "text-black" : "text-gray-600"
+                    isOpenTrigger ? "text-black" : "text-gray-600"
                   }`}
                 >
                   <SelectValue placeholder="เลือกหมวดหมู่" />
@@ -307,8 +347,18 @@ export const AdminserviceAddIndex = ({
               </div>
             </div>
           </div>
+          {/* PopUp for warning delete image */}
+          <AdminDeletePopUp
+            showPopUpDeleteImg={showPopUpDeleteImg}
+            setShowPopUpDeleteImg={setShowPopUpDeleteImg}
+            handleDeleteImg={handleDeleteImg}
+            message="ยืนยันการลบรายการ ?"
+            subMessage="ใช่หรือไม่"
+            confirmationText="ลบรายการ"
+            cancelAction="ยกเลิก"
+          />
 
-          {/* กล่องล่าง */}
+          {/* -----------------------------กล่องล่าง----------------------------- */}
           <div className="h-px w-full bg-gray-300"></div>
           <div>
             <div className="">
@@ -320,64 +370,25 @@ export const AdminserviceAddIndex = ({
                   subservice={subservice}
                   deleteSubservice={deleteSubservice}
                   updateSubservice={updateSubservice}
-                  subserviceEmpty={subserviceEmpty}
-                  setSubserviceEmpty={setSubserviceEmpty}
+                  subserviceEmpty={subserviceEmpty[index]}
+                  showAsterisk={index = 0}
                 />
               ))}
             </div>
-            <div className="">
-              <button
-                type="button"
-                className=" bg-white text-defaultColor text-base h-10  flex items-center justify-center gap-3 rounded-lg border border-defaultColor px-7 mt-7 active:bg-pressedColor active:text-white "
-                onClick={addSubService}
-              >
-                เพิ่มรายการ
-                <span>
-                  <IconPlusDefaultColor />
-                </span>
-              </button>
-            </div>
+
+            <button
+              type="button"
+              className=" bg-white text-defaultColor text-base h-10  flex items-center justify-center gap-3 rounded-lg border border-defaultColor px-7 mt-7 active:bg-pressedColor active:text-white "
+              onClick={addSubService}
+            >
+              เพิ่มรายการ
+              <span>
+                <IconPlusDefaultColor />
+              </span>
+            </button>
           </div>
         </div>
       </div>
-
-      {/* Popup for delete image */}
-      {showPopUpDeleteImg && (
-        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white w-[360px] h-auto flex flex-col items-center rounded-xl p-4 gap-3">
-            <div className="w-full">
-              <div
-                className="w-full flex justify-end "
-                onClick={() => setShowPopUpDeleteImg(false)}
-              >
-                <IconX />
-              </div>
-              <div className="flex justify-center">
-                <IconWarning />
-              </div>
-            </div>
-            <h1 className="font-medium text-xl">ยืนยันการลบรายการ ?</h1>
-            <h1 className="text-center text-gray-500">
-              {/* คุณต้องการลบรายการ ‘{serviceName}’ <br /> */}
-              ใช่หรือไม่
-            </h1>
-            <div className="flex flex-row gap-3 my-1">
-              <button
-                className="bg-defaultColor text-white w-28 py-2 rounded-lg font-medium"
-                onClick={handleDeleteImg}
-              >
-                ลบรายการ
-              </button>
-              <button
-                className="bg-white text-defaultColor border-[1px] border-defaultColor w-28 py-2 rounded-lg font-medium"
-                onClick={() => setShowPopUpDeleteImg(false)}
-              >
-                ยกเลิก
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };

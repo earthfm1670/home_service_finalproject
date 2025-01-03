@@ -1,4 +1,4 @@
-import Adminsidebar from "@/components/admin/adminsidebar";
+import Adminsidebar from "@/components/admin/admin-sidebar";
 import { supabase } from "@/utils/supabase";
 import { useEffect, useState } from "react";
 import { useServices } from "@/components/ServicesContext";
@@ -281,7 +281,6 @@ function IconTrash({
       const response = await axios.delete(
         `/api/admincategorise/deletecategory/${id}`
       );
-
 
       if (response.status === 201) {
         console.log(`Service with ID ${id} has been deleted.`);

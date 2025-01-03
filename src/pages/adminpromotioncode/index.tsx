@@ -1,4 +1,4 @@
-import Adminsidebar from "@/components/admin/adminsidebar";
+import Adminsidebar from "@/components/admin/admin-sidebar";
 import { supabase } from "@/utils/supabase";
 import { useEffect, useState } from "react";
 import { useServices } from "@/components/ServicesContext";
@@ -67,7 +67,6 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
     updated_at: string;
   }
 
-
   // ดึงข้อมูลจาก Context
   // สร้าง state เพื่อมารับข้อมูล service
   // const { getServicesData, servicesData } = useServices();
@@ -77,12 +76,14 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
 
   const fetchUser = async () => {
     try {
-      const response = await axios.get(`/api/admin/getdataAdmin?search=${input}`);
+      const response = await axios.get(
+        `/api/admin/getdataAdmin?search=${input}`
+      );
       // console.log("test response 101");
-      if(response.data.data.length !== 0){
+      if (response.data.data.length !== 0) {
         setServicesList(response.data.data);
       }
-      
+
       // console.log(response.data.data, "test response 103");
     } catch (error) {
       console.log(error);
@@ -207,7 +208,6 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
                             )}
                           </td>
 
-                          
                           <td className="flex flex-row items-center justify-between px-6 py-7 ">
                             <IconTrash
                               id={service.service_id}

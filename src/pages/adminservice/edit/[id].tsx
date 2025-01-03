@@ -1,4 +1,4 @@
-import { AdminSidebar } from "@/components/admin/adminsidebar";
+import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
@@ -16,7 +16,7 @@ import IconWarning from "@/components/ui/Iconwarning";
 import IconX from "@/components/ui/IconX";
 import IconCheck from "@/components/ui/IconCheck";
 import { IconArrowBack } from "@/components/ui/IconArrowBack";
-import { AdminSubmitPopUp } from "@/components/admin/adminSubmitPopUp";
+import { AdminSubmitPopUp } from "@/components/admin/admin-submit-popup";
 
 interface SubService {
   description: string;
