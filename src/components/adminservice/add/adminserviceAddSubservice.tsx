@@ -11,7 +11,7 @@ interface AddSubServiceProps {
     value: string | number
   ) => void;
   subserviceEmpty: boolean;
-  showAsterisk: number
+  showAsterisk: number;
 }
 
 export function AddSubService({
@@ -21,11 +21,7 @@ export function AddSubService({
   updateSubservice,
   subserviceEmpty,
   showAsterisk,
-
-
 }: AddSubServiceProps) {
-
-
   // // ฟังก์ชันจัดการการกรอกชื่อบริการ
   // const cancleActionEmpty = (field: string, value: string | number) => {
   //   // ตรวจสอบว่าได้กรอกข้อมูลครบทั้ง 3 ฟิลด์หรือไม่
@@ -42,7 +38,7 @@ export function AddSubService({
   //     updatedSubservice.pricePerUnit !== 0
   //   ) {
   //     setSubserviceEmpty(false);
-  //   } 
+  //   }
   // };
 
   return (
@@ -70,12 +66,14 @@ export function AddSubService({
               // cancleActionEmpty("description", e.target.value)
             }}
             className="border border-gray-300 h-11 rounded-lg w-[422px] pl-5 "
-            />
-            {/* {index === 0 &&subserviceEmpty && (
+          />
+          {/* {index === 0 &&subserviceEmpty && (
               <p className="text-red-500 text-sm  absolute bottom-0 font-medium">กรุณากรอกข้อมูลให้ถูกต้อง</p> */}
-            {subserviceEmpty && (
-              <p className="text-red-500 text-sm  absolute bottom-0 font-medium">กรุณากรอกข้อมูลให้ถูกต้อง</p>
-            )}
+          {subserviceEmpty && (
+            <p className="text-red-500 text-sm  absolute bottom-0 font-medium">
+              กรุณากรอกข้อมูลให้ถูกต้อง
+            </p>
+          )}
         </div>
         <div className="flex flex-col py-6">
           <label

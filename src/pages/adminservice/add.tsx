@@ -1,13 +1,22 @@
 // import libary
 import React, { useState } from "react";
 import axios from "axios";
-// import component
-import { AdminSidebar } from "@/components/admin/admin-sidebar";
-import { AdminserviceAddIndex } from "@/components/adminservice/add/adminserviceAddIndex";
-import { AdminServiceAddNavbar } from "@/components/adminservice/add/adminserviceAddNavbar";
-import { AdminSubmitPopUp } from "@/components/admin/admin-submit-popup";
+import IconPicture from "@/components/ui/IconPicture";
+import IconDrag from "@/components/ui/IconDragAddAdmin";
+import IconPlusDefaultColor from "@/components/ui/IconPluseDefaultColor";
+import { stringify } from "querystring";
+import IconWarning from "@/components/ui/Iconwarning";
+import IconX from "@/components/ui/IconX";
+import { Check } from "lucide-react";
+import IconCheck from "@/components/ui/IconCheck";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-// create interface for subservice
 interface SubService {
   description: string;
   unit: string;
@@ -21,69 +30,44 @@ export default function AdminNavbar() {
   const [inputTitle, setInputTitle] = useState<string>("");
   // select category
   const [inputCat, setInputCat] = useState<number>();
-  // input to show image
-  const [inputImage, setInputImage] = useState<File | null>(null);
+  const [inputImage, setInputImage] = useState<File>();
+  const [URLimage, setURLimage] = useState<String>();
+  const [showPopUpSubmit, setShowPopUpSubmit] = useState<Boolean>(false);
+  const [showPopUpDeleteImg, setShowPopUpDeleteImg] = useState<Boolean>(false);
 
-  // popup alert for submit
-  const [showPopUpSubmit, setShowPopUpSubmit] = React.useState(false);
-  // popup alert for delete image
-  const [showPopUpDeleteImg, setShowPopUpDeleteImg] = useState<boolean>(false);
   // console.log("inputImage", inputImage);
 
-  // เพิ่ม state สำหรับเก็บข้อความแจ้งเตือน
-  const [titleEmpty, setTitleEmpty] = useState<boolean>(false);
-  const [categoryEmpty, setCategoryEmpty] = useState<boolean>(false);
-  const [subserviceEmpty, setSubserviceEmpty] = useState<boolean[]>([]);
-  const [imageEmpty, setImageEmpty] = useState<boolean>(false);
+  // const file = new Blob([yourData], { type: "image/jpeg" });
+
+  const router = useRouter();
+
+  //   <option value="general_service">บริการทั่วไป</option>
+  //   <option value="kitchen_service">บริการห้องครัว</option>
+  //   <option value="bathroom_service">บริการห้องน้ำ</option>
+
+  //   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //     setInput(event.target.value);
+  //   };
+
+  // const convertFileToBase64 = (file: File): Promise<string> => {
+  //   return new Promise((resolve, reject) => {
+  //     if (!file) {
+  //       reject(new Error("File is null or undefined"));
+  //       return;
+  //     }
+  //     const reader = new FileReader();
+  //     reader.onload = () => resolve(reader.result as string);
+  //     reader.onerror = (error) => reject(error);
+  //     reader.readAsDataURL(file);
+  //   });
+  // };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-
-    // ตั้งค่า isValid เป็น true ก่อนการตรวจสอบ
-    let isValid = true;
-
-    // ตรวจสอบ title
-    if (!inputTitle) {
-      setTitleEmpty(true);
-      isValid = false;
-    }
-
-    // ตรวจสอบ category
-    if (!inputCat) {
-      setCategoryEmpty(true);
-      isValid = false;
-    }
-
-    // ตรวจสอบ subservices
-    console.log("check value subservice", inputSubservice);
-
-    const newErrors = inputSubservice.map((value: any) => {
-      return (
-        value.description === "" || // ตรวจสอบว่าค่าว่าง
-        value.unit === "" || // ตรวจสอบว่าค่าว่าง
-        value.pricePerUnit === 0 // ตรวจสอบว่าราคาเป็น 0
-      );
-    });
-
-    setSubserviceEmpty(newErrors); // อัปเดต state subserviceEmpty ด้วย array ของข้อผิดพลาด
-
-    if (newErrors.includes(true)) {
-      // ตรวจสอบว่ามีข้อผิดพลาดในรายการใดหรือไม่
-      isValid = false;
-    }
-
-    // ตรวจสอบ image
-    if (!inputImage) {
-      setImageEmpty(true);
-      isValid = false;
-      // check value image when submit
-      // console.log("inputImage for valid value", inputImage);
-    }
-
-    // ถ้าข้อมูลไม่ครบถ้วน จะไม่ทำการส่งข้อมูล
-    if (!isValid) {
-      return;
-    }
+    // if (e.key === "Enter") {
+    //   e.preventDefault(); // ปิดการทำงานของ Enter
+    //   return;
+    // }
 
     const formData = new FormData();
     formData.append("title", inputTitle);
@@ -100,10 +84,43 @@ export default function AdminNavbar() {
     for (let [key, value] of formData.entries()) {
       formDataObject[key] = value;
     }
-    // แสดงข้อมูลทั้งหมดในรูปแบบ object
-    console.log(formDataObject);
 
+    console.log(formDataObject); // แสดงข้อมูลทั้งหมดในรูปแบบ object
+
+    // let base64Image = null;
+
+    // if (inputImage instanceof File) {
+    //   try {
+    //     base64Image = await convertFileToBase64(inputImage);
+    //     // console.log(base64Image)
+    //   } catch (error) {
+    //     console.error("Error converting file to Base64:", error);
+    //     alert("เกิดข้อผิดพลาดในการแปลงไฟล์รูปภาพ");
+    //     return;
+    //   }
+    // } else {
+    //   console.error("inputImage is not a valid File");
+    // }
+
+    // console.log("create new category");
+    // let category_id = 0;
+
+    // if (inputCat === "general_service") {
+    //   category_id = 2;
+    // } else if (inputCat === "kitchen_service") {
+    //   category_id = 3;
+    // } else if (inputCat === "bathroom_service") {
+    //   category_id = 4;
+    // }
     try {
+      // const newInputData = {
+      //   title: inputTitle,
+      //   category_id: inputCat,
+      //   image: inputImage,
+      //   subServices: inputSubservice,
+      // };
+
+      // await axios.post(`/api/admin/management/create`, newInputData);
       await axios.post(`/api/admin/management/create`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -145,15 +162,6 @@ export default function AdminNavbar() {
               SetInputimage={setInputImage}
               setShowPopUpDeleteImg={setShowPopUpDeleteImg}
               showPopUpDeleteImg={showPopUpDeleteImg}
-              // แสดงข้อความแจ้งเตือน ช่องกรอกข้อมูลว่าง
-              titleEmpty={titleEmpty}
-              categoryEmpty={categoryEmpty}
-              imageEmpty={imageEmpty}
-              subserviceEmpty={subserviceEmpty}
-              setTitleEmpty={setTitleEmpty}
-              setCategoryEmpty={setCategoryEmpty}
-              setImageEmpty={setImageEmpty}
-              setSubserviceEmpty={setSubserviceEmpty}
             />
           </div>
         </div>
