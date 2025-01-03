@@ -29,10 +29,10 @@ interface AdminServiceAddIndexProps {
   titleEmpty: boolean;
   categoryEmpty: boolean;
   imageEmpty: boolean;
-  subserviceEmpty: boolean[];
+  subserviceEmpty: boolean;
   setTitleEmpty: (value: boolean) => void;
   setCategoryEmpty: (value: boolean) => void;
-  setSubserviceEmpty: (value: boolean[]) => void;
+  setSubserviceEmpty: (value: boolean) => void;
   setImageEmpty: (value: boolean) => void;
 }
 
@@ -124,23 +124,27 @@ export const AdminserviceAddIndex = ({
         [field]: value, // อัปเดตฟิลด์ที่ระบุด้วยค่าใหม่
       };
 
-      // ตรวจสอบว่า subservice ที่อัปเดตมีค่าครบทั้ง 3 ฟิลด์หรือไม่
-      const isSubserviceComplete =
-        updatedSubservices[index].description !== "" &&
-        updatedSubservices[index].unit !== "" &&
-        updatedSubservices[index].pricePerUnit !== 0;
+      // ตรวจสอบว่า subservice ทุกตัวกรอกครบทั้ง 3 ฟิลด์หรือไม่
+      const isSubserviceComplete = updatedSubservices.map(
+        (subservice) =>
+          subservice.description !== "" &&
+          subservice.unit !== "" &&
+          subservice.pricePerUnit !== 0
+      );
+      console.log("isSubserviceComplete", isSubserviceComplete);
 
-      // ถ้าครบทั้ง 3 ฟิลด์ ให้ตั้งค่า setSubserviceEmpty[index] เป็น false
-      if (isSubserviceComplete) {
-        const updatedEmptyState = [...subserviceEmpty];
-        updatedEmptyState[index] = false; // ตั้งค่าเป็น false สำหรับ subservice ที่กรอกครบ
-        setSubserviceEmpty(updatedEmptyState);
-      } 
+      const completeEmpty = isSubserviceComplete.includes(false);
+      console.log("completeEmpty", completeEmpty);
+      if (completeEmpty === false) {
+        setSubserviceEmpty(completeEmpty);
+      }
+
+      // setSubserviceEmpty(updatedEmptyState);
 
       return updatedSubservices;
     });
   };
-  console.log("check update update subservice", subservices);
+  // console.log("check update update subservice", subservices);
 
   // ฟังก์ชันจัดการการกรอกชื่อบริการ
   const handleInputTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -370,8 +374,7 @@ export const AdminserviceAddIndex = ({
                   subservice={subservice}
                   deleteSubservice={deleteSubservice}
                   updateSubservice={updateSubservice}
-                  subserviceEmpty={subserviceEmpty[index]}
-                  showAsterisk={index = 0}
+                  subserviceEmpty={subserviceEmpty}
                 />
               ))}
             </div>

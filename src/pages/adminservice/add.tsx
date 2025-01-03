@@ -33,7 +33,8 @@ export default function AdminNavbar() {
   // เพิ่ม state สำหรับเก็บข้อความแจ้งเตือน
   const [titleEmpty, setTitleEmpty] = useState<boolean>(false);
   const [categoryEmpty, setCategoryEmpty] = useState<boolean>(false);
-  const [subserviceEmpty, setSubserviceEmpty] = useState<boolean[]>([]);
+  const [subserviceEmpty, setSubserviceEmpty] = useState<boolean>(false);
+  // console.log("check subserviceEmpty for sent waring empty", subserviceEmpty);
   const [imageEmpty, setImageEmpty] = useState<boolean>(false);
 
   const handleSubmit = async (e: any) => {
@@ -55,20 +56,28 @@ export default function AdminNavbar() {
     }
 
     // ตรวจสอบ subservices
-    console.log("check value subservice", inputSubservice);
+    // console.log("check value subservice", inputSubservice);
 
     const newErrors = inputSubservice.map((value: any) => {
       return (
-        value.description === "" || // ตรวจสอบว่าค่าว่าง
-        value.unit === "" || // ตรวจสอบว่าค่าว่าง
-        value.pricePerUnit === 0 // ตรวจสอบว่าราคาเป็น 0
+        value.description !== "" && // ตรวจสอบว่าค่าว่าง
+        value.unit !== "" && // ตรวจสอบว่าค่าว่าง
+        value.pricePerUnit !== 0 // ตรวจสอบว่าราคาเป็น 0
       );
     });
+    // console.log("check newError boolean", newErrors);
 
-    setSubserviceEmpty(newErrors); // อัปเดต state subserviceEmpty ด้วย array ของข้อผิดพลาด
+    function booleanSubservice(newErrors: boolean[]): boolean {
+      // ตรวจสอบว่า newErrors มีค่า false หรือไม่
+      return newErrors.includes(false);
+    }
+    // function ที่จะส่งค่าเป็น true เพื่อใช้งาน warning ได้มีแค่ booleanSubservice เท่านั้น
+    // console.log("booleanSubservice", booleanSubservice(newErrors));
+    // อัปเดต state ด้วยค่าที่ได้จาก booleanSubservice
+    setSubserviceEmpty(booleanSubservice(newErrors)); // ตั้งค่าผลลัพธ์เป็น boolean
 
-    if (newErrors.includes(true)) {
-      // ตรวจสอบว่ามีข้อผิดพลาดในรายการใดหรือไม่
+    // ใช้ผลลัพธ์ในการตรวจสอบ isValid
+    if (booleanSubservice(newErrors)) {
       isValid = false;
     }
 
