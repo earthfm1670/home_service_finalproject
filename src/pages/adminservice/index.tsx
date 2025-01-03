@@ -1,4 +1,4 @@
-import { AdminSidebar } from "@/components/admin/adminsidebar";
+import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
@@ -131,7 +131,7 @@ export const AdminserviceIndex = ({ search }: { search: string | null }) => {
                   <th className="w-[120px] text-center font-normal">Action</th>
                 </tr>
               </thead>
-               {/* for content rendering list form data */}
+              {/* for content rendering list form data */}
               <tbody>
                 {serviceList
                   // .sort((a, b) => a.service_id - b.service_id)
@@ -266,13 +266,7 @@ export function IconDrag() {
   );
 }
 
-function IconTrash({
-  id,
-  setUpdateTable,
-  index,
-  serviceName,
-}: any) {
-
+function IconTrash({ id, setUpdateTable, index, serviceName }: any) {
   interface Service {
     service_id: number;
   }
@@ -281,8 +275,6 @@ function IconTrash({
 
   const [showPopup, setShowPopup] = useState<boolean>(false);
   // console.log(updateTable, "3");
-
- 
 
   const [active, setActive] = useState<boolean>(false);
 
@@ -306,7 +298,7 @@ function IconTrash({
         // อัปเดตตารางโดยการกรองข้อมูลที่ไม่ถูกลบออก
         setUpdateTable(
           (prevTable: TableState) =>
-            prevTable.filter((_, idx: number) => idx !== index) 
+            prevTable.filter((_, idx: number) => idx !== index)
           // ใช้ index เพื่อกรองเฉพาะ service ที่ไม่ถูกลบ
         );
       } else {

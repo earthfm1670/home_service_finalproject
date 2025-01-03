@@ -5,19 +5,19 @@ import { useRouter } from "next/router";
 interface AdminServiceSubmitPopUpProps {
   setShowPopUpSubmit: React.Dispatch<React.SetStateAction<boolean>>;
   showPopUpSubmit: boolean;
-  message?: string; // ข้อความแสดงใน popup
-  subMessage?: string; // ข้อความย่อย
-  confirmationText?: string; // ข้อความบนปุ่มยืนยัน
-  redirectPath?: string; // เส้นทางที่ต้องการ redirect หลังยืนยัน
+  message: string; // ข้อความแสดงใน popup
+  subMessage: string; // ข้อความย่อย
+  confirmationText: string; // ข้อความบนปุ่มยืนยัน
+  redirectPath: string ; // เส้นทางที่ต้องการ redirect หลังยืนยัน
 }
 
 export function AdminSubmitPopUp({
   setShowPopUpSubmit,
   showPopUpSubmit,
-  message = "สร้างรายการสำเร็จ", // ข้อความเริ่มต้น
-  subMessage = "กรุณากดยืนยันเพื่อกลับสู่หน้าหลัก ?", // ข้อความย่อยเริ่มต้น
-  confirmationText = "ยืนยัน", // ข้อความบนปุ่มเริ่มต้น
-  redirectPath = "/adminservice", // เส้นทางเริ่มต้น
+  message, // ข้อความเริ่มต้น
+  subMessage, // ข้อความย่อยเริ่มต้น
+  confirmationText, // ข้อความบนปุ่มเริ่มต้น
+  redirectPath, // เส้นทางเริ่มต้น
 }: AdminServiceSubmitPopUpProps): JSX.Element {
   const router = useRouter(); // ใช้ useRouter เพื่อสร้าง router
 

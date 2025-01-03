@@ -1,4 +1,4 @@
-import { AdminSidebar } from "@/components/admin/adminsidebar";
+import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { useEffect, useState } from "react";
 import { useServices } from "@/components/ServicesContext";
 import { useRouter } from "next/router";
