@@ -20,27 +20,6 @@ export function AddSubService({
   updateSubservice,
   subserviceEmpty,
 }: AddSubServiceProps) {
-
-
-  // // ฟังก์ชันจัดการการกรอกชื่อบริการ
-  // const cancleActionEmpty = (field: string, value: string | number) => {
-  //   // ตรวจสอบว่าได้กรอกข้อมูลครบทั้ง 3 ฟิลด์หรือไม่
-  //   const updatedSubservice = {
-  //     description: field === "description" ? value : subservice.description,
-  //     unit: field === "unit" ? value : subservice.unit,
-  //     pricePerUnit: field === "pricePerUnit" ? value : subservice.pricePerUnit,
-  //   };
-
-  //   // หากกรอกข้อมูลครบแล้วให้ set subserviceEmpty เป็น false
-  //   if (
-  //     updatedSubservice.description !== "" &&
-  //     updatedSubservice.unit !== "" &&
-  //     updatedSubservice.pricePerUnit !== 0
-  //   ) {
-  //     setSubserviceEmpty(false);
-  //   } 
-  // };
-
   return (
     <>
       {/* sub service */}
