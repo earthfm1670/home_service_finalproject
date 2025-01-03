@@ -3,8 +3,9 @@ import HomeFooter from "@/components/homefooter";
 import UserSidebar from "@/components/customer/userSidebar";
 import { useAuth } from "@/context/authContext";
 import { useEffect, useState } from "react";
-import profileSkeleton from "@/components/customer/profileSkeleton";
 import axios from "axios";
+import { ProtectCustomer } from "@/lib/pageProtector/protectCustomer";
+import profileSkeleton from "@/components/customer/profileSkeleton";
 
 interface UserInfo {
   userId: null | string;
@@ -17,6 +18,7 @@ export default function CustomerProfile() {
   const user = authState.user?.user_metadata;
   const userId = authState.userId;
   const email = authState.userEmail; // change to get user from supabase
+  const userRole = user?.role;
   //-------------------------------------------------------------------
   const [userInfo, setUserInfo] = useState<UserInfo>({
     userId: null,
@@ -28,7 +30,6 @@ export default function CustomerProfile() {
       const respond = await axios.post("api/auth/getUser", {
         email,
       });
-      console.log(respond);
       const userInfo = respond.data.userInfo;
       setUserInfo({
         userId: userInfo.user_id,
@@ -68,7 +69,7 @@ export default function CustomerProfile() {
             <li>User Name : {userInfo.userName || ""} </li>
             <li>User Email : {email || ""} </li>
             <li>User Phone : {userInfo.userPhone || ""}</li>
-            <li>User Role : {user?.role || ""} </li>
+            <li>User Role : {userRole || ""} </li>
           </div>
         )}
       </div>

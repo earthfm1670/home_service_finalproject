@@ -5,6 +5,9 @@ import { jwtVerify } from "jose";
 export default async function middleware(req: NextRequest) {
   console.log("From MW____************____**************____*********");
   const authorization = req.headers.get("Authorization");
+  const pathName = req.nextUrl.pathname;
+  console.log(`path name: ${pathName}`);
+
   if (!authorization || !authorization.startsWith(`Bearer `)) {
     console.log("No Authorization");
     console.log(req.headers.get("Authorization"));
@@ -30,12 +33,9 @@ export default async function middleware(req: NextRequest) {
 
   let expired = false;
   try {
-    const { payload } = await jwtVerify(
-      trimedToken,
-      new TextEncoder().encode(secretKey)
-    );
+    await jwtVerify(trimedToken, new TextEncoder().encode(secretKey));
     expired = false;
-    console.log(payload);
+    // console.log(payload);
   } catch (err) {
     const error = err as Error;
     expired = true;
@@ -49,36 +49,19 @@ export default async function middleware(req: NextRequest) {
 
   console.log(`Auth check. III`);
   console.log("user has token---------------------------------------");
+  // const userRole = userPayload.user_metadata.role;
+  // //---Role base Authorization-----------------------
+  // if (pathName.startsWith("/api/customer") && userRole !== "customer") {
+  //   console.log(`Hitting customer path`);
+  //   return NextResponse.redirect(new URL("/", req.url));
+  // }
+  // if (pathName.startsWith("/api/admin") && userRole !== "admin") {
+  //   console.log(`Hitting admin path`);
+  //   return NextResponse.redirect(new URL("/", req.url));
+  // }
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/api/customer/:path*", "/api/admin/:path*"],
+  matcher: ["/api/customer/:path*"],
 };
-//"/api/auth/getUser"
-//-----------------------------------------------
-//VV ทำงานได้เฉย
-// export default async function middleware(req: NextRequest) {
-//   const user = "";
-//   if (!user) {
-//     return NextResponse.redirect(new URL("/", req.url));
-//   }
-// }
-// export const config = {
-//   matcher: ["/login"],
-// };
-//------------------------------------------------
-/** โครง
- * function middleware(req){
- * await authCheck(req) << will inwoke logout() if token expired
- * return NextResponse.next()
- * }
- *
- * function routeHandler(children){
- * if(userRole !== 'admin'){
- * redirect("/")
- * }
- *
- * return({children})
- * }
- */
