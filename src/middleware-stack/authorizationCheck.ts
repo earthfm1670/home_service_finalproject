@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
-export default async function isToken(req: NextRequest) {
+export default async function authorizationCheck(req: NextRequest) {
   //1. access authorization
   const authorization = req.headers.get("Authorization");
   if (!authorization || !authorization.startsWith(`Bearer `)) {
@@ -25,13 +25,10 @@ export default async function isToken(req: NextRequest) {
   console.log(`Auth check. II`);
   // 3. set payload and userRole to req
   try {
-    const { payload } = await jwtVerify(
+    await jwtVerify(
       trimedToken,
       new TextEncoder().encode(secretKey)
     );
-    const userRole = payload.user_metadata?.role;
-    console.log(userRole);
-    req.headers.set(`userRole`, JSON.stringify(userRole));
     console.log(`Auth check. III`);
     console.log("user has token---------------------------------------");
     return NextResponse.next();
