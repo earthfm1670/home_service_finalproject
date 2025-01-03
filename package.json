@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "@types/formidable": "^3.4.5",
+    "@types/js-cookie": "^3.0.6",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^20",
     "@types/pg": "^8.11.10",

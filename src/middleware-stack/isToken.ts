@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
-
+interface JwtPayload {
+  user_metadata?: {
+    role?: string;
+  };
+}
 export async function isToken(req: NextRequest) {
   const secretKey = process.env.SECRET_KEY;
 
@@ -18,7 +22,7 @@ export async function isToken(req: NextRequest) {
     new TextEncoder().encode(secretKey)
   );
 
-  const userRole = payload.user_metadata?.role;
+  const userRole = (payload as JwtPayload).user_metadata?.role;
   if (!userRole) {
     req.headers.set(`userRole`, `unauthorized`);
     return NextResponse.next();
