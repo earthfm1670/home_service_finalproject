@@ -10,8 +10,8 @@ interface AddSubServiceProps {
     field: "description" | "unit" | "pricePerUnit",
     value: string | number
   ) => void;
-  subserviceEmpty: boolean[];
-  setSubserviceEmpty: (value: boolean[]) => void;
+  subserviceEmpty: boolean;
+  showAsterisk: number
 }
 
 export function AddSubService({
@@ -20,8 +20,31 @@ export function AddSubService({
   deleteSubservice,
   updateSubservice,
   subserviceEmpty,
-  setSubserviceEmpty
+  showAsterisk,
+
+
 }: AddSubServiceProps) {
+
+
+  // // ฟังก์ชันจัดการการกรอกชื่อบริการ
+  // const cancleActionEmpty = (field: string, value: string | number) => {
+  //   // ตรวจสอบว่าได้กรอกข้อมูลครบทั้ง 3 ฟิลด์หรือไม่
+  //   const updatedSubservice = {
+  //     description: field === "description" ? value : subservice.description,
+  //     unit: field === "unit" ? value : subservice.unit,
+  //     pricePerUnit: field === "pricePerUnit" ? value : subservice.pricePerUnit,
+  //   };
+
+  //   // หากกรอกข้อมูลครบแล้วให้ set subserviceEmpty เป็น false
+  //   if (
+  //     updatedSubservice.description !== "" &&
+  //     updatedSubservice.unit !== "" &&
+  //     updatedSubservice.pricePerUnit !== 0
+  //   ) {
+  //     setSubserviceEmpty(false);
+  //   } 
+  // };
+
   return (
     <>
       {/* sub service */}
@@ -30,23 +53,29 @@ export function AddSubService({
           <IconDrag />
         </div>
 
-        <div className="flex flex-col py-6">
+        <div className="flex flex-col py-6 relative">
           <label
             htmlFor={`subserviceName-${index}`}
             className="text-sm text-gray-600"
           >
             ชื่อบริการ
           </label>
-          {subserviceEmpty && <p className="text-red-500">กรอกข้อมูลไม่ครบ</p>}
+          {/* {subserviceEmpty && <p className="text-red-500">กรอกข้อมูลไม่ครบ</p>} */}
           <input
             type="text"
             id={`subserviceName-${index}`}
             value={subservice.description}
-            onChange={(e) =>
-              updateSubservice(index, "description", e.target.value)
-            }
-            className="border border-gray-300 h-11 rounded-lg w-[422px] pl-5"
-          />
+            onChange={(e) => {
+              updateSubservice(index, "description", e.target.value);
+              // cancleActionEmpty("description", e.target.value)
+            }}
+            className="border border-gray-300 h-11 rounded-lg w-[422px] pl-5 "
+            />
+            {/* {index === 0 &&subserviceEmpty && (
+              <p className="text-red-500 text-sm  absolute bottom-0 font-medium">กรุณากรอกข้อมูลให้ถูกต้อง</p> */}
+            {subserviceEmpty && (
+              <p className="text-red-500 text-sm  absolute bottom-0 font-medium">กรุณากรอกข้อมูลให้ถูกต้อง</p>
+            )}
         </div>
         <div className="flex flex-col py-6">
           <label
@@ -59,9 +88,10 @@ export function AddSubService({
             type="number"
             id={`subservicePrice-${index}`}
             // value={subservice.pricePerUnit}
-            onChange={(e) =>
-              updateSubservice(index, "pricePerUnit", e.target.value)
-            }
+            onChange={(e) => {
+              updateSubservice(index, "pricePerUnit", e.target.value);
+              // cancleActionEmpty("pricePerUnit", e.target.value)
+            }}
             className="border border-gray-300 h-11 rounded-lg w-[240px] pl-5"
           />
         </div>
@@ -76,12 +106,15 @@ export function AddSubService({
             type="text"
             id={`subserviceUnit-${index}`}
             value={subservice.unit}
-            onChange={(e) => updateSubservice(index, "unit", e.target.value)}
+            onChange={(e) => {
+              updateSubservice(index, "unit", e.target.value);
+              // cancleActionEmpty("unit", e.target.value)
+            }}
             className="border border-gray-300 h-11 rounded-lg w-[240px] pl-5"
           />
         </div>
         <h1
-          className="mt-[52px] active:text-[#FF6347] cursor-pointer underline font-semibold text-gray-400"
+          className="mt-[52px] cursor-pointer text-blue-500 hover:text-blue-700 underline font-medium"
           onClick={() => deleteSubservice(index)}
         >
           ลบรายการ

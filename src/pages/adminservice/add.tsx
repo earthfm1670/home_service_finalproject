@@ -2,10 +2,10 @@
 import React, { useState } from "react";
 import axios from "axios";
 // import component
-import { AdminSidebar } from "@/components/admin/adminsidebar";
+import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminserviceAddIndex } from "@/components/adminservice/add/adminserviceAddIndex";
 import { AdminServiceAddNavbar } from "@/components/adminservice/add/adminserviceAddNavbar";
-import { AdminSubmitPopUp } from "@/components/admin/adminSubmitPopUp";
+import { AdminSubmitPopUp } from "@/components/admin/admin-submit-popup";
 
 // create interface for subservice
 interface SubService {
@@ -24,16 +24,17 @@ export default function AdminNavbar() {
   // input to show image
   const [inputImage, setInputImage] = useState<File | null>(null);
 
-  // popup alert
+  // popup alert for submit
   const [showPopUpSubmit, setShowPopUpSubmit] = React.useState(false);
-  const [showPopUpDeleteImg, setShowPopUpDeleteImg] = useState<Boolean>(false);
+  // popup alert for delete image
+  const [showPopUpDeleteImg, setShowPopUpDeleteImg] = useState<boolean>(false);
   // console.log("inputImage", inputImage);
 
   // เพิ่ม state สำหรับเก็บข้อความแจ้งเตือน
-const [titleEmpty, setTitleEmpty] = useState<boolean>(false);
-const [categoryEmpty, setCategoryEmpty] = useState<boolean>(false);
-const [subserviceEmpty, setSubserviceEmpty] = useState<boolean>(false);
-const [imageEmpty, setImageEmpty] = useState<boolean>(false);
+  const [titleEmpty, setTitleEmpty] = useState<boolean>(false);
+  const [categoryEmpty, setCategoryEmpty] = useState<boolean>(false);
+  const [subserviceEmpty, setSubserviceEmpty] = useState<boolean[]>([]);
+  const [imageEmpty, setImageEmpty] = useState<boolean>(false);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -54,8 +55,20 @@ const [imageEmpty, setImageEmpty] = useState<boolean>(false);
     }
 
     // ตรวจสอบ subservices
-    if (inputSubservice.length === 0) {
-      setSubserviceEmpty(true);
+    console.log("check value subservice", inputSubservice);
+
+    const newErrors = inputSubservice.map((value: any) => {
+      return (
+        value.description === "" || // ตรวจสอบว่าค่าว่าง
+        value.unit === "" || // ตรวจสอบว่าค่าว่าง
+        value.pricePerUnit === 0 // ตรวจสอบว่าราคาเป็น 0
+      );
+    });
+
+    setSubserviceEmpty(newErrors); // อัปเดต state subserviceEmpty ด้วย array ของข้อผิดพลาด
+
+    if (newErrors.includes(true)) {
+      // ตรวจสอบว่ามีข้อผิดพลาดในรายการใดหรือไม่
       isValid = false;
     }
 
@@ -63,6 +76,8 @@ const [imageEmpty, setImageEmpty] = useState<boolean>(false);
     if (!inputImage) {
       setImageEmpty(true);
       isValid = false;
+      // check value image when submit
+      // console.log("inputImage for valid value", inputImage);
     }
 
     // ถ้าข้อมูลไม่ครบถ้วน จะไม่ทำการส่งข้อมูล
@@ -85,7 +100,6 @@ const [imageEmpty, setImageEmpty] = useState<boolean>(false);
     for (let [key, value] of formData.entries()) {
       formDataObject[key] = value;
     }
-
     // แสดงข้อมูลทั้งหมดในรูปแบบ object
     console.log(formDataObject);
 
@@ -131,14 +145,14 @@ const [imageEmpty, setImageEmpty] = useState<boolean>(false);
               SetInputimage={setInputImage}
               setShowPopUpDeleteImg={setShowPopUpDeleteImg}
               showPopUpDeleteImg={showPopUpDeleteImg}
-
-              // แสดงข้อความแจ้งเตือน
+              // แสดงข้อความแจ้งเตือน ช่องกรอกข้อมูลว่าง
               titleEmpty={titleEmpty}
               categoryEmpty={categoryEmpty}
-              subserviceEmpty={subserviceEmpty}
               imageEmpty={imageEmpty}
+              subserviceEmpty={subserviceEmpty}
               setTitleEmpty={setTitleEmpty}
               setCategoryEmpty={setCategoryEmpty}
+              setImageEmpty={setImageEmpty}
               setSubserviceEmpty={setSubserviceEmpty}
             />
           </div>
