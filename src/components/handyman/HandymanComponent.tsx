@@ -1,12 +1,22 @@
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import homeservicelogo from "../../../public/image/homeservicelogo.svg";
 import Image from "next/image";
+import { List, ListCheck, LogOut, EllipsisVertical } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ButtonComponentProps {
   status: string;
@@ -20,7 +30,7 @@ const mockData = [
     statusColor: "text-orange-400",
     name: "Mr. Jack Richer",
     email: "Richer@mission.io",
-    address: "33 Fordland Road, Impossible Tower",
+    address: "33 Fordland Road, Benton Tower",
     service: [
       {
         category: "บริการทั่วไป",
@@ -241,7 +251,7 @@ const mockData = [
 
 const ButtonComponent: React.FC<ButtonComponentProps> = ({ status }) => (
   <button
-    className={`px-8 py-2 text-sm font-medium text-white ${
+    className={`px-8 py-2 text-sm md:text-base font-medium transition-all duration-700 ease-in-out text-white ${
       status === "รอดำเนินการ"
         ? "bg-blue-500 hover:bg-blue-600 active:bg-blue-700"
         : status === "กำลังดำเนินการ"
@@ -260,6 +270,15 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({ status }) => (
 const HandymanComponent: React.FC = () => {
   const [list, setList] = useState<Boolean>(true);
   const [filteredData, setFilteredData] = useState(mockData);
+
+  const router = useRouter();
+
+  const handleLogOut = (value: string) => {
+    if (value === "logout") {
+      router.push("/");
+    }
+  };
+
   const handleSelectList = (listStatus: Boolean) => {
     setList(listStatus);
     if (listStatus) {
@@ -299,7 +318,7 @@ const HandymanComponent: React.FC = () => {
                 className="flex flex-row gap-4 px-6 py-4 w-full"
                 onClick={() => handleSelectList(true)}
               >
-                {/* <Icon1 /> */}
+                <List />
                 รายการ
               </button>
             </div>
@@ -312,15 +331,20 @@ const HandymanComponent: React.FC = () => {
                 className="flex flex-row gap-4 px-6 py-4 w-full"
                 onClick={() => handleSelectList(false)}
               >
-                {/* <Icon2 /> */}
+                <ListCheck />
                 ประวัติรายการ
               </button>
             </div>
           </div>
         </div>
         <div className="hover:bg-[#022B87] w-full my-16">
-          <button className="flex flex-row gap-4 px-6 py-4">
-            {/* <Icon4 /> */}
+          <button
+            className="flex flex-row gap-4 px-6 py-4"
+            onClick={() => {
+              router.push("/");
+            }}
+          >
+            <LogOut />
             ออกจากระบบ
           </button>
         </div>
@@ -335,28 +359,6 @@ const HandymanComponent: React.FC = () => {
               <button className=" my-10 w-full h-11 flex justify-center items-center rounded-lg hover:bg-hoverColor active:bg-pressedColor">
                 <Image src={homeservicelogo} alt="Homeservice Logo" />
               </button>
-              {/* <div className="h-20 py-5">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="bg-blue-500 text-white text-base h-full px-4 flex items-center gap-3 rounded-lg"
-                    >
-                      Menu
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="min-w-60">
-                    <div className="grid gap-4">
-                      <div className="flex flex-col">
-                        <div className="">
-                          <h1 className="">รายการ</h1>
-                          <h1>ประวัติรายการ</h1>
-                        </div>
-                      </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div> */}
             </div>
             <div className="flex h-20 py-5 gap-2">
               <h3 className=" text-gray-700 font-medium text-sm lg:text-base h-full px-2 lg:px-4 flex items-center rounded-lg transition-all duration-700 ease-in-out">
@@ -368,6 +370,29 @@ const HandymanComponent: React.FC = () => {
                 width={40}
                 height={70}
               />
+              <span className="flex items-center lg:hidden">
+                {/* <EllipsisVertical color="#878282" /> */}
+                <Select onValueChange={handleLogOut}>
+                  <SelectTrigger className="border-none shadow-none focus:ring-0 relative text-transparent">
+                    <SelectValue placeholder="" />
+                    <div className="absolute  top-1/2 transform -translate-y-1/2 text-gray-500">
+                      <EllipsisVertical />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem
+                        value="logout"
+                        className="!bg-[#022B87] !text-white p-2"
+                      >
+                        <h1 className="flex items-center gap-2 cursor-pointer">
+                          <LogOut /> ออกจากระบบ
+                        </h1>
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </span>
             </div>
           </div>
         </nav>
@@ -379,10 +404,10 @@ const HandymanComponent: React.FC = () => {
               } flex items-center w-full transition duration-500`}
             >
               <button
-                className="flex flex-row justify-center px-6 py-4 w-full"
+                className="flex flex-row justify-center px-6 py-4 w-full gap-2"
                 onClick={() => handleSelectList(true)}
               >
-                {/* <Icon1 /> */}
+                <List />
                 รายการ
               </button>
             </div>
@@ -392,10 +417,10 @@ const HandymanComponent: React.FC = () => {
               } flex items-center w-full transition duration-500`}
             >
               <button
-                className="flex flex-row justify-center px-6 py-4 w-full"
+                className="flex flex-row justify-center px-6 py-4 w-full gap-2"
                 onClick={() => handleSelectList(false)}
               >
-                {/* <Icon2 /> */}
+                <ListCheck />
                 ประวัติรายการ
               </button>
             </div>
@@ -410,23 +435,31 @@ const HandymanComponent: React.FC = () => {
                   <h1 className="tracking-widest">{service.date}</h1>
                   <h1 className={service.statusColor}>{service.status}</h1>
                 </AccordionTrigger>
-                <AccordionContent className="w-full sm:max-h-[420px] lg:max-h-[470px] overflow-y-auto flex flex-col px-10 rounded-lg shadow-lg lg:text-lg md:text-base transition-all duration-700 ease-in-out">
+                <AccordionContent className="w-full sm:max-h-[420px] lg:max-h-[540px] overflow-y-auto flex flex-col px-10 rounded-lg shadow-lg lg:text-lg md:text-base transition-all duration-700 ease-in-out">
                   <div className="flex justify-evenly py-6">
-                    <div className="flex flex-col space-y-4 px-2 text-gray-800">
-                      <span className="pb-2 font-medium flex justify-center rounded-full shadow-md text-gray-500">
-                        รายละเอียดผู้ใช้บริการ
+                    <div className="flex flex-col px-2 space-y-4 text-gray-800 flex-1">
+                      <span className="pb-2 font-medium flex justify-center text-gray-500">
+                        <h1 className="px-2 py-1 sm:px-12 sm:py-2 flex justify-center items-center text-center rounded-full shadow-md transition-all duration-700 ease-in-out">
+                          รายละเอียดผู้ให้บริการ
+                        </h1>
                       </span>
-                      <h1 className="pt-4 ">Name : {service.name}</h1>
-                      <h1>Phone / Email : {service.email}</h1>
-                      <h1>Address : {service.address}</h1>
+                      <div className="flex flex-col items-center">
+                        <span className="space-y-4 ">
+                          <h1 className="pt-4 ">Name : {service.name}</h1>
+                          <h1>Phone / Email : {service.email}</h1>
+                          <h1>Address : {service.address}</h1>
+                        </span>
+                      </div>
                     </div>
                     <span className="mx-2 border-solid border-l-4 rounded-sm border-gray-300"></span>
-                    <div className="flex-col space-y-4 px-2">
-                      <span className="pb-2 font-medium flex justify-center rounded-full shadow-md text-gray-500">
-                        รายละเอียดบริการ
+                    <div className="flex-col space-y-4 px-2 flex-1">
+                      <span className="pb-2 px-4 font-medium flex justify-center text-gray-500">
+                        <h1 className="px-2 py-1 sm:px-12 sm:py-2 flex justify-center items-center text-center rounded-full shadow-md transition-all duration-700 ease-in-out">
+                          รายละเอียดบริการ
+                        </h1>
                       </span>
                       {service.service.map((detail, index) => (
-                        <div className="flex-col space-y-4 text-gray-800">
+                        <div className="flex flex-col space-y-4 sm:px-2 md:px-4 lg:px-8 xl:px-20 2xl:px-32 text-gray-800 transition-all duration-700 ease-in-out">
                           <h1 className="pt-4 ">บริการ : {detail.category}</h1>
                           <h1>
                             รายการ : {detail.service_name} จำนวน {detail.amount}{" "}
