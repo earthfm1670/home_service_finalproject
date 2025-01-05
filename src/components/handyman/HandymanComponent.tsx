@@ -268,7 +268,7 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({ status }) => (
 );
 
 const HandymanComponent: React.FC = () => {
-  const [list, setList] = useState<Boolean>(true);
+  const [list, setList] = useState<boolean>(true);
   const [filteredData, setFilteredData] = useState(mockData);
 
   const router = useRouter();
@@ -279,7 +279,7 @@ const HandymanComponent: React.FC = () => {
     }
   };
 
-  const handleSelectList = (listStatus: Boolean) => {
+  const handleSelectList = (listStatus: boolean) => {
     setList(listStatus);
     if (listStatus) {
       setFilteredData(
@@ -297,7 +297,7 @@ const HandymanComponent: React.FC = () => {
   };
   useEffect(() => {
     handleSelectList(list);
-  }, []);
+  }, [list]);
 
   return (
     <section className="flex flex-col lg:flex-row bg-gray-100">
@@ -459,7 +459,10 @@ const HandymanComponent: React.FC = () => {
                         </h1>
                       </span>
                       {service.service.map((detail, index) => (
-                        <div className="flex flex-col space-y-4 sm:px-2 md:px-4 lg:px-8 xl:px-20 2xl:px-32 text-gray-800 transition-all duration-700 ease-in-out">
+                        <div
+                          key={index}
+                          className="flex flex-col space-y-4 sm:px-2 md:px-4 lg:px-8 xl:px-20 2xl:px-32 text-gray-800 transition-all duration-700 ease-in-out"
+                        >
                           <h1 className="pt-4 ">บริการ : {detail.category}</h1>
                           <h1>
                             รายการ : {detail.service_name} จำนวน {detail.amount}{" "}
