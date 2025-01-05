@@ -7,8 +7,20 @@ import React, {
 } from "react";
 import axios from "axios";
 
+interface ServiceResponse {
+  service_id: number;
+  service_name: string;
+  category: string;
+  service_picture_url: string;
+  service_pricing: string;
+  minPrice: number;
+  maxPrice: number;
+  total_usage: number;
+  promotionsAndOffers: boolean;
+}
+
 interface ServicesContextProps {
-  servicesData: any[];
+  servicesData: ServiceResponse[];
   allServiceNames: string[];
   getServicesData: (
     selecttedCategory?: string,
@@ -33,13 +45,13 @@ export const useServices = () => {
 export const ServicesProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [servicesData, setServicesData] = useState<any[]>([]);
+  const [servicesData, setServicesData] = useState<ServiceResponse[]>([]);
   const [allServiceNames, setAllServiceNames] = useState<string[]>([]);
 
   const getServicesData = async (
     selectCategory = "บริการทั้งหมด",
     sortBy = "popular",
-    priceRange: [Number, Number] = [0, 0],
+    priceRange: [number, number] = [0, 0],
     searchValue = ""
   ) => {
     try {
