@@ -1,7 +1,8 @@
 import { useRouter } from "next/router";
 import { useServices } from "./ServicesContext";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Search } from "lucide-react";
+import Image from "next/image";
 
 const categoryBgClassMap: Record<string, string> = {
   บริการทั่วไป: "text-blue-800 bg-blue-100",
@@ -11,7 +12,7 @@ const categoryBgClassMap: Record<string, string> = {
 
 const ServicesListRendering: React.FC = () => {
   const { servicesData, getServicesData } = useServices(); // รับ - ส่ง ข้อมูลจาก Context
-  const [serviceID, setServiceID] = useState<Number>(0);
+  const [serviceID, setServiceID] = useState<number>(0);
   const router = useRouter();
   const limitRender = 9;
 
@@ -22,15 +23,15 @@ const ServicesListRendering: React.FC = () => {
     getServicesData(value);
   };
 
+  const redirectToServiceDetail = useCallback((): void => {
+    router.push(`servicedetail/${serviceID}`);
+  }, [router, serviceID]);
+
   useEffect(() => {
     if (serviceID) {
       redirectToServiceDetail();
     }
-  }, [serviceID]);
-
-  const redirectToServiceDetail = (): void => {
-    router.push(`servicedetail/${serviceID}`);
-  };
+  }, [serviceID, redirectToServiceDetail]);
 
   return (
     <div className="flex flex-col items-center ">
@@ -45,14 +46,17 @@ const ServicesListRendering: React.FC = () => {
                   key={index}
                   className="w-[349px] h-[365px] flex flex-col items-center mx-auto bg-white border border-gray-300 rounded-lg overflow-hidden"
                 >
-                  <img
+                  <Image
                     src={service.service_picture_url}
                     alt={service.service_name}
+                    width={349}
+                    height={365}
                     className="w-full h-[200px] cursor-pointer transition hover:scale-105 duration-700"
                     onClick={() => {
                       setServiceID(service.service_id);
                     }}
                   />
+
                   <div className="flex flex-col items-start justify-between p-4 gap-2 w-full h-[165px]">
                     <p
                       className={`w-fit h-fit px-3 py-1 flex items-center justify-center rounded-lg text-xs font-normal cursor-pointer text-blue-800 ${colorCategoryClass}`}
@@ -71,11 +75,12 @@ const ServicesListRendering: React.FC = () => {
                       {service.service_name}
                     </h1>
                     <h2 className="flex gap-2 text-sm font-normal text-gray-700">
-                      <img
+                      <Image
                         src="/image/pricetag.svg"
                         alt="pricetaglogo"
-                        className="w-[16px] h-[16px]"
-                      ></img>
+                        width={16}
+                        height={16}
+                      />
                       {service.service_pricing}
                     </h2>
                     <button
@@ -97,12 +102,12 @@ const ServicesListRendering: React.FC = () => {
           <span className="flex flex-col items-center gap-6">
             <Search size={70} className=" text-[#cfcac7]" />
             <h3 className="text-gray-700 font-semibold text-lg lg:text-xl">
-              Sorry, we couldn't find any services matching your search.
+              Sorry, we couldn&apos;t find any services matching your search.
             </h3>
           </span>
         </div>
       )}
-      <section className="w-full h-[458px] flex justify-center relative px-6 py-12 overflow-hidden bg-blue-600 lg:items-center lg:h-[284px]">
+      <section className="w-full h-[458px] sm:h-auto flex justify-center relative px-6 py-12 overflow-hidden bg-blue-600 lg:items-center lg:h-[284px]">
         <h1 className="min-w-[327px] w-full h-[243px] sm:px-10 text-lg font-medium text-center text-[#FFFFFF] lg:justify-center lg:px-0 lg:flex lg:max-w-[810px] lg:max-h-[120px] ">
           <p className="lg:hidden">
             เพราะเราคือช่าง ผู้ให้บริการเรื่องบ้านอันดับ
@@ -126,10 +131,11 @@ const ServicesListRendering: React.FC = () => {
             มั่นใจ ช่างไม่ทิ้งงาน พร้อมรับประกันคุณภาพงาน
           </p>
         </h1>
-
-        <img
-          src="image/homeservicelogo.png"
+        <Image
+          src="/image/homeservicelogo.png"
           alt="homeservicelogo"
+          width={250}
+          height={250}
           className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 w-[250px] h-[250px] opacity-20 lg:w-[416px] lg:h-[416px] lg:left-[1370px] lg:top-[-29px]"
         />
       </section>
