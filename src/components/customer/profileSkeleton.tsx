@@ -1,27 +1,24 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function profileSkeleton() {
+export default function ProfileSkeleton() {
   return (
-    <div className="content bg-gray-300 h-96 flex flex-col justify-start w-full lg:ml-72 p-4 space-y-4">
-      <div className="flex items-center space-x-4">
-        <Skeleton className="h-4 w-24" />
-        <Skeleton className="h-4 w-40" />
-      </div>
-      <div className="flex items-center space-x-4">
-        <Skeleton className="h-4 w-24" />
-        <Skeleton className="h-4 w-40" />
-      </div>
-      <div className="flex items-center space-x-4">
-        <Skeleton className="h-4 w-24" />
-        <Skeleton className="h-4 w-40" />
-      </div>
-      <div className="flex items-center space-x-4">
-        <Skeleton className="h-4 w-24" />
-        <Skeleton className="h-4 w-40" />
-      </div>
-      <div className="flex items-center space-x-4">
-        <Skeleton className="h-4 w-24" />
-        <Skeleton className="h-4 w-40" />
+    <div className="profile-body rounded-lg bg-white h-11/12 w-11/12 flex flex-col justify-center items-center gap-6 p-6">
+      <Skeleton className="h-8 w-64 mb-4" />
+
+      <div className="form flex flex-col items-center justify-center gap-6 w-full max-w-md">
+        <div className="picture-box flex flex-col lg:flex-row justify-center items-center gap-4">
+          <Skeleton className="rounded-full w-32 h-32" />
+          <Skeleton className="h-10 w-56" />
+        </div>
+
+        {["Name", "Email", "Phone number", "Address"].map((field, index) => (
+          <div key={index} className="flex flex-col justify-start w-full">
+            <Skeleton className="h-4 w-20 mb-2" />
+            <Skeleton className="h-12 w-full rounded-lg" />
+          </div>
+        ))}
+
+        <Skeleton className="h-10 w-56 rounded-lg mt-4" />
       </div>
     </div>
   );
