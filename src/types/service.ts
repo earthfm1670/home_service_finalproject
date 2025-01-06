@@ -12,10 +12,13 @@ export interface Service {
   category: string;
   service_picture_url: string;
   service_pricing: string;
+  sub_services: SubService[];
   minPrice: number;
   maxPrice: number;
   total_usage: number;
   promotionsAndOffers: boolean;
+  id: number;
+  title: string;
 }
 
 export interface ServicesResponse {

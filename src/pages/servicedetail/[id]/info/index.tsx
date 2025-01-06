@@ -24,6 +24,36 @@ import {
 interface ServiceInfoPageProps {
   initialService?: Service | null;
 }
+type SelectedServicesData = {
+  serviceId: number;
+  selections: Array<{
+    id: number;
+    description: string;
+    unit?: string;
+    unit_price: number;
+    discount: number;
+    quantity: number;
+    totalAmount: number;
+    canProceed: boolean;
+    handleProceed: () => void;
+  }>;
+  totalAmount: number;
+};
+type Province = {
+  id: string;
+  name_th: string;
+  name_en: string;
+  amphure: Array<{
+    id: string;
+    name_th: string;
+    name_en: string;
+    tambon: Array<{
+      id: string;
+      name_th: string;
+      name_en: string;
+    }>;
+  }>;
+};
 
 interface LocationInfo {
   date: Date | null;
