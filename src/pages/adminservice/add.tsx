@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import axios from "axios";
 // import component
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
-import { AdminserviceAddIndex } from "@/components/adminservice/add/adminserviceAddIndex";
+import { AdminserviceAddService } from "@/components/adminservice/add/adminserviceAddService";
 import { AdminServiceAddNavbar } from "@/components/adminservice/add/adminserviceAddNavbar";
 import { AdminSubmitPopUp } from "@/components/admin/admin-submit-popup";
 
@@ -14,9 +14,10 @@ interface SubService {
   pricePerUnit: number;
 }
 
-export default function AdminNavbar() {
+export default function AdminserviceAddIndex() {
   // array of object form subservice
   const [inputSubservice, setInputSubservice] = useState<SubService[]>([]);
+  console.log("inputSubservice",inputSubservice)
   // name service
   const [inputTitle, setInputTitle] = useState<string>("");
   // select category
@@ -33,7 +34,7 @@ export default function AdminNavbar() {
   // เพิ่ม state สำหรับเก็บข้อความแจ้งเตือน
   const [titleEmpty, setTitleEmpty] = useState<boolean>(false);
   const [categoryEmpty, setCategoryEmpty] = useState<boolean>(false);
-  const [subserviceEmpty, setSubserviceEmpty] = useState<boolean>(false);
+  const [subServiceEmpty, setSubserviceEmpty] = useState<boolean>(false);
   // console.log("check subserviceEmpty for sent waring empty", subserviceEmpty);
   const [imageEmpty, setImageEmpty] = useState<boolean>(false);
 
@@ -147,9 +148,9 @@ export default function AdminNavbar() {
             {/* navbar for admin page */}
             <AdminServiceAddNavbar />
             {/* adminservice index */}
-            <AdminserviceAddIndex
+            <AdminserviceAddService
               setInputSubservice={setInputSubservice}
-              inputtitle={setInputTitle}
+              inputTitle={setInputTitle}
               setInputCat={setInputCat}
               SetInputimage={setInputImage}
               setShowPopUpDeleteImg={setShowPopUpDeleteImg}
@@ -158,7 +159,7 @@ export default function AdminNavbar() {
               titleEmpty={titleEmpty}
               categoryEmpty={categoryEmpty}
               imageEmpty={imageEmpty}
-              subserviceEmpty={subserviceEmpty}
+              subServiceEmpty={subServiceEmpty}
               setTitleEmpty={setTitleEmpty}
               setCategoryEmpty={setCategoryEmpty}
               setImageEmpty={setImageEmpty}
