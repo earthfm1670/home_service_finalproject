@@ -42,15 +42,13 @@ export default async function getOrderList(
 
   try {
     const respond = await connectionPool.query(query, [userIdFromClient]);
-    console.log(respond);
     if (!respond.rows[0]) {
-      return res
-        .status(404)
-        .json({ error: "Orders list not found." });
+      return res.status(404).json({ error: "Orders list not found." });
     }
     return res.status(200).json({ data: respond.rows });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ error: "Internal server error." });
+  } catch (error) {
+    const err = error as Error;
+    console.log(err.message);
+    return res.status(500).json({ err: "Internal server error." });
   }
 }

@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useContext, createContext } from "react";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
+import { setCookie, removeCookie } from "@/utils/cookies";
 //define user structure
 interface UserMetadata {
   email: string;
@@ -51,6 +52,7 @@ interface AuthContextType {
 //defined authState
 interface AuthState {
   userId: string | null;
+  userEmail: string | null;
   user: UserPayload | null;
   token: string | null;
 }
@@ -77,10 +79,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 //creat provider which will be render as **WRAPPER for whole app.
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  console.log("From Auth Context");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [authState, setAuthState] = useState<AuthState>({
     userId: null,
+    userEmail: null,
     user: null,
     token: null,
   });
@@ -113,6 +115,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   ): void => {
     setAuthState({
       userId: savedUser.sub,
+      userEmail: savedUser.email,
       user: savedUser,
       token: savedToken,
     });
@@ -148,6 +151,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       //store user info as string in local& store token
       localStorage.setItem("user", JSON.stringify(userInfo));
       localStorage.setItem("token", authToken);
+      setCookie("authToken", authToken);
       //setauth state to store user / token
       const userRole = userInfo.user_metadata.role;
       handleSessionLogin(authToken, userInfo, userRole);
@@ -168,6 +172,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       //store user info as string in local& store token
       localStorage.setItem("user", JSON.stringify(userInfo));
       localStorage.setItem("token", authToken);
+      setCookie("authToken", authToken);
       //setauth state to store user / token
       // if (userInfo.user_metadata.role === "admin"){} << แก้ type
       const userRole = userInfo.user_metadata.role;
@@ -182,8 +187,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const logout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+    removeCookie("authToken");
     setAuthState({
       userId: null,
+      userEmail: null,
       user: null,
       token: null,
     });

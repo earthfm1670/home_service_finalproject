@@ -28,33 +28,20 @@ export default function CustomerHistory() {
   const [fetchOrder, setFetchOrder] = useState<FetchBookingHistory[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { authState } = useAuth();
-  const user = authState.user?.user_metadata;
+  // const user = authState.user?.user_metadata;
   const userId = authState.userId;
-  if (!user || !userId) {
-    console.log("No User");
-    console.log(authState);
-    console.log(authState.user?.user_metadata);
-    console.log(user);
-  }
 
   const fetchData = async () => {
     setIsLoading(true);
-    console.log("history fetching--------------------------------------------");
-    console.log(fetchOrder);
     try {
       const respond: Respond = await axios.get(
         `/api/customer/history/${userId}`
       );
       if (respond) {
-        console.log(
-          "history respond-----------------------------------------------"
-        );
         setIsLoading(false); //fix to false
         setFetchOrder(respond.data.data);
-        console.log(respond.data.data);
       }
     } catch (err) {
-      console.log("Fetch data error");
       console.log(err);
       setIsLoading(false); //fix to false
     }

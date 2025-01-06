@@ -1,6 +1,5 @@
 import { supabase } from "@/utils/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
-
 interface UserLoginRequestBody {
   email: string;
   password: string;
@@ -15,7 +14,6 @@ export default async function userLogin(
     email,
     password,
   });
-
   if (error) {
     //check if credential invalid
     if (
@@ -28,6 +26,8 @@ export default async function userLogin(
     }
     return res.status(400).json({ error: error.message });
   }
+
+ 
   return res.status(200).json({
     message: "Signed in successfully",
     access_token: data.session.access_token,

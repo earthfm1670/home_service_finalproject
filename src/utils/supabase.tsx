@@ -21,9 +21,3 @@ export const adminSupabase = createClient(supabaseUrl, admininKey, {
     detectSessionInUrl: false,
   },
 });
-
-//TODO Upadate all admin api using adminSupabase
-//TODO admin register: add meta data
-//TODO admin login: change into adminSupabase client
-//TODO user register: add meta data
-//TODO check if nessessary to updatre CRUD for admin api
