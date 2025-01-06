@@ -1,11 +1,11 @@
 // import libary
 import { useEffect, useState } from "react";
 import axios from "axios";
-// import component
-import { AddSubService } from "./adminserviceAddSubservice";
 // import icon
 import IconPicture from "@/components/ui/IconPicture";
 import IconPlusDefaultColor from "@/components/ui/IconPluseDefaultColor";
+// import component
+import { AddSubService } from "./adminserviceAddSubservice";
 
 import {
   Select,
@@ -21,7 +21,7 @@ import { AdminDeletePopUp } from "@/components/admin/admin-delete-popup";
 
 interface AdminServiceAddIndexProps {
   setInputSubservice: (value: any) => void; // ควรระบุ type ที่ชัดเจนกว่านี้ ถ้าทราบ
-  inputtitle: (value: string) => void;
+  inputTitle: (value: string) => void;
   setInputCat: (value: any) => void; // ควรระบุ type ที่ชัดเจนกว่านี้ ถ้าทราบ
   SetInputimage: (value: any) => void; // ควรระบุ type ที่ชัดเจนกว่านี้ ถ้าทราบ
   showPopUpDeleteImg: boolean;
@@ -29,17 +29,17 @@ interface AdminServiceAddIndexProps {
   titleEmpty: boolean;
   categoryEmpty: boolean;
   imageEmpty: boolean;
-  subserviceEmpty: boolean;
+  subServiceEmpty: boolean;
   setTitleEmpty: (value: boolean) => void;
   setCategoryEmpty: (value: boolean) => void;
   setSubserviceEmpty: (value: boolean) => void;
   setImageEmpty: (value: boolean) => void;
 }
 
-export const AdminserviceAddIndex = ({
+export const AdminserviceAddService = ({
   // input for sent value
   setInputSubservice,
-  inputtitle,
+  inputTitle,
   setInputCat,
   SetInputimage,
   // alert popup for delete image
@@ -47,13 +47,13 @@ export const AdminserviceAddIndex = ({
   setShowPopUpDeleteImg,
   // check empty for alert warning
   titleEmpty,
-  categoryEmpty,
-  imageEmpty,
-  subserviceEmpty,
   setTitleEmpty,
+  categoryEmpty,
   setCategoryEmpty,
-  setSubserviceEmpty,
+  imageEmpty,
   setImageEmpty,
+  subServiceEmpty,
+  setSubserviceEmpty,
 }: AdminServiceAddIndexProps) => {
   // State สำหรับเก็บข้อมูล Category ที่ดึงมาจาก API
   const [fetchDataCategories, setFetchDataCategories] = useState<any>([]);
@@ -106,12 +106,17 @@ export const AdminserviceAddIndex = ({
     field: string, // ชื่อฟิลด์ที่ต้องการอัปเดต เช่น "description", "unit", "pricePerUnit"
     value: string | number // ค่าใหม่ที่จะอัปเดตในฟิลด์ที่เลือก
   ) => {
-    // ถ้าฟิลด์คือ "pricePerUnit" และค่า value เป็น "" (string) ให้ตั้งค่าเป็น 0
-    if (field === "pricePerUnit" && value === "") {
-      value = 0;
-    }
-    if (field === "pricePerUnit" && value === "0") {
-      value = 0;
+    
+    // ถ้าฟิลด์คือ "pricePerUnit"
+    if (field === "pricePerUnit") {
+      if (value === "" || value === "0") {
+        value = 0; // แปลง "" หรือ "0" ให้เป็น 0
+      } else if (typeof value === "number" && value < 0) {
+        value = 0; // ป้องกันค่าที่ต่ำกว่า 0
+      } else if (typeof value === "string") {
+        const numberValue = parseFloat(value); // แปลง string เป็น number
+        value = numberValue < 0 ? 0 : numberValue; // ถ้าค่าน้อยกว่า 0 ให้ตั้งเป็น 0
+      }
     }
 
     // การอัปเดตข้อมูล subservices
@@ -131,10 +136,10 @@ export const AdminserviceAddIndex = ({
           subservice.unit !== "" &&
           subservice.pricePerUnit !== 0
       );
-      console.log("isSubserviceComplete", isSubserviceComplete);
+      // console.log("isSubserviceComplete", isSubserviceComplete);
 
       const completeEmpty = isSubserviceComplete.includes(false);
-      console.log("completeEmpty", completeEmpty);
+      // console.log("completeEmpty", completeEmpty);
       if (completeEmpty === false) {
         setSubserviceEmpty(completeEmpty);
       }
@@ -148,10 +153,11 @@ export const AdminserviceAddIndex = ({
 
   // ฟังก์ชันจัดการการกรอกชื่อบริการ
   const handleInputTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
-    inputtitle(event.target.value);
+    inputTitle(event.target.value);
     setTitleEmpty(false);
   };
 
+  // ฟังก์ชันสำหรับจัดการการอัปโหลดรูปภาพ
   const handleInputImg = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]; // ดึงไฟล์ที่ผู้ใช้เลือก
     console.log(event, "event for image");
@@ -164,7 +170,7 @@ export const AdminserviceAddIndex = ({
       SetInputimage(file);
     }
   };
-
+  // ดึงข้อมูล subservice จาก API เมื่อ component ถูกโหลดครั้งแรก
   const fetchCategories = async () => {
     try {
       const response = await axios.get(`/api/admin/management/get-categories`);
@@ -174,6 +180,7 @@ export const AdminserviceAddIndex = ({
     }
   };
 
+  // ฟังก์ชันสำหรับจัดการการเลือก category
   const handleCategorySelect = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
@@ -183,10 +190,7 @@ export const AdminserviceAddIndex = ({
     setCategoryEmpty(false);
   };
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
+  // ฟังก์ชันสำหรับลบรูปภาพ
   const handleDeleteImg = () => {
     setPreview(null);
     setShowPopUpDeleteImg(false);
@@ -196,6 +200,11 @@ export const AdminserviceAddIndex = ({
     setImageEmpty(false);
   };
 
+  // ใช้ useEffect เพื่อดึงข้อมูล category เมื่อ component ถูก mount
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
   return (
     <>
       {/* พื้นหลัง */}
@@ -204,7 +213,6 @@ export const AdminserviceAddIndex = ({
         <div className="flex flex-col w-[1120px] border bg-white border-gray-300 rounded-lg overflow-x-auto gap-10 py-12 px-7 ">
           {/* กล่องบน */}
           {/* ชื่อบริการ */}
-
           <div className="flex items-center justify-between w-[662px] text-gray-500 font-medium relative">
             <label htmlFor="ชื่อบริการ" className="">
               ชื่อบริการ
@@ -363,6 +371,7 @@ export const AdminserviceAddIndex = ({
           />
 
           {/* -----------------------------กล่องล่าง----------------------------- */}
+          {/* subservice */}
           <div className="h-px w-full bg-gray-300"></div>
           <div>
             <div className="">
@@ -374,7 +383,7 @@ export const AdminserviceAddIndex = ({
                   subservice={subservice}
                   deleteSubservice={deleteSubservice}
                   updateSubservice={updateSubservice}
-                  subserviceEmpty={subserviceEmpty}
+                  subServiceEmpty={subServiceEmpty}
                 />
               ))}
             </div>
@@ -395,3 +404,6 @@ export const AdminserviceAddIndex = ({
     </>
   );
 };
+
+
+
