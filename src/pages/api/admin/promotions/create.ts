@@ -42,6 +42,7 @@ export default async function createPromotion(
       });
     }
   } catch (e) {
+    console.log("Create promotion VI");
     const error = e as Error;
     return res.status(500).json({
       message: "Internal server error",
