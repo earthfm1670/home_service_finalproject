@@ -55,12 +55,15 @@ const ServicesListFilteredData: React.FC = () => {
   const suggestionRefs = useRef<(HTMLLIElement | null)[]>([]);
 
   const { allServiceNames, getServicesData } = useServices(); // ดึงข้อมูลจาก Context
+
   const handleCategoryChange = (value: string) => {
     setSelecttedCategory(value);
+    getServicesData(value, selecttedSortBy, priceRange);
   };
 
   const handleSortByChange = (value: string) => {
     setSelecttedSortBy(value);
+    getServicesData(selecttedCategory, value, priceRange);
   };
 
   // ส่ง parameter ไปยัง context เมื่อกด button ค้นหา
@@ -85,9 +88,9 @@ const ServicesListFilteredData: React.FC = () => {
   };
 
   // ส่ง parameter ไปยัง getServicesData() ที่ ServicesContext.tsx เพื่อ request data
-  useEffect(() => {
-    getServicesData(selecttedCategory, selecttedSortBy, priceRange, searchText);
-  }, [selecttedCategory, selecttedSortBy]);
+  // useEffect(() => {
+  //   getServicesData(selecttedCategory, selecttedSortBy, priceRange, searchText);
+  // }, [selecttedCategory, selecttedSortBy, priceRange, searchText]);
 
   // update ค่า setPlaceholder Dispay size มีการเปลี่ยนแปลงมากหรือน้อยกว่า 1024px
   useEffect(() => {
