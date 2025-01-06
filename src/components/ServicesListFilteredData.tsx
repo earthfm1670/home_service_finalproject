@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Range } from "react-range";
 import { Search } from "lucide-react";
 import { useServices } from "./ServicesContext";
@@ -15,27 +15,14 @@ import {
 
 // ฟังก์ชัน debounce เพื่อหน่วงการเรียก fetch ข้อมูล
 type TimerId = ReturnType<typeof setTimeout>;
-const debounce = (
-  func: (
-    category: string,
-    sortBy: string,
-    range: [number, number],
-    text: string
-  ) => void,
-  delay: number
-) => {
+const debounce = (func: (range: [number, number]) => void, delay: number) => {
   let timerId: TimerId;
-  return (
-    category: string,
-    sortBy: string,
-    range: [number, number],
-    text: string
-  ) => {
+  return (range: [number, number]) => {
     if (timerId) {
       clearTimeout(timerId);
     }
     timerId = setTimeout(() => {
-      func(category, sortBy, range, text);
+      func(range);
     }, delay);
   };
 };
@@ -55,6 +42,16 @@ const ServicesListFilteredData: React.FC = () => {
   const suggestionRefs = useRef<(HTMLLIElement | null)[]>([]);
 
   const { allServiceNames, getServicesData } = useServices(); // ดึงข้อมูลจาก Context
+
+  const debouncedFetchDataRef = useRef(
+    debounce((range: [number, number]) => {
+      getServicesData(selecttedCategory, selecttedSortBy, range);
+      console.log(range);
+    }, 1000)
+  );
+  useEffect(() => {
+    debouncedFetchDataRef.current(priceRange);
+  }, [priceRange]);
 
   const handleCategoryChange = (value: string) => {
     setSelecttedCategory(value);
@@ -86,11 +83,6 @@ const ServicesListFilteredData: React.FC = () => {
     setSuggestions([]);
     handleSearchSubmit(suggestion);
   };
-
-  // ส่ง parameter ไปยัง getServicesData() ที่ ServicesContext.tsx เพื่อ request data
-  // useEffect(() => {
-  //   getServicesData(selecttedCategory, selecttedSortBy, priceRange, searchText);
-  // }, [selecttedCategory, selecttedSortBy, priceRange, searchText]);
 
   // update ค่า setPlaceholder Dispay size มีการเปลี่ยนแปลงมากหรือน้อยกว่า 1024px
   useEffect(() => {
@@ -128,34 +120,15 @@ const ServicesListFilteredData: React.FC = () => {
     setIsOpen(!isOpen);
   };
 
+
   const handleSliderChange = (value: number[]) => {
     if (value.length === 2) {
       setPriceRange([value[0], value[1]]);
     }
-    //เรียกใช้ debouncedFetchData เพื่อกำหนด delay ในการส่ง parameter ไปยัง fetchPriceRangeData เพื่อ get data from api
-    debouncedFetchData(
-      selecttedCategory,
-      selecttedSortBy,
-      [value[0], value[1]],
-      searchText
-    );
+    //เรียกใช้ debouncedFetchDataRef เพื่อกำหนด delay ในการส่ง parameter ไปยัง fetchPriceRangeData เพื่อ get data from api
+    debouncedFetchDataRef.current([value[0], value[1]]);
   };
 
-  // ฟังก์ชัน fetch ข้อมูล
-  const fetchPriceRangeData = (
-    category: string,
-    sortBy: string,
-    range: [number, number],
-    text: string
-  ) => {
-    getServicesData(category, sortBy, range, text);
-  };
-
-  // ใช้ debounce สำหรับฟังก์ชัน fetchData
-  const debouncedFetchData = useCallback(
-    debounce(fetchPriceRangeData, 1000),
-    []
-  );
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setsearchText(event.target.value);
