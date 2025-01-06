@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Range } from "react-range";
 import { Search } from "lucide-react";
 import { useServices } from "./ServicesContext";
+import Image from "next/image";
 import {
   Select,
   SelectContent,
@@ -14,14 +15,27 @@ import {
 
 // ฟังก์ชัน debounce เพื่อหน่วงการเรียก fetch ข้อมูล
 type TimerId = ReturnType<typeof setTimeout>;
-const debounce = (func: (...args: any[]) => void, delay: number) => {
+const debounce = (
+  func: (
+    category: string,
+    sortBy: string,
+    range: [number, number],
+    text: string
+  ) => void,
+  delay: number
+) => {
   let timerId: TimerId;
-  return (...args: any[]) => {
+  return (
+    category: string,
+    sortBy: string,
+    range: [number, number],
+    text: string
+  ) => {
     if (timerId) {
       clearTimeout(timerId);
     }
     timerId = setTimeout(() => {
-      func(...args);
+      func(category, sortBy, range, text);
     }, delay);
   };
 };
@@ -34,11 +48,11 @@ const ServicesListFilteredData: React.FC = () => {
     useState<string>("บริการทั้งหมด");
   const [selecttedSortBy, setSelecttedSortBy] = useState<string>("popular");
   const [searchText, setsearchText] = useState<string>("");
-  const [suggestions, setSuggestions] = useState<any>([]);
-  const [activeSuggestion, setActiveSuggestion] = useState<any>(0);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [activeSuggestion, setActiveSuggestion] = useState<number>(0);
   const [isSuggestionSelected, setIsSuggestionSelected] =
     useState<boolean>(false);
-  const suggestionRefs = useRef<any>([]);
+  const suggestionRefs = useRef<(HTMLLIElement | null)[]>([]);
 
   const { allServiceNames, getServicesData } = useServices(); // ดึงข้อมูลจาก Context
   const handleCategoryChange = (value: string) => {
@@ -61,6 +75,13 @@ const ServicesListFilteredData: React.FC = () => {
 
   const handleButtonClick = () => {
     handleSearchSubmit(searchText);
+  };
+
+  // เรียกใช้ฟังก์ชัน handleSearchSubmit เพื่อ fetch ข้อมูล
+  const handleSuggestionClick = (suggestion: string) => {
+    setsearchText(suggestion);
+    setSuggestions([]);
+    handleSearchSubmit(suggestion);
   };
 
   // ส่ง parameter ไปยัง getServicesData() ที่ ServicesContext.tsx เพื่อ request data
@@ -109,7 +130,12 @@ const ServicesListFilteredData: React.FC = () => {
       setPriceRange([value[0], value[1]]);
     }
     //เรียกใช้ debouncedFetchData เพื่อกำหนด delay ในการส่ง parameter ไปยัง fetchPriceRangeData เพื่อ get data from api
-    debouncedFetchData(selecttedCategory, selecttedSortBy, value, searchText);
+    debouncedFetchData(
+      selecttedCategory,
+      selecttedSortBy,
+      [value[0], value[1]],
+      searchText
+    );
   };
 
   // ฟังก์ชัน fetch ข้อมูล
@@ -144,14 +170,14 @@ const ServicesListFilteredData: React.FC = () => {
   // ใช้ปุ่ม ArrowUp และ ArrowDown เพื่อนเลื่อน auto cpmplete
   const handelKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "ArrowDown") {
-      setActiveSuggestion((prevActive: any) => {
+      setActiveSuggestion((prevActive: number) => {
         const newActive =
           prevActive + 1 < suggestions.length ? prevActive + 1 : prevActive;
         scrollIntoView(newActive);
         return newActive;
       });
     } else if (event.key === "ArrowUp") {
-      setActiveSuggestion((prevActive: any) => {
+      setActiveSuggestion((prevActive: number) => {
         const newActive = prevActive - 1 >= 0 ? prevActive - 1 : prevActive;
         scrollIntoView(newActive);
         return newActive;
@@ -184,9 +210,10 @@ const ServicesListFilteredData: React.FC = () => {
   };
 
   // เลื่อน scroll ได้เมื่อมี auto complete หลายรายการ
-  const scrollIntoView = (index: any) => {
-    if (suggestionRefs.current[index]) {
-      suggestionRefs.current[index].scrollIntoView({
+  const scrollIntoView = (index: number) => {
+    const ref = suggestionRefs.current[index];
+    if (ref) {
+      ref.scrollIntoView({
         behavior: "smooth",
         block: "nearest",
       });
@@ -194,10 +221,11 @@ const ServicesListFilteredData: React.FC = () => {
   };
 
   // ตรวจสอบการคลิก mouse นอก field auto complete เพื่อยกเลิก auto complete
-  const handleClickOutside = (event: any) => {
+  const handleClickOutside = (event: MouseEvent) => {
+    const target = event.target as Node;
     if (
       suggestionRefs.current &&
-      !suggestionRefs.current.contains(event.target)
+      !suggestionRefs.current.some((ref) => ref?.contains(target))
     ) {
       setSuggestions([]);
     }
@@ -216,10 +244,13 @@ const ServicesListFilteredData: React.FC = () => {
     <>
       <div className="flex flex-col items-center mx-auto">
         <div className="relative w-full h-[168px] overflow-hidden lg:h-60">
-          <img
+          <Image
             className="object-cover w-full h-full object-center lg:object-[center_69%]"
-            src="image/servicelistbanner.jpg"
+            src="/image/servicelistbanner.jpg"
             alt="Servicelist-banner"
+            layout="fill"
+            objectFit="cover"
+            quality={100}
           />
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-[rgba(0,25,81,0.6)] to-[rgba(0,25,81,0.6)] z-10"></div>
           <div className="absolute top-0 left-0 w-full h-full flex flex-col gap-5 items-center justify-center lg:gap-7 z-20">
@@ -241,7 +272,7 @@ const ServicesListFilteredData: React.FC = () => {
               className="absolute left-5 cursor-pointer text-[#b3afa8] lg:left-5 z-10"
               onClick={handleButtonClick}
             />
-            <div ref={suggestionRefs}>
+            <div>
               <input
                 type="text"
                 placeholder="ค้นหาบริการ..."
@@ -252,7 +283,7 @@ const ServicesListFilteredData: React.FC = () => {
               />
               {suggestions.length > 0 && (
                 <ul className="absolute top-11 w-full bg-white border- border-gray-300 rounded-lg mt-1 z-10 max-h-52 overflow-y-auto">
-                  {suggestions.map((suggestion: any, index: any) => (
+                  {suggestions.map((suggestion: string, index: number) => (
                     <li
                       key={index}
                       ref={(el) => (suggestionRefs.current[index] = el)}
@@ -261,10 +292,7 @@ const ServicesListFilteredData: React.FC = () => {
                           ? "bg-blue-700 font-medium text-slate-50 rounded-lg"
                           : ""
                       }`}
-                      onClick={() => {
-                        setsearchText(suggestion);
-                        setSuggestions([]);
-                      }}
+                      onClick={() => handleSuggestionClick(suggestion)}
                     >
                       {suggestion}
                     </li>
@@ -381,12 +409,12 @@ const ServicesListFilteredData: React.FC = () => {
                           </div>
                         )}
                         renderThumb={({ props, index }) => {
-                          const { key, ...otherProps } = props;
+                          const { ...otherProps } = props;
                           return (
                             <div
-                              key={index}
                               {...otherProps}
                               className="h-4 w-4 bg-white border-solid border-4 border-blue-700 rounded-full"
+                              key={index}
                             />
                           );
                         }}
@@ -440,7 +468,7 @@ const ServicesListFilteredData: React.FC = () => {
                         : ""
                     }`}
                   >
-                    "ตามตัวอักษร (Ascending)"
+                    &quot;ตามตัวอักษร (Ascending)&quot;
                   </SelectItem>
                   <SelectItem
                     value="desc"
@@ -450,7 +478,7 @@ const ServicesListFilteredData: React.FC = () => {
                         : ""
                     }`}
                   >
-                    "ตามตัวอักษร (Descending)"
+                    &quot;ตามตัวอักษร (Descending)&quot;
                   </SelectItem>
                 </SelectGroup>
               </SelectContent>
