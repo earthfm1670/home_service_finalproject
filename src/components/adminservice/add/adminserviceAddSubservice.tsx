@@ -19,7 +19,6 @@ export function AddSubService({
   deleteSubservice,
   updateSubservice,
   subServiceEmpty,
-
 }: AddSubServiceProps) {
   return (
     <>
