@@ -1,4 +1,4 @@
-import Adminsidebar from "@/components/admin/admin-sidebar";
+import {AdminSidebar} from "@/components/admin/admin-sidebar";
 import { useEffect, useState } from "react";
 import { useServices } from "@/components/ServicesContext";
 import { useRouter } from "next/router";
@@ -215,7 +215,7 @@ export default function AdminNavbar() {
       >
         <div className="flex flex-row w-full">
           <div>
-            <Adminsidebar />
+            <AdminSidebar />
           </div>
           <div className="w-full flex flex-col">
             {/* navbar for admin page */}
