@@ -25,7 +25,6 @@ export default async function createPromotion(
         ])
         .select();
 
-    console.log("Create promotion II");
 
     if (InsertPromotion) {
       console.log("Create promotion I");
@@ -34,10 +33,8 @@ export default async function createPromotion(
         message: `create code successfully: ${InsertPromotion[0].promotion_code}`,
       });
     }
-    console.log("Create promotion VI");
 
     if (InsertPromotionError) {
-      console.log("Create promotion V");
       console.log("Create Promotion Error");
       console.log(InsertPromotionError);
       return res.status(400).json({
@@ -45,7 +42,6 @@ export default async function createPromotion(
       });
     }
   } catch (e) {
-    console.log("Create promotion VI");
     const error = e as Error;
     return res.status(500).json({
       message: "Internal server error",
