@@ -302,7 +302,6 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
   useEffect(() => {
     const loadDataFromStorage = async () => {
       try {
-        // Load services data
         const servicesData = sessionStorage.getItem("selectedServices");
         if (servicesData) {
           const parsedServices = JSON.parse(servicesData);
@@ -314,7 +313,6 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
           }
         }
 
-        // Load form data with priority given to payment data
         const paymentData = sessionStorage.getItem("paymentData");
         const formData = sessionStorage.getItem("serviceInfoFormData");
 
@@ -346,7 +344,6 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
         const provinceData = await response.json();
         setProvinces(provinceData);
 
-        // If we have payment data, we need to match location names with IDs
         if (paymentData) {
           const parsedPaymentData = JSON.parse(paymentData);
           const province = provinceData.find(
@@ -503,7 +500,7 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
           additionalDetails: additionalDetails,
         }}
         isServiceInfoPage={true}
-        discount={0} // Add the appropriate discount value if available
+        discount={0}
         totalAmount={selectedServices?.totalAmount || 0}
         backButtonText="ย้อนกลับ"
         proceedButtonText="ดำเนินการต่อ"

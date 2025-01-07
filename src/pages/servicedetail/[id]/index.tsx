@@ -109,7 +109,6 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
     });
   };
 
-  // Rest of the component remains the same...
   if (isLoading) {
     return <ServiceHeroSkeleton />;
   }
@@ -131,11 +130,11 @@ const getSelectedServices = () => {
     .map((subService) => ({
       ...subService,
       quantity: quantities[subService.id]?.quantity || 0,
-      discount: 0, // You may want to calculate this if there's a discount logic
+      discount: 0,
       totalAmount:
         (quantities[subService.id]?.quantity || 0) * subService.unit_price,
-      canProceed: true, // This should be true if the service is selected
-      handleProceed: handleProceed, // Use the same handleProceed function
+      canProceed: true, 
+      handleProceed: handleProceed, 
     }));
 };
 
@@ -169,7 +168,6 @@ const getSelectedServices = () => {
         "selectedServices",
         JSON.stringify(selectedServicesData)
       );
-      // Keep the quantities in localStorage when proceeding
       saveQuantities(quantities);
       router.push(`/servicedetail/${id}/info`);
     }
@@ -197,7 +195,7 @@ const getSelectedServices = () => {
               getQuantityDisplay={getQuantityDisplay}
               calculateTotal={calculateTotal}
               getPriceDisplay={getPriceDisplay}
-              totalAmount={calculateTotal()} // Add this line
+              totalAmount={calculateTotal()}
             />
           </div>
         </div>

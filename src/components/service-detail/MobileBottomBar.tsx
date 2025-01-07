@@ -22,7 +22,7 @@ interface MobileBottomBarProps {
   getQuantityDisplay: (subServiceId: number) => number;
   handleProceed: () => void;
   locationInfo?: LocationInfo;
-  isServiceInfoPage?: boolean; // Add this new prop
+  isServiceInfoPage?: boolean;
   discount: number;
   totalAmount: number;
   backButtonText: string;

@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { ProgressStepsNew } from "./ProgressSteps";
+import { ProgressSteps } from "./ProgressSteps";
 
 interface ServiceHeroProps {
   service: {
@@ -50,7 +50,7 @@ export default function ServiceHero({ service }: ServiceHeroProps) {
               {service.service_name}
             </span>
           </div>
-          <ProgressStepsNew currentStep={currentStep} />
+          <ProgressSteps currentStep={currentStep} />
         </div>
       </div>
     </div>
