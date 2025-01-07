@@ -17,6 +17,7 @@ interface UserInfo {
   userName: null | string;
   userPhone: null | string;
   userAddress: null | string;
+  profileImage: null | string;
 }
 export default function CustomerProfile() {
   const { authState } = useAuth();
@@ -27,17 +28,15 @@ export default function CustomerProfile() {
     userName: null,
     userPhone: null,
     userAddress: null,
+    profileImage: null,
   });
   const user = authState.user?.user_metadata;
+  console.log(user);
   const userId = authState.userId;
   const email = authState.userEmail; // change to get user from supabase
-  const fetchImage = null;
 
   //--------Form Input---------------------------------------------
-  const [profileImage, setProfileImage] = useState<File>();
-  const [previewImage, setPreviewImage] = useState<string>(
-    fetchImage || "/image/footerhouse.svg"
-  );
+
   //-----Loading state--------------------------------------------------------------
   const [isLoading, setIsLoading] = useState(true);
   //-----Fetch user------------------------------------------------------------
@@ -51,11 +50,14 @@ export default function CustomerProfile() {
         email,
       });
       const fetchedUser = respond.data.userInfo;
+      console.log("fetchUser");
+      console.log(fetchedUser);
       setUserInfo({
         userId: fetchedUser.user_id,
         userName: fetchedUser.name,
         userPhone: fetchedUser.phone_number,
         userAddress: fetchedUser.address,
+        profileImage: fetchedUser.profile_picture_url,
       });
       setIsLoading(false);
     } catch (err) {
@@ -108,9 +110,9 @@ export default function CustomerProfile() {
               <div className="form flex flex-col items-center justify-center gap-6">
                 <div className="picture-box flex flex-col lg:flex-row justify-center items-center gap-4">
                   <div className="empty-box rounded-full w-32 h-32 bg-white">
-                    {previewImage ? (
+                    {userInfo.profileImage ? (
                       <img
-                        src={previewImage}
+                        src={userInfo.profileImage}
                         alt="preview"
                         className="w-full h-full object-cover rounded-lg"
                       />
