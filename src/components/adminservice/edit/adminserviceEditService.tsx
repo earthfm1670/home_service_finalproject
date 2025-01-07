@@ -13,7 +13,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AdminserviceEditSubService } from "./adminserviceEditSubservice";
-import { AdminDeletePopUp } from "@/components/admin/admin-delete-popup";
+import { AdminDeleteImagePopUp } from "@/components/admin/admin-delete-image-popup";
+import IconX from "@/components/ui/IconX";
+import IconWarning from "@/components/ui/Iconwarning";
+import { AdminServiceEditDate } from "./adminserviceEditDate";
+import { AdminButtonAddSubService } from "@/components/admin/admin-button-add-subservice";
+import { AdminDeleteServicePopUp } from "@/components/admin/admin-delete-service-popup";
 
 interface AdminServiceAddIndexProps {
   setInputSubservice: (value: any) => void; // ควรระบุ type ที่ชัดเจนกว่านี้ ถ้าทราบ
@@ -53,7 +58,7 @@ export const AdminserviceEditService = ({
 
   // state for store subservice
   const [fetchSubservices, setFetchSubservices] = useState<any[]>([]);
-  // console.log("fetchSubservices",fetchSubservices)
+  console.log("fetchSubservices", fetchSubservices);
 
   // store all of data categories for show
   const [fetchDataCategories, setFetchDataCategories] = useState<any>([]);
@@ -62,9 +67,6 @@ export const AdminserviceEditService = ({
   const [serviceCategoryData, setServiceCategoryData] = useState<String>();
   const [createAt, setCreateAt] = useState<string>(new Date().toISOString());
   const [updateAt, setUpdateAt] = useState<string>(new Date().toISOString());
-
-  const [deleteServiceButton, setDeleteServiceButton] =
-    useState<boolean>(false);
 
   // add new row for subservice
   const addSubService = () => {
@@ -75,10 +77,37 @@ export const AdminserviceEditService = ({
   };
 
   // function for filter idx that not match with index
+  // const deleteSubservice = (index: number) => {
+  //   const updatedSubservices = fetchSubservices
+  //     .filter((_, idx) => idx !== index) // ลบ item ที่มี index ตรงกัน
+  //     .map((subservice) => ({
+  //       ...subservice, // คัดลอกข้อมูลเดิม
+  //       unit_price: subservice.unit_price === "" || subservice.unit_price === 0 ? null : null,
+  //       // รีเซ็ตค่า unit_price ที่เป็น 0 หรือ "" ให้เป็น null
+  //     }));
+
+  //   console.log("Before:", fetchSubservices); // ดูค่าก่อนลบ
+  //   console.log("After:", updatedSubservices); // ดูค่าหลังจากลบ
+
+  //   setFetchSubservices(updatedSubservices); // อัปเดตข้อมูลใหม่
+  // };
+
+  // const deleteSubservice = (index: number) => {
+  //   const updatedSubservices = [
+  //     ...fetchSubservices.slice(0, index),
+  //     ...fetchSubservices.slice(index + 1)
+  //   ];
+  //   console.log("Before:", fetchSubservices);
+  //   console.log("After:", updatedSubservices);
+  //   setFetchSubservices(updatedSubservices); // อัปเดตค่าหลังการลบ
+  // };
+
   const deleteSubservice = (index: number) => {
     const updatedSubservices = fetchSubservices.filter(
       (_, idx) => idx !== index
     );
+    console.log("Before:", fetchSubservices);
+    console.log("After:", updatedSubservices);
     setFetchSubservices(updatedSubservices);
   };
 
@@ -136,7 +165,7 @@ export const AdminserviceEditService = ({
   useEffect(() => {
     const updatedSubservices = fetchSubservices.map((subService) => ({
       ...subService,
-      unit_price: subService.unit_price === "" ? "0" : subService.unit_price,
+      unit_price: subService.unit_price === "" ? 0 : subService.unit_price,
     }));
     // console.log("updata subservice", updatedSubservices);
     setInputSubservice(updatedSubservices);
@@ -236,6 +265,33 @@ export const AdminserviceEditService = ({
       fetchService();
     }
   }, [id]);
+
+  // const [deleteServiceButton, setDeleteServiceButton] =
+  //   useState<boolean>(false);
+
+  // const deleteServiceButton = (value: boolean) => {
+  //   // ใส่ logic ของฟังก์ชันที่นี่
+  //   console.log(value);
+  // };
+  const [deleteServiceButton, setDeleteServiceButton] =
+    useState<boolean>(false);
+
+  const handleDelete = async (id: string | string[] | undefined) => {
+    try {
+      const response = await axios.delete(
+        `/api/admin/management/deleteServices/${id}`
+      );
+      if (response.status === 201) {
+        console.log(`Service with ID ${id} has been deleted.`);
+        router.push("/adminservice");
+      } else {
+        console.log("Failed to delete the service:", response.data.message);
+      }
+      console.log();
+    } catch (error) {
+      console.log("Error deleting the service:", error);
+    }
+  };
 
   return (
     <>
@@ -396,77 +452,35 @@ export const AdminserviceEditService = ({
                   />
                 ))}
               </div>
-              <div className="">
-                <button
-                  type="button"
-                  className="bg-white text-defaultColor text-base h-10 flex items-center justify-center gap-3 rounded-lg border border-defaultColor px-7 mt-7"
-                  onClick={addSubService}
-                >
-                  เพิ่มรายการ
-                  <span>
-                    <IconPlusDefaultColor />
-                  </span>
-                </button>
-              </div>
+
+              <AdminButtonAddSubService addSubService={addSubService} />
             </div>
             {/* กล่องล่าง */}
             <div className="h-px w-full bg-gray-300"></div>
-            <div className="flex flex-row gap-5 w-[400px]">
-              <div className="flex flex-col justify-between w-full gap-5 text-gray-500 font-medium">
-                <div>สร้างเมื่อ</div>
-                <div>แก้ไขล่าสุด</div>
-              </div>
-              <div className="flex flex-col justify-between w-full gap-5 ">
-                <div className="flex gap-2">
-                  <div>
-                    {new Date(createAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                    })}
-                  </div>
-                  {new Date(createAt).toLocaleTimeString("en-US", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}
-                </div>
-                <div className="flex gap-2 ">
-                  <div>
-                    {new Date(updateAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                    })}
-                  </div>
-                  {new Date(updateAt).toLocaleTimeString("en-US", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}
-                </div>
-              </div>
-            </div>
+            <AdminServiceEditDate createAt={createAt} updateAt={updateAt} />
           </div>
         </div>
+        {/* button delete service */}
         <div className="w-[1120px] flex flex-row justify-end">
           <button
-            className="flex flex-row items-center gap-2 font-medium underline cursor-pointer text-gray-500"
-            onMouseDown={() => setDeleteServiceButton(true)}
-            onMouseUp={() => setDeleteServiceButton(false)}
-            onMouseLeave={() => setDeleteServiceButton(false)} // Reset เมื่อเมาส์ออกจากปุ่ม
+            className="flex flex-row items-center gap-2 font-medium underline cursor-pointer text-gray-500 active:text-red-600 group"
+            type="button"
+            onClick={() => setDeleteServiceButton(true)}
           >
-            {deleteServiceButton ? <IconTrashRed /> : <IconTrash />}
-            <span
-              className={deleteServiceButton ? "text-red-500" : "text-gray-500"}
-            >
-              ลบบริการ
-            </span>
+            {/* IconTrash */}
+            <div className="group-active:hidden">
+              <IconTrash />
+            </div>
+            {/* IconTrashRed */}
+            <div className="hidden group-active:inline">
+              <IconTrashRed />
+            </div>
+            ลบบริการ
           </button>
         </div>
       </div>
       {/* Popup for delete image */}
-      <AdminDeletePopUp
+      <AdminDeleteImagePopUp
         showPopUpDeleteImg={showPopUpDeleteImg}
         setShowPopUpDeleteImg={setShowPopUpDeleteImg}
         handleDeleteImg={handleDeleteImg}
@@ -475,43 +489,14 @@ export const AdminserviceEditService = ({
         confirmationText="ลบรายการ"
         cancelAction="ยกเลิก"
       />
+      {/* Popup for delete service*/}
+      <AdminDeleteServicePopUp
+        deleteServiceButton={deleteServiceButton}
+        setDeleteServiceButton={setDeleteServiceButton}
+        inputTitle={inputTitle}
+        handleDelete={handleDelete}
+        id={id}
+      />
     </>
   );
 };
-
-// {showPopUpDeleteImg && (
-//   <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50">
-//     <div className="bg-white w-[360px] h-auto flex flex-col items-center rounded-xl p-4 gap-3">
-//       <div className="w-full">
-//         <div
-//           className="w-full flex justify-end "
-//           onClick={() => setShowPopUpDeleteImg(false)}
-//         >
-//           <IconX />
-//         </div>
-//         <div className="flex justify-center">
-//           <IconWarning />
-//         </div>
-//       </div>
-//       <h1 className="font-medium text-xl ">ยืนยันการลบรายการ ?</h1>
-//       <h1 className="text-center text-gray-500">
-//         {/* คุณต้องการลบรายการ ‘{serviceName}’ <br /> */}
-//         ใช่หรือไม่
-//       </h1>
-//       <div className="flex flex-row gap-3">
-//         <button
-//           className="bg-defaultColor text-white w-28 py-2 rounded-lg font-medium"
-//           onClick={handleDeleteImg}
-//         >
-//           ลบรายการ
-//         </button>
-//         <button
-//           className="bg-white text-defaultColor border-[1px] border-defaultColor w-28 py-2 rounded-lg font-medium"
-//           onClick={() => setShowPopUpDeleteImg(false)}
-//         >
-//           ยกเลิก
-//         </button>
-//       </div>
-//     </div>
-//   </div>
-// )}

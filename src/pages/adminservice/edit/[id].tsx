@@ -26,7 +26,7 @@ export default function AdminEdit() {
 
   // file image to form.append for sent request
   const [inputImage, setInputImage] = useState<File>();
-  console.log("check image when update", inputImage);
+  // console.log("check image when update", inputImage);
 
   // at the navbar for show name of service
   const [nameTopic, setNameTopic] = useState<string>("loading");

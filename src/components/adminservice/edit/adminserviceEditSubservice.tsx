@@ -92,12 +92,13 @@ export function AdminserviceEditSubService({
             className="border border-gray-300 h-11 rounded-lg w-[240px] pl-5"
           />
         </div>
-        <h1
-          className="mt-[52px] cursor-pointer text-blue-500 hover:text-blue-700 underline font-medium"
+        <button
+          className="mt-[52px] cursor-pointer text-blue-500 hover:text-blue-700 underline font-medium flex"
+          type="button"
           onClick={() => deleteSubservice(index)}
         >
           ลบรายการ
-        </h1>
+        </button>
       </div>
     </>
   );

@@ -12,7 +12,7 @@ interface AdminServiceDeletePopUpProps {
   cancelAction?: string // ยกเลิกคำสั่งแล้วกลับไปหน้าเดิม
 }
 
-export function AdminDeletePopUp({
+export function AdminDeleteImagePopUp({
   showPopUpDeleteImg,
   setShowPopUpDeleteImg,
   handleDeleteImg,

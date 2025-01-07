@@ -349,7 +349,7 @@ function IconTrash({ id, setUpdateTable, index, serviceName }: any) {
             </div>
             <h1 className="font-medium text-xl ">ยืนยันการลบรายการ ?</h1>
             <h1 className="text-center text-gray-500">
-              คุณต้องการลบรายการ ‘{serviceName}’ <br />
+              คุณต้องการลบรายการ {serviceName} <br />
               ใช่หรือไม่
             </h1>
             <div className="flex flex-row gap-3">

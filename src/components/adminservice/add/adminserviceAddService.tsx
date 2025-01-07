@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { AdminDeletePopUp } from "@/components/admin/admin-delete-popup";
+import { AdminDeleteImagePopUp } from "@/components/admin/admin-delete-image-popup";
 
 // ----------------------------------------------------------------------------------------
 
@@ -106,7 +106,6 @@ export const AdminserviceAddService = ({
     field: string, // ชื่อฟิลด์ที่ต้องการอัปเดต เช่น "description", "unit", "pricePerUnit"
     value: string | number // ค่าใหม่ที่จะอัปเดตในฟิลด์ที่เลือก
   ) => {
-    
     // ถ้าฟิลด์คือ "pricePerUnit"
     if (field === "pricePerUnit") {
       if (value === "" || value === "0") {
@@ -360,7 +359,7 @@ export const AdminserviceAddService = ({
             </div>
           </div>
           {/* PopUp for warning delete image */}
-          <AdminDeletePopUp
+          <AdminDeleteImagePopUp
             showPopUpDeleteImg={showPopUpDeleteImg}
             setShowPopUpDeleteImg={setShowPopUpDeleteImg}
             handleDeleteImg={handleDeleteImg}
@@ -404,6 +403,3 @@ export const AdminserviceAddService = ({
     </>
   );
 };
-
-
-
