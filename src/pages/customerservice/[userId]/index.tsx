@@ -31,7 +31,6 @@ export default function CustomerProfile() {
     profileImage: null,
   });
   const user = authState.user?.user_metadata;
-  console.log(user);
   const userId = authState.userId;
   const email = authState.userEmail; // change to get user from supabase
 
@@ -41,16 +40,16 @@ export default function CustomerProfile() {
   const [isLoading, setIsLoading] = useState(true);
   //-----Fetch user------------------------------------------------------------
   const fetchUser = async () => {
-    console.log("check authState");
+    console.log("check authState-I------------");
     console.log(authState);
-    console.log("check email");
+    console.log("check email-I----------------");
     console.log(email);
     try {
       const respond = await axios.post("api/auth/getUser", {
         email,
       });
       const fetchedUser = respond.data.userInfo;
-      console.log("fetchUser");
+      console.log("fetched User");
       console.log(fetchedUser);
       setUserInfo({
         userId: fetchedUser.user_id,
@@ -66,24 +65,20 @@ export default function CustomerProfile() {
       console.log(error);
     }
   };
-  //-----Image Preview-----------------------------------------------------------------
-  // const handleImagePreview = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   //Upload picture to webpage
-  //   const file = e.target.files?.[0];
-  //   //สำหรับ display รูปก่อนอัพ
-  //   if (file) {
-  //     const previewURL = URL.createObjectURL(file);
-  //     console.log("previewURL", previewURL);
-  //     setPreviewImage(previewURL);
-  //     setProfileImage(file);
-  //   }
-  // };
+
   const handleRedirect = () => {
     router.push(`/customerservice/${userId}/editprofile`);
   };
 
   useEffect(() => {
-    fetchUser();
+    if (email) {
+      fetchUser();
+      console.log("check authState--II-----------");
+      console.log(authState);
+      console.log("check email--II---------------");
+      console.log(email);
+      console.log(user);
+    }
   }, [email]);
 
   return (
