@@ -6,6 +6,7 @@ import {
   CardExpiryElement,
   CardCvcElement,
 } from "@stripe/react-stripe-js";
+import axios from "axios";
 import { useRouter } from "next/router";
 import React, { forwardRef, useImperativeHandle, useState } from "react";
 
@@ -147,6 +148,48 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
         );
         setLoading(false);
         return;
+      }
+
+      const serviceInfo = sessionStorage.getItem("serviceInfoFormData");
+      const parsedServiceInfo = serviceInfo ? JSON.parse(serviceInfo) : null;
+      const selectedServices = sessionStorage.getItem("selectedServices");
+      const parsedSelectedServices = selectedServices
+        ? JSON.parse(selectedServices)
+        : [];
+
+      const userId = localStorage.getItem("userId") || null;
+      const scheduledDate = parsedServiceInfo?.selectedDate || null;
+      const paymentDate = new Date().toISOString();
+      const paymentMethodId = selectedPayment === "creditcard" ? 2 : 1;
+      const promotionId = promoCodes[promoCode] ? 1 : 0;
+      const subServices = parsedSelectedServices.map((service: any) => ({
+        subServiceId: service.id,
+        amount: service.quantity,
+      }));
+
+      const apiPayload = {
+        scheduledDate,
+        totalPrice: totalAmount,
+        paymentMethod: paymentMethodId,
+        paymentDate,
+        promotionId,
+        subServices,
+      };
+
+      // send payment data to api
+      const apiResponse = await axios.post(
+        `/api/customer/payment/${userId}`,
+        apiPayload
+      );
+
+      if (apiResponse.status === 201) {
+        alert("Payment successful! Thank you for your purchase.");
+        console.log("Redirecting to /paymentsuccess...");
+        setLoading(false);
+        router.push("/paymentsuccess");
+      } else {
+        setError(apiResponse.data.message || "Failed to process the payment.");
+        setLoading(false);
       }
 
       // send payment data to create payment intent
