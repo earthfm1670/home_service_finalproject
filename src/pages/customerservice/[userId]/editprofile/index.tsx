@@ -65,7 +65,7 @@ export default function CustomerProfile() {
     } catch (err) {
       const error = err as Error;
       console.log("fetch user error.");
-      console.log(error);
+      console.log(error.message);
     }
   };
   //-----Image Preview-----------------------------------------------------------------
@@ -99,9 +99,6 @@ export default function CustomerProfile() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     //Send form data to edit profile api
     e.preventDefault();
-    const dataBundle = e.target;
-    console.log("dataBundle");
-    console.log(dataBundle);
     const fd = new FormData();
     fd.append("userName", userName);
     fd.append("phoneNumber", phoneNumber);
@@ -125,7 +122,19 @@ export default function CustomerProfile() {
   };
 
   useEffect(() => {
-    fetchUser();
+    if (email) {
+      fetchUser();
+    }
+    console.log("---------------------------------------");
+    console.log("userName: ");
+    console.log(userName);
+    console.log("phoneNumber: ");
+    console.log(phoneNumber);
+    console.log("userAddress: ");
+    console.log(userAddress);
+    console.log("authState: ");
+    console.log(authState);
+    console.log("---------------------------------------");
   }, [email]);
 
   return (
@@ -147,7 +156,7 @@ export default function CustomerProfile() {
           ) : (
             <div className="profile-body rounded-lg bg-white h-11/12 w-11/12 flex flex-col justify-center items-center gap-6">
               <h3 className="user-header font-semibold text-2xl">
-                {userName} <span>| Edit Profile </span>
+                {userInfo.userName} <span>| Edit Profile </span>
               </h3>
               <form
                 action=""
