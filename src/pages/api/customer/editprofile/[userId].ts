@@ -1,9 +1,8 @@
-import { supabase, adminSupabase } from "@/utils/supabase";
+import { adminSupabase } from "@/utils/supabase";
 import { IncomingForm } from "formidable";
-import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
+import { promises as fs } from "fs";
 import { NextApiRequest, NextApiResponse } from "next";
-import { error } from "console";
 
 // Set API route to accept files
 export const config = {
@@ -36,73 +35,119 @@ export default async function editUserProfile(
       error: error.message,
     });
   }
-  console.log("fields: ", fields);
-  console.log("files: ", files);
+  //   console.log("fields: ", fields);
+  //   console.log("files: ", files);
 
-  //-----------------Main query-------------------
+  //-----------------Image Query-------------------
   if (fields && files) {
-    const userName = fields.userName[0];
-    const phoneNumber = fields.phoneNumber[0];
-    const address = fields.address[0] || "";
-   // const imageFile = files.image[0];
-    const imageFileBuffer = fs.readFileSync(files.image[0].filepath);
-    console.log("Parsed fields: ", fields);
-    console.log("Parsed files: ", files);
-    console.log("Name: ", userName);
-    console.log("Phone: ", phoneNumber);
-    console.log("Address: ", address);
-    console.log("Image: ", imageFileBuffer);
-    if (imageFileBuffer) {
+    const userName = fields.userName?.[0];
+    const phoneNumber = fields.phoneNumber?.[0];
+    const userAddress = fields.address?.[0] || "";
+    const file = files.image?.[0];
+    let imageFile;
+    let imagePath;
+
+    if (file) {
+      imageFile = await fs.readFile(file.filepath);
+    }
+
+    // const imageFile = files.image[0];
+    if (file && imageFile) {
+      console.log(imageFile);
       const { data: insertedImageUrl, error: insertedImageError } =
         await adminSupabase.storage
           .from("profile_pictures")
-          .upload(userId + "/" + uuidv4(), imageFileBuffer);
+          .upload(userId + "/" + uuidv4(), imageFile, {
+            contentType: "image/jpeg",
+            upsert: true,
+          });
       if (insertedImageUrl) {
         console.log("insert image successful");
+        imagePath = insertedImageUrl.fullPath;
+        console.log("image path:", imagePath);
       }
       if (insertedImageError) {
         console.log("insert image Error");
-        console.log(insertedImageError);
+        console.log(insertedImageError.message);
+        res.status(400).json({
+          message: "insert image fail",
+        });
+      }
+      //------With Image Main Query-----------------------------------
+      try {
+        const { data, error } = await adminSupabase
+          .from("users")
+          .upsert({
+            user_id: userId,
+            name: userName,
+            phone_number: phoneNumber,
+            address: userAddress,
+            profile_picture_url: `https://frqdeijtcguxcozmpucc.supabase.co/storage/v1/object/public/${imagePath}`,
+          })
+          .select();
+
+        if (data) {
+          console.log("Update profile with image success: ");
+          console.log(data);
+        }
+        if (error) {
+          console.log("Update profile with image fale: ");
+          console.log(error);
+          console.log("_____________________");
+          console.log(error.message);
+          res.status(400).json({
+            message: "Update profile fail",
+            error: error.message,
+          });
+        }
+      } catch (e) {
+        console.log(e);
+        const error = e as Error;
+        console.log(error.message);
+        res.status(500).json({
+          message: "Update profile fail",
+          error: error.message,
+        });
+      }
+      return res.status(200).json({
+        message: "Profile updated successfully",
+      });
+    } else {
+      //------Main Query Witout Image-----------------------------------
+      try {
+        const { data, error } = await adminSupabase
+          .from("users")
+          .upsert({
+            user_id: userId,
+            name: userName,
+            phone_number: phoneNumber,
+            address: userAddress,
+          })
+          .select();
+
+        if (data) {
+          console.log("Update profile without image success: ");
+          console.log(data);
+        }
+        if (error) {
+          console.log("Update profile without image fale: ");
+          console.log(error);
+          console.log("_____________________");
+        }
+      } catch (e) {
+        const error = e as Error;
+        console.log(error.message);
+        res.status(500).json({
+          message: "Update profile fail",
+          error: error.message,
+        });
       }
     }
   }
 
-  res.status(200).json({
-    message: "Profile updated successfully",
-    status: 200,
+  res.status(500).json({
+    error: "Internal server error",
   });
 }
-//---For Edge Runtime Version-------------------------------------------------------------------
-// //For Edge runtime
-// import { NextRequest, NextResponse } from "next/server";
-// export default async function edgeRuntimeEditUserProfile(req: NextRequest) {
-//   if (req.method !== "PUT") {
-//     console.log("Method not allowed");
-//     return NextResponse.json({ error: "Method not allowed", status: 503 });
-//   }
-//   const data = await req.formData();
-//   const file: File | null = data.get("image") as unknown as File;
-//   const byte = await file.arrayBuffer();
-//   const buffer = Buffer.from(byte);
-//   console.log("File check");
-//   console.log(file);
-//   console.log("Buffer check");
-//   console.log(buffer);
 
-//   //   const { userName, phoneNumber, address, image } = req.body;
-//   //   const userId = req;
-//   //   console.log("check profile edit api");
-//   //   console.log(req.body);
-//   //   console.log(userId);
-//   //   console.log(userName);
-//   //   console.log(phoneNumber);
-//   //   console.log(address);
-//   //   console.log(image);
-//   //   console.log("_______________________");
-//   return NextResponse.json({
-//     message: "Edit profile successfully",
-//     status: 200,
-//   });
-// }
-//------------------------------------------------------------
-//For Node runtime
+//------base image url >> `https://frqdeijtcguxcozmpucc.supabase.co/storage/v1/object/public/${imagePath}`,
