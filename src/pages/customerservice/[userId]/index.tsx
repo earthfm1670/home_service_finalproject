@@ -31,6 +31,7 @@ export default function CustomerProfile() {
     profileImage: null,
   });
   const user = authState.user?.user_metadata;
+  console.log(user);
   const userId = authState.userId;
   const email = authState.userEmail; // change to get user from supabase
 
