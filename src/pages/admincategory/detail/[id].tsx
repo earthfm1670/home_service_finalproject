@@ -1,4 +1,4 @@
-import Adminsidebar from "@/components/admin/adminsidebar";
+import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { useEffect, useState } from "react";
 import { useServices } from "@/components/ServicesContext";
 import { useRouter } from "next/router";
@@ -68,34 +68,32 @@ export default function AdminNavbar() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-  
+
     try {
       const updatedCategoryData = {
         category: inputCategory, // ข้อมูลหมวดหมู่ที่ต้องการอัพเดต
       };
       console.log("new input data for update check", updatedCategoryData);
-  
+
       // ใช้ axios.put เพื่ออัพเดตข้อมูล category ตาม id
       await axios.put(`/api/admincategorise/edit/${id}`, updatedCategoryData, {
         headers: { "Content-Type": "application/json" },
       });
-  
+
       // ถ้าอัพเดตสำเร็จ
-      router.push("/admincategory")
+      router.push("/admincategory");
       console.log("Updated category data", updatedCategoryData);
-  
+
       // ถ้าคุณต้องการให้ redirect ไปที่หน้าอื่น
       // router.push("/adminservice");
-  
     } catch (error) {
       console.log("Error updating category:", error);
     }
   };
-  
 
   const handleInputCategory = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputCategory(event.target.value);
-    setFetchDataCategories(event.target.value)
+    setFetchDataCategories(event.target.value);
   };
 
   // const updateCategory = async (id: number, category: string) => {
@@ -104,9 +102,9 @@ export default function AdminNavbar() {
   //     const response = await axios.put(`/api/admincategorise/edit/${id}`, {
   //       category: category, // ส่งข้อมูลใน body
   //     });
-  
+
   //     console.log("Response:", response.data); // แสดงผลลัพธ์ที่ได้รับจาก API
-  
+
   //   } catch (error) {
   //     console.error("Error updating category:", error);
   //   }
@@ -162,7 +160,7 @@ export default function AdminNavbar() {
     try {
       const response = await axios.get(`/api/admincategorise/selectedit/${id}`);
 
-      console.log("check data fetching all by id",response.data.data)
+      console.log("check data fetching all by id", response.data.data);
 
       setFetchDataCategories(response.data.data.category);
       console.log(
@@ -217,7 +215,7 @@ export default function AdminNavbar() {
       >
         <div className="flex flex-row w-full">
           <div>
-            <Adminsidebar />
+            <AdminSidebar />
           </div>
           <div className="w-full flex flex-col">
             {/* navbar for admin page */}
@@ -251,7 +249,7 @@ export default function AdminNavbar() {
                         className="border border-gray-300 h-11 rounded-lg w-[433px] pl-5 text-black font-normal"
                       /> */}
                       <div className="border-gray-300 h-11 rounded-lg w-[433px] items-center flex text-black font-normal">
-                      {fetchNameCatagory}
+                        {fetchNameCatagory}
                       </div>
                     </div>
                   </div>
@@ -260,43 +258,42 @@ export default function AdminNavbar() {
                   <div>
                     <div className="h-px w-full bg-gray-300 mb-10"></div>
                     <div className="flex flex-row gap-5 w-[400px]">
-              <div className="flex flex-col justify-between w-full gap-5 text-gray-500 font-medium">
-                <div>สร้างเมื่อ</div>
-                <div>แก้ไขล่าสุด</div>
-              </div>
-               <div className="flex flex-col justify-between w-full gap-5 ">
-                <div className="flex gap-2">
-                  <div>
-                    {new Date(updateAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                    })}
+                      <div className="flex flex-col justify-between w-full gap-5 text-gray-500 font-medium">
+                        <div>สร้างเมื่อ</div>
+                        <div>แก้ไขล่าสุด</div>
+                      </div>
+                      <div className="flex flex-col justify-between w-full gap-5 ">
+                        <div className="flex gap-2">
+                          <div>
+                            {new Date(updateAt).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "2-digit",
+                              day: "2-digit",
+                            })}
+                          </div>
+                          {new Date(updateAt).toLocaleTimeString("en-US", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          })}
+                        </div>
+                        <div className="flex gap-2 ">
+                          <div>
+                            {new Date(createAt).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "2-digit",
+                              day: "2-digit",
+                            })}
+                          </div>
+                          {new Date(createAt).toLocaleTimeString("en-US", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          })}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  {new Date(updateAt).toLocaleTimeString("en-US", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}
-                </div>
-                <div className="flex gap-2 ">
-                  <div>
-                    {new Date(createAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                    })}
-                  </div>
-                  {new Date(createAt).toLocaleTimeString("en-US", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}
-                </div>
-              </div> 
-            </div>
-                  </div>
-                  
                 </div>
               </div>
             </div>

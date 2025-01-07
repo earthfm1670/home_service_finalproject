@@ -1,4 +1,4 @@
-import Adminsidebar from "@/components/admin/adminsidebar";
+import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { useEffect, useState } from "react";
 import { useServices } from "@/components/ServicesContext";
 import { useRouter } from "next/router";
@@ -21,27 +21,24 @@ import {
 } from "@/components/ui/select";
 
 interface Category {
-    category: string;
-  }
+  category: string;
+}
 
 export default function AdminNavbar() {
   const [showPopUpSubmit, setShowPopUpSubmit] = useState<Boolean>(false);
-  const [inputCategory, setInputCategory] = useState<string>()
-  console.log("input category for check",inputCategory)
-
+  const [inputCategory, setInputCategory] = useState<string>();
+  console.log("input category for check", inputCategory);
 
   const router = useRouter();
-
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    
     try {
       const newInputData = {
         category: inputCategory,
       };
-      console.log("new input data for create check",newInputData)
+      console.log("new input data for create check", newInputData);
 
       // await axios.post(`/api/admin/management/create`, newInputData);
       await axios.post(`/api/admincategorise/create`, newInputData, {
@@ -56,10 +53,9 @@ export default function AdminNavbar() {
     }
   };
 
-    const handleInputCategory = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setInputCategory(event.target.value);
+  const handleInputCategory = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputCategory(event.target.value);
   };
-
 
   return (
     <>
@@ -74,7 +70,7 @@ export default function AdminNavbar() {
       >
         <div className="flex flex-row w-full">
           <div>
-            <Adminsidebar />
+            <AdminSidebar />
           </div>
           <div className="w-full flex flex-col">
             {/* navbar for admin page */}
@@ -112,7 +108,7 @@ export default function AdminNavbar() {
                       <label htmlFor="ชื่อบริการ">ชื่อหมวดหมู่</label>
                       <input
                         type="text"
-                         onChange={handleInputCategory}
+                        onChange={handleInputCategory}
                         className="border border-gray-300 h-11 rounded-lg w-[433px] pl-5 text-black font-normal"
                       />
                     </div>

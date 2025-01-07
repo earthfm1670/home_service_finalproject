@@ -1,4 +1,4 @@
-import Adminsidebar from "@/components/admin/adminsidebar";
+import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { supabase } from "@/utils/supabase";
 import { useEffect, useState } from "react";
 import { useServices } from "@/components/ServicesContext";
@@ -20,7 +20,7 @@ export default function AdminNavbar() {
     <>
       <div className="flex flex-row w-full">
         <div>
-          <Adminsidebar />
+          <AdminSidebar />
         </div>
         <div className="w-full flex flex-col">
           {/* navbar for admin page */}
@@ -77,7 +77,7 @@ export const AdminserviceIndex = ({ search }: { search: string | null }) => {
   const fetchUser = async () => {
     try {
       const response = await axios.get(
-        `/api/admincategorise/getCategories?search=${search}`
+        `/api/admincategorise/get-categories?search=${search}`
       );
       setGetCategoriesData(response.data.data);
     } catch (error) {
@@ -281,7 +281,6 @@ function IconTrash({
       const response = await axios.delete(
         `/api/admincategorise/deletecategory/${id}`
       );
-
 
       if (response.status === 201) {
         console.log(`Service with ID ${id} has been deleted.`);

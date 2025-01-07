@@ -115,7 +115,7 @@ export default function Login() {
                   <div className="h-3">
                     {emailError && (
                       <p className="text-red-500 text-sm">
-                        อีเมลต้องมี @ และ .com
+                        อีเมลไม่ถูกต้อง
                       </p>
                     )}
                   </div>
@@ -144,7 +144,7 @@ export default function Login() {
                   <div className="h-3">
                     {passwordError && (
                       <p className="text-red-500 text-sm">
-                        พาสเวิร์ดต้องมีอย่างน้อย 12 ตัว
+                        พาสเวิร์ดไม่ถูกต้อง
                       </p>
                     )}
                   </div>
