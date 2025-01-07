@@ -9,13 +9,19 @@ export default async function createPromotion(
     return res.status(503).json({ error: "method not allow" });
   }
   console.log("Create promotion I");
-  const { promotionCode, discountValue } = req.body;
+  const { promotionCode, discountValue, useLimit } = req.body;
   try {
     const { data: InsertPromotion, error: InsertPromotionError } =
       await adminSupabase
         .from("promotion_codes")
         .insert([
-          { promotion_code: promotionCode, discount_value: discountValue },
+          {
+            promotion_code: promotionCode,
+            discount_value: discountValue,
+            usage_limit: useLimit,
+            usage_pool: useLimit,
+            promotion_status: "available",
+          },
         ])
         .select();
 

@@ -1,7 +1,10 @@
 import { supabase } from "@/utils/supabase";
-import { NextApiResponse } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 
-export default async function getAllPromotionCode(res: NextApiResponse) {
+export default async function getAllPromotionCode(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   try {
     const { data, error } = await supabase.from("promotion_codes").select();
     if (data) {

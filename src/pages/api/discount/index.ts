@@ -14,7 +14,7 @@ export default async function useDiscountCode(
     // 1. validate promotion code: valid and use count remain
     const { data: hasPromotion, error: hasPromotionError } = await supabase
       .from("promotion_codes")
-      .select(`promotion_id, discount_value, promotion_status`)
+      .select(`promotion_id, promotion_code , discount_value, promotion_status`)
       .eq(`promotion_code`, promotionCode)
       .single();
 
