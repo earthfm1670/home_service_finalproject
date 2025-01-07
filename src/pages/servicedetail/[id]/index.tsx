@@ -125,11 +125,19 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
     }, 0);
   };
 
-  const getSelectedServices = () => {
-    return service.sub_services.filter(
-      (subService) => (quantities[subService.id]?.quantity || 0) > 0
-    );
-  };
+const getSelectedServices = () => {
+  return service.sub_services
+    .filter((subService) => (quantities[subService.id]?.quantity || 0) > 0)
+    .map((subService) => ({
+      ...subService,
+      quantity: quantities[subService.id]?.quantity || 0,
+      discount: 0, // You may want to calculate this if there's a discount logic
+      totalAmount:
+        (quantities[subService.id]?.quantity || 0) * subService.unit_price,
+      canProceed: true, // This should be true if the service is selected
+      handleProceed: handleProceed, // Use the same handleProceed function
+    }));
+};
 
   const getQuantityDisplay = (subServiceId: number) => {
     return quantities[subServiceId]?.quantity || 0;
@@ -166,6 +174,7 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
       router.push(`/servicedetail/${id}/info`);
     }
   };
+  
 
   return (
     <div className="min-h-screen bg-gray-100 pb-32">
@@ -199,11 +208,17 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
         getSelectedServices={getSelectedServices}
         getQuantityDisplay={getQuantityDisplay}
         handleProceed={handleProceed}
+        disabled={!canProceed}
+        discount={0}
+        totalAmount={calculateTotal()}
+        backButtonText="ย้อนกลับ"
+        proceedButtonText="ดำเนินการต่อ"
       />
 
       <NavigationButtons
         canProceed={canProceed}
         handleProceed={handleProceed}
+        disabled={!canProceed}
       />
     </div>
   );

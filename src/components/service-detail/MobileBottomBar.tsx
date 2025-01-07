@@ -28,22 +28,39 @@ interface MobileBottomBarProps {
   backButtonText: string;
   proceedButtonText: string;
 }
+interface LocationInfo {
+  date: string | Date | null;
+  time: string | null;
+  address: string;
+  subDistrict: string;
+  district: string;
+  province: string;
+  additionalDetails?: string;
+}
 
 export const MobileBottomBar = ({
   canProceed,
-  disabled,
+  // disabled,
   calculateTotal,
   getSelectedServices,
   getQuantityDisplay,
   handleProceed,
   locationInfo,
-  isServiceInfoPage = false, // Add this new prop with a default value
+  isServiceInfoPage = false,
   discount,
   totalAmount,
   backButtonText = "ย้อนกลับ",
   proceedButtonText = "ดำเนินการต่อ",
 }: MobileBottomBarProps) => {
   const router = useRouter();
+  
+  const parsedLocationInfo = locationInfo
+    ? {
+        ...locationInfo,
+        date: locationInfo.date ? new Date(locationInfo.date) : null,
+      }
+    : undefined;
+
 
   return (
     <div className="fixed bottom-0 left-0 right-0 lg:hidden">
@@ -52,7 +69,7 @@ export const MobileBottomBar = ({
         getSelectedServices={getSelectedServices}
         getQuantityDisplay={getQuantityDisplay}
         calculateTotal={calculateTotal}
-        locationInfo={locationInfo}
+        locationInfo={parsedLocationInfo}
         discount={discount}
         totalAmount={totalAmount}
       />

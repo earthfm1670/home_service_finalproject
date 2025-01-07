@@ -127,7 +127,7 @@ export const DesktopSummary: React.FC<DesktopSummaryProps> = ({
           <div className="space-y-4">
             {getSelectedServices().map((subService) => {
               const quantity = getQuantityDisplay(subService.id);
-              const total = subService.unit_price * quantity;
+              // const total = subService.unit_price * quantity;
               return (
                 <div
                   key={subService.id}
