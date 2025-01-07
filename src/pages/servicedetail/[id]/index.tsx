@@ -197,6 +197,7 @@ const getSelectedServices = () => {
               getQuantityDisplay={getQuantityDisplay}
               calculateTotal={calculateTotal}
               getPriceDisplay={getPriceDisplay}
+              totalAmount={calculateTotal()} // Add this line
             />
           </div>
         </div>

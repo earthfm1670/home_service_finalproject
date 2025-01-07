@@ -52,14 +52,14 @@ export const MobileSummary = ({
   discount?: number;
 }) => {
   const [isOrderSummaryOpen, setIsOrderSummaryOpen] = useState(false);
-  const [sessionData, setSessionData] = useState<{
-    totalAmount: number;
-  } | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  // const [sessionData, setSessionData] = useState<{
+  //   totalAmount: number;
+  // } | null>(null);
+  // const [loading, setLoading] = useState<boolean>(true);
   const preDiscountTotal = totalAmount;
   const discountAmount = preDiscountTotal * discount;
   const router = useRouter();
-  const { timeLeft, isTimerExpired } = useTimer();
+  const { timeLeft } = useTimer();
   const [redirectCountdown, setRedirectCountdown] = useState(5);
   const [isExpired, setIsExpired] = useState(false);
 
@@ -116,10 +116,12 @@ export const MobileSummary = ({
                 {getSelectedServices().map((subService) => (
                   <div
                     key={subService.id}
-                    className="flex justify-between items-center"
+                    className="flex justify-between text-sm mb-2"
                   >
-                    <span className="text-sm">{subService.description}</span>
-                    <span className="text-sm text-blue-600">
+                    <span className="text-sm flex-grow break-words">
+                      {subService.description}
+                    </span>
+                    <span className="text-sm text-blue-600 flex items-center gap-3 ml-2 text-right text-nowrap">
                       {getQuantityDisplay(subService.id)} รายการ
                     </span>
                   </div>

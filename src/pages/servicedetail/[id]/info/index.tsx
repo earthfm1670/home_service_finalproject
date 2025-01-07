@@ -468,6 +468,7 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
             locationInfo={locationInfo}
             isServiceInfoPage={true}
             isServiceDetailPage={true}
+            totalAmount={selectedServices?.totalAmount || 0}
           />
         </div>
       </div>
