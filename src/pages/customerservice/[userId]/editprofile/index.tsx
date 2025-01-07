@@ -96,7 +96,7 @@ export default function CustomerProfile() {
     router.push(`/customerservice/${userId}`);
   };
   //------Form Submission-----------------------------------------------------------------------------
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     //Send form data to edit profile api
     e.preventDefault();
     const fd = new FormData();
@@ -110,6 +110,14 @@ export default function CustomerProfile() {
     console.log(Array.from(fd));
     for (const i of fd) {
       console.log(i);
+    }
+    try {
+      const result = await axios.put(`/api/customer/editprofile/${userId}`, fd);
+      console.log(result);
+    } catch (e) {
+      const error = e as Error;
+      console.log("send request fail");
+      console.log(error.message);
     }
     //----------WORK------------------
 
