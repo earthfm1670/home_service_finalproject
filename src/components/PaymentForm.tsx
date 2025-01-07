@@ -326,7 +326,7 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="block w-full h-[44px] border border-gray-300 rounded-md py-1 placeholder:text-gray-500 placeholder:text-[16px] placeholder:font-normal placeholder:px-2"
+                  className="block w-full h-[44px] border border-gray-300 rounded-md py-1 px-3 placeholder:text-gray-500 placeholder:text-[16px] placeholder:font-normal"
                   placeholder="กรุณากรอกชื่อบนบัตร"
                 ></input>
               </label>
