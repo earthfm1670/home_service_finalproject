@@ -19,32 +19,32 @@ const middlewareMap: MiddlewareMap = {
 };
 
 export async function middleware(req: NextRequest) {
-  // 1. validate token
-  const pathName = req.nextUrl.pathname;
-  const url = req.url;
-  await isToken(req);
-  // 2. validate role
-  await roleCheck(req);
-  //--------Mapping-------------------
-  for (const path in middlewareMap) {
-    if (req.nextUrl.pathname.startsWith(path)) {
-      console.log(
-        "******************Loop working*******************************"
-      );
-      const handler = middlewareMap[path];
-      if (handler) {
-        return handler(req);
-      }
-    }
-  }
-  //---------------------------
-  // 3. api protection
-  if (pathName.startsWith(`/api`)) {
-    console.log("try to connect API?");
-    await authorizationCheck(req);
-  }
+  // // 1. validate token
+  // const pathName = req.nextUrl.pathname;
+  // const url = req.url;
+  // await isToken(req);
+  // // 2. validate role
+  // await roleCheck(req);
+  // //--------Mapping-------------------
+  // for (const path in middlewareMap) {
+  //   if (req.nextUrl.pathname.startsWith(path)) {
+  //     console.log(
+  //       "******************Loop working*******************************"
+  //     );
+  //     const handler = middlewareMap[path];
+  //     if (handler) {
+  //       return handler(req);
+  //     }
+  //   }
+  // }
+  // //---------------------------
+  // // 3. api protection
+  // if (pathName.startsWith(`/api`)) {
+  //   console.log("try to connect API?");
+  //   await authorizationCheck(req);
+  // }
 
-  console.log(`path name: `, pathName);
-  console.log(`url: `, url);
+  // console.log(`path name: `, pathName);
+  // console.log(`url: `, url);
   return NextResponse.next();
 }

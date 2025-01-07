@@ -70,7 +70,7 @@ export default function Login() {
     try {
       adminLogin(email, password);
       // นำทางไปที่หน้าเพจที่เราต้องการ
-      router.push("/admincategory");
+      router.push("/adminservice");
     } catch (error) {
       // ไม่พบข้อมูล email || password ในฐานข้อมูล
       console.error("Invalid email or password");

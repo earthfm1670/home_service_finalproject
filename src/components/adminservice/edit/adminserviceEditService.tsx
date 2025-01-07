@@ -3,6 +3,8 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import IconPicture from "@/components/ui/IconPicture";
 import IconPlusDefaultColor from "@/components/ui/IconPluseDefaultColor";
+import IconTrash from "@/components/ui/IconTrash";
+import IconTrashRed from "@/components/ui/IconTrashRed";
 import {
   Select,
   SelectContent,
@@ -60,6 +62,9 @@ export const AdminserviceEditService = ({
   const [serviceCategoryData, setServiceCategoryData] = useState<String>();
   const [createAt, setCreateAt] = useState<string>(new Date().toISOString());
   const [updateAt, setUpdateAt] = useState<string>(new Date().toISOString());
+
+  const [deleteServiceButton, setDeleteServiceButton] =
+    useState<boolean>(false);
 
   // add new row for subservice
   const addSubService = () => {
@@ -234,7 +239,7 @@ export const AdminserviceEditService = ({
 
   return (
     <>
-      <div className="min-h-screen w-full flex justify-center items-start py-12 min-w-[1200px] bg-gray-100">
+      <div className="min-h-screen w-full flex flex-col justify-center items-center py-12 min-w-[1200px] bg-gray-100 gap-5">
         <div className="flex flex-col w-[1120px] border bg-white border-gray-300 rounded-lg overflow-x-auto gap-10 py-12 px-7">
           {/* กล่องบน */}
           {/* ชื่อบริการ */}
@@ -443,7 +448,21 @@ export const AdminserviceEditService = ({
               </div>
             </div>
           </div>
-<div>abc</div>
+        </div>
+        <div className="w-[1120px] flex flex-row justify-end">
+          <button
+            className="flex flex-row items-center gap-2 font-medium underline cursor-pointer text-gray-500"
+            onMouseDown={() => setDeleteServiceButton(true)}
+            onMouseUp={() => setDeleteServiceButton(false)}
+            onMouseLeave={() => setDeleteServiceButton(false)} // Reset เมื่อเมาส์ออกจากปุ่ม
+          >
+            {deleteServiceButton ? <IconTrashRed /> : <IconTrash />}
+            <span
+              className={deleteServiceButton ? "text-red-500" : "text-gray-500"}
+            >
+              ลบบริการ
+            </span>
+          </button>
         </div>
       </div>
       {/* Popup for delete image */}
