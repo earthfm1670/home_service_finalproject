@@ -355,10 +355,10 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
 
           if (province) {
             const amphure = province.amphure.find(
-              (a) => a.name_th === parsedPaymentData.district
+              (a: {name_th: string}) => a.name_th === parsedPaymentData.district
             );
             const tambon = amphure?.tambon.find(
-              (t) => t.name_th === parsedPaymentData.subDistrict
+              (t: {name_th: string}) => t.name_th === parsedPaymentData.subDistrict
             );
 
             setSelected({
@@ -474,14 +474,38 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
 
       <MobileBottomBar
         canProceed={isFormComplete}
+        disabled={!isFormComplete}
         calculateTotal={() => selectedServices?.totalAmount || 0}
-        getSelectedServices={() => selectedServices?.selections || []}
+        getSelectedServices={() =>
+          selectedServices?.selections.map((s) => ({
+            sub_service_id: s.id,
+            id: s.id,
+            description: s.description,
+            unit: s.unit || "",
+            unit_price: s.unit_price,
+          })) || []
+        }
         getQuantityDisplay={(id) =>
           selectedServices?.selections.find((s) => s.id === id)?.quantity || 0
         }
         handleProceed={handleProceed}
-        locationInfo={locationInfo}
+        locationInfo={{
+          date: selectedDate,
+          time: selectedTime,
+          address: address,
+          province:
+            provinces.find((p) => p.id === selected.province_id)?.name_th || "",
+          district:
+            amphures.find((a) => a.id === selected.amphure_id)?.name_th || "",
+          subDistrict:
+            tambons.find((t) => t.id === selected.tambon_id)?.name_th || "",
+          additionalDetails: additionalDetails,
+        }}
         isServiceInfoPage={true}
+        discount={0} // Add the appropriate discount value if available
+        totalAmount={selectedServices?.totalAmount || 0}
+        backButtonText="ย้อนกลับ"
+        proceedButtonText="ดำเนินการต่อ"
       />
 
       <NavigationButtons
@@ -501,6 +525,7 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
         }}
         handleProceed={handleProceed}
         canProceed={isFormComplete}
+        disabled={!isFormComplete}
       />
     </div>
   );
