@@ -12,6 +12,7 @@ interface UserInfo {
   userId: null | string;
   userName: null | string;
   userPhone: null | string;
+  profileImage: null | string;
 }
 export default function CustomerProfile() {
   const { authState } = useAuth();
@@ -45,6 +46,7 @@ export default function CustomerProfile() {
     userId: null,
     userName: null,
     userPhone: null,
+    profileImage: null,
   });
   const fetchUser = async () => {
     console.log("check authState");
@@ -60,6 +62,7 @@ export default function CustomerProfile() {
         userId: fetchedUser.user_id,
         userName: fetchedUser.name,
         userPhone: fetchedUser.phone_number,
+        profileImage: fetchedUser.profile_picture_url,
       });
       setIsLoading(false);
     } catch (err) {
@@ -172,9 +175,9 @@ export default function CustomerProfile() {
                 className="form flex flex-col items-center justify-center gap-6">
                 <div className="picture-box flex flex-col lg:flex-row justify-center items-center gap-4">
                   <div className="empty-box rounded-full w-32 h-32 bg-white">
-                    {previewImage ? (
+                    {userInfo.profileImage ? (
                       <img
-                        src={previewImage}
+                        src={userInfo.profileImage}
                         alt="preview"
                         className="w-full h-full object-cover rounded-lg"
                       />
