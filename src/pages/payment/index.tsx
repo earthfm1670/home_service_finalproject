@@ -26,6 +26,7 @@ import NavigationButtons from "@/components/service-detail/NavigationButtons";
 const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
   const router = useRouter();
   const formRef = useRef(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [service, setService] = useState<Service | null>(
     initialService || null
   );
@@ -177,6 +178,7 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
   };
 
   const handleProceed = () => {
+    setIsLoading(true);
     if (formRef.current) {
       formRef.current.handleSubmit(new Event("submit"));
     }
@@ -186,31 +188,40 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
       return;
     }
 
-    const discountedTotal = calculateTotal();
-
-    console.log("Selected Services Before Nav:", selectedServices);
-    console.log("date", locationInfo.date);
-    console.log("time", locationInfo.time);
-    console.log("address", locationInfo.address);
-    console.log("totalAmount", discountedTotal.toFixed(2));
-    router.push({
-      pathname: "/paymentsuccess",
-      query: {
-        selectedServices: JSON.stringify(selectedServices),
-        date: locationInfo.date,
-        time: locationInfo.time,
-        address: locationInfo.address,
-        subDistrict: locationInfo.subDistrict,
-        district: locationInfo.district,
-        province: locationInfo.province,
-        totalAmountAfterDiscount: discountedTotal.toFixed(2),
-      },
-    });
+    setTimeout(() => {
+      setIsLoading(false);
+      const discountedTotal = calculateTotal();
+      console.log("Selected Services Before Nav:", selectedServices);
+      console.log("date", locationInfo.date);
+      console.log("time", locationInfo.time);
+      console.log("address", locationInfo.address);
+      console.log("totalAmount", discountedTotal.toFixed(2));
+      router.push({
+        pathname: "/paymentsuccess",
+        query: {
+          selectedServices: JSON.stringify(selectedServices),
+          date: locationInfo.date,
+          time: locationInfo.time,
+          address: locationInfo.address,
+          subDistrict: locationInfo.subDistrict,
+          district: locationInfo.district,
+          province: locationInfo.province,
+          totalAmountAfterDiscount: discountedTotal.toFixed(2),
+        },
+      });
+    }, 3000);
   };
 
   return (
     <StripeContext>
-      <div className="bg-gray-100">
+      {/* screen loading effect */}
+      {isLoading && (
+        <>
+          <div className="fixed inset-0 bg-white bg-opacity-90 z-50 flex items-center justify-center"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-white border-opacity-50"></div>
+        </>
+      )}
+      <div className={`bg-gray-100 ${isLoading ? "hidden" : ""}`}>
         <div className="flex flex-col h-min-screen">
           {/* <h1>Payment Page</h1> */}
           <Navbar />
