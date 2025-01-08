@@ -262,13 +262,13 @@ export default function AdminNavbar() {
                       <div className="flex flex-col justify-between w-full gap-5 ">
                         <div className="flex gap-2">
                           <div>
-                            {new Date(updateAt).toLocaleDateString("en-US", {
+                            {new Date().toLocaleDateString("th-TH", {
                               year: "numeric",
                               month: "2-digit",
                               day: "2-digit",
                             })}
                           </div>
-                          {new Date(updateAt).toLocaleTimeString("en-US", {
+                          {new Date(createAt).toLocaleTimeString("en-US", {
                             hour: "2-digit",
                             minute: "2-digit",
                             hour12: true,
@@ -276,13 +276,13 @@ export default function AdminNavbar() {
                         </div>
                         <div className="flex gap-2 ">
                           <div>
-                            {new Date(createAt).toLocaleDateString("en-US", {
+                            {new Date(updateAt).toLocaleDateString("th-TH", {
                               year: "numeric",
                               month: "2-digit",
                               day: "2-digit",
                             })}
                           </div>
-                          {new Date(createAt).toLocaleTimeString("en-US", {
+                          {new Date(updateAt).toLocaleTimeString("en-US", {
                             hour: "2-digit",
                             minute: "2-digit",
                             hour12: true,

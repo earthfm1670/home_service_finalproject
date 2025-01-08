@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import IconPicture from "@/components/ui/IconPicture";
-import IconPlusDefaultColor from "@/components/ui/IconPluseDefaultColor";
 import IconTrash from "@/components/ui/IconTrash";
 import IconTrashRed from "@/components/ui/IconTrashRed";
 import {
@@ -14,8 +13,6 @@ import {
 } from "@/components/ui/select";
 import { AdminserviceEditSubService } from "./adminserviceEditSubservice";
 import { AdminDeleteImagePopUp } from "@/components/admin/admin-delete-image-popup";
-import IconX from "@/components/ui/IconX";
-import IconWarning from "@/components/ui/Iconwarning";
 import { AdminServiceEditDate } from "./adminserviceEditDate";
 import { AdminButtonAddSubService } from "@/components/admin/admin-button-add-subservice";
 import { AdminDeleteServicePopUp } from "@/components/admin/admin-delete-service-popup";
@@ -35,6 +32,8 @@ interface AdminServiceAddIndexProps {
   setSubserviceEmpty: (value: boolean) => void;
   setImageEmpty: (value: boolean) => void;
   setNameTopic: (value: string) => void;
+  setOldImageURL: (value: string) => void;
+  
 }
 
 export const AdminserviceEditService = ({
@@ -52,13 +51,14 @@ export const AdminserviceEditService = ({
   setImageEmpty,
   subServiceEmpty,
   setSubserviceEmpty,
+  setOldImageURL,
 }: AdminServiceAddIndexProps) => {
   const router = useRouter();
   const { id } = router.query;
 
   // state for store subservice
   const [fetchSubservices, setFetchSubservices] = useState<any[]>([]);
-  console.log("fetchSubservices", fetchSubservices);
+  // console.log("fetchSubservices", fetchSubservices);
 
   // store all of data categories for show
   const [fetchDataCategories, setFetchDataCategories] = useState<any>([]);
@@ -75,32 +75,6 @@ export const AdminserviceEditService = ({
       { description: "", unit: "", unit_price: null },
     ]);
   };
-
-  // function for filter idx that not match with index
-  // const deleteSubservice = (index: number) => {
-  //   const updatedSubservices = fetchSubservices
-  //     .filter((_, idx) => idx !== index) // ลบ item ที่มี index ตรงกัน
-  //     .map((subservice) => ({
-  //       ...subservice, // คัดลอกข้อมูลเดิม
-  //       unit_price: subservice.unit_price === "" || subservice.unit_price === 0 ? null : null,
-  //       // รีเซ็ตค่า unit_price ที่เป็น 0 หรือ "" ให้เป็น null
-  //     }));
-
-  //   console.log("Before:", fetchSubservices); // ดูค่าก่อนลบ
-  //   console.log("After:", updatedSubservices); // ดูค่าหลังจากลบ
-
-  //   setFetchSubservices(updatedSubservices); // อัปเดตข้อมูลใหม่
-  // };
-
-  // const deleteSubservice = (index: number) => {
-  //   const updatedSubservices = [
-  //     ...fetchSubservices.slice(0, index),
-  //     ...fetchSubservices.slice(index + 1)
-  //   ];
-  //   console.log("Before:", fetchSubservices);
-  //   console.log("After:", updatedSubservices);
-  //   setFetchSubservices(updatedSubservices); // อัปเดตค่าหลังการลบ
-  // };
 
   const deleteSubservice = (index: number) => {
     const updatedSubservices = fetchSubservices.filter(
@@ -240,6 +214,7 @@ export const AdminserviceEditService = ({
       setInputTitle(response.data.service_name);
       setInputCat(response.data.category_id);
       SetInputimage(response.data.service_picture_url);
+      setOldImageURL(response.data.service_picture_url);
       // console.log(
       //   "check refresh page for catrgories_id",
       //   response.data.categories_id
@@ -266,13 +241,7 @@ export const AdminserviceEditService = ({
     }
   }, [id]);
 
-  // const [deleteServiceButton, setDeleteServiceButton] =
-  //   useState<boolean>(false);
 
-  // const deleteServiceButton = (value: boolean) => {
-  //   // ใส่ logic ของฟังก์ชันที่นี่
-  //   console.log(value);
-  // };
   const [deleteServiceButton, setDeleteServiceButton] =
     useState<boolean>(false);
 

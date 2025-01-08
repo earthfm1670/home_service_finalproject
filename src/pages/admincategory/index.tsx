@@ -153,7 +153,7 @@ export const AdminserviceIndex = ({ search }: { search: string | null }) => {
                         </td>
                         <td className="px-6">
                           {new Date(category.created_at).toLocaleDateString(
-                            "en-US",
+                            "th-TH",
                             {
                               year: "numeric",
                               month: "2-digit",
@@ -171,7 +171,7 @@ export const AdminserviceIndex = ({ search }: { search: string | null }) => {
                         </td>
                         <td className="px-6">
                           {new Date(category.updated_at).toLocaleDateString(
-                            "en-US",
+                            "th-TH",
                             {
                               year: "numeric",
                               month: "2-digit",

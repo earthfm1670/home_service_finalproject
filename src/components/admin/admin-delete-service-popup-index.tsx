@@ -1,29 +1,31 @@
 import IconX from "../ui/IconX";
 import IconWarning from "../ui/Iconwarning";
 
-interface AdminDeleteServicePopUp {
+interface AdminDeleteServicePopUpIndex {
   deleteServiceButton: boolean;
   setDeleteServiceButton: React.Dispatch<React.SetStateAction<boolean>>;
   inputTitle: string;
   handleDelete: (
     id: string | string[] | undefined,
+    index: number
   ) => Promise<void>;
   id: string | string[] | undefined;
-
+  index: number
 }
 
-export function AdminDeleteServicePopUp({
+export function AdminDeleteServicePopUpIndex({
   deleteServiceButton,
   setDeleteServiceButton,
   inputTitle,
   handleDelete,
   id,
-
-}: AdminDeleteServicePopUp) {
+  index,
+}: AdminDeleteServicePopUpIndex) {
   return (
     <>
       {deleteServiceButton && (
         <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50">
+            
           <div className="bg-white w-[360px] h-auto flex flex-col items-center rounded-xl p-4 gap-3">
             <div className="w-full">
               <div
@@ -44,7 +46,7 @@ export function AdminDeleteServicePopUp({
             <div className="flex flex-row gap-3">
               <button
                 className="bg-defaultColor text-white w-28 py-2 rounded-lg font-medium"
-                onClick={() => handleDelete(id)}
+                onClick={() => handleDelete(id, index)}
                 type="button"
               >
                 ลบรายการ
