@@ -7,13 +7,6 @@ import axios from "axios";
 import ProfileSkeleton from "@/components/customer/profileSkeleton";
 import { useRouter } from "next/router";
 
-//FIXME address on user meta data / database table
-interface UserInfo {
-  userId: null | string;
-  userName: null | string;
-  userPhone: null | string;
-  profileImage: null | string;
-}
 export default function CustomerProfile() {
   const { authState } = useAuth();
 
