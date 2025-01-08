@@ -1,12 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "@/utils/supabase";
 
-const formatPrice = (price: number): string => {
-  return price.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-};
+// const formatPrice = (price: number): string => {
+//   return price.toLocaleString("en-US", {
+//     minimumFractionDigits: 2,
+//     maximumFractionDigits: 2,
+//   });
+// };
 
 export default async function handlerHandyman(
   req: NextApiRequest,
@@ -23,7 +23,7 @@ export default async function handlerHandyman(
       let dbQuery = supabase
         .from("order_list")
         .select(
-          ` id, booking_id, sub_services_id, amount, order_price, sub_services:sub_services ( description, unit, unit_price, services:services ( service_name ) ), booking:bookings ( booked_at, completed_at, status_id, total_price, address, booking_status:booking_status ( status_name ) ) `,
+          ` id, booking_id, sub_services_id, amount, order_price, sub_services:sub_services ( description, unit, unit_price, services:services ( service_name ) ), booking:bookings ( booked_at, completed_at, status_id, total_price, address, booking_status:booking_status ( status_name ), user_id, users ( name ), staff_id, staffs ( name ) ) `,
           { count: "exact" }
         );
 
@@ -48,7 +48,7 @@ export default async function handlerHandyman(
 
       // Format response
 
-      const formattedBookings = paginatedBookings.map((booking: any) => ({
+      const bookingsData = paginatedBookings.map((booking: any) => ({
         id: booking.id,
         booking_id: booking.booking_id,
         service_name: booking.sub_services.services.service_name,
@@ -62,19 +62,14 @@ export default async function handlerHandyman(
         status_name: booking.booking?.booking_status?.status_name,
         total_price: booking.booking?.total_price,
         address: booking.booking?.address,
-        // booking_id: booking.booking_id,
-        // booked_at: booking.booked_at,
-        // completed_at: booking.completed_at,
-        // status_name: booking.status_id,
-        // total_price: booking.total_price,
-        // address: booking.address,
-        // user_name: booking.users.name,
+        user_name: booking.booking?.users.name,
+        staff_name: booking.booking?.staffs.name,
       }));
 
-      console.log("Formatted Bookings:", formattedBookings); // Debugging log
+      console.log("Formatted Bookings:", bookingsData); // Debugging log
 
       res.status(200).json({
-        data: formattedBookings,
+        data: bookingsData,
         totalCount,
         currentPage: page,
         totalPages,
