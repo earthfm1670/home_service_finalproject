@@ -157,12 +157,12 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
         ? JSON.parse(selectedServices)
         : [];
 
-      const userId = localStorage.getItem("userId") || null;
+      const userId = localStorage.getItem("userId") || null; //MARK <<< เช็คว่า userId มีจริงไหม ถ้าไม่มี เอาจาก params หรือ pares localstorage.user แล้วดูที่ sub 
       const scheduledDate = parsedServiceInfo?.selectedDate || null;
       const paymentDate = new Date().toISOString();
       const paymentMethodId = selectedPayment === "creditcard" ? 2 : 1;
-      const promotionId = promoCodes[promoCode] ? 1 : 0;
-      const subServices = parsedSelectedServices.map((service: any) => ({
+      const promotionId = promoCodes[promoCode] ? 1 : 0; //MARK <<< เปลี่ยนเป็นค่าของ promotion_id ถ้าไม่มี เป็น 0
+      const subServices = parsedSelectedServices.selections.map((service: any) => ({ //MARK <<< เพิ่ม selections เพื่อเข้าถึง array
         subServiceId: service.id,
         amount: service.quantity,
       }));
@@ -333,14 +333,12 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
           className={`w-[147px] h-[95px] lg:w-[331px] lg:h-[86px] border rounded-sm flex flex-col justify-center items-center cursor-pointer ${
             selectedPayment === "qrcode" ? "bg-blue-100 border-blue-600" : ""
           }`}
-          onClick={() => handlePaymentMethodChange("qrcode")}
-        >
+          onClick={() => handlePaymentMethodChange("qrcode")}>
           {selectedPayment === "qrcode" ? (
             <>
               <img
                 src="/image/qrclicked.svg"
-                className="w-[35px] h-[35px]"
-              ></img>
+                className="w-[35px] h-[35px]"></img>
               <p className="text-[16px] text-blue-600 font-semibold">
                 พร้อมเพย์
               </p>
@@ -361,14 +359,12 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
               ? "bg-blue-100 border-blue-600"
               : ""
           }`}
-          onClick={() => handlePaymentMethodChange("creditcard")}
-        >
+          onClick={() => handlePaymentMethodChange("creditcard")}>
           {selectedPayment === "creditcard" ? (
             <>
               <img
                 src="/image/creditcardclicked.svg"
-                className="w-[35px] h-[35px]"
-              ></img>
+                className="w-[35px] h-[35px]"></img>
               <p className="text-[16px] text-blue-600 font-semibold">
                 บัตรเครดิต
               </p>
@@ -377,8 +373,7 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
             <>
               <img
                 src="/image/creditcard.svg"
-                className="w-[35px] h-[35px]"
-              ></img>
+                className="w-[35px] h-[35px]"></img>
               <p className="text-[16px] text-gray-800 font-semibold">
                 บัตรเครดิต
               </p>
@@ -407,8 +402,7 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="block w-full h-[44px] border border-gray-300 rounded-md py-1 px-3 placeholder:text-gray-500 placeholder:text-[16px] placeholder:font-normal"
-                  placeholder="กรุณากรอกชื่อบนบัตร"
-                ></input>
+                  placeholder="กรุณากรอกชื่อบนบัตร"></input>
               </label>
             </div>
             <div>
@@ -444,13 +438,11 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
                     value={promoCode}
                     onChange={(e) => setPromoCode(e.target.value)}
                     className="block min-w-[205px] h-[64px] text-[16px] border border-gray-300 rounded-md py-3 px-2 placeholder:text-[16px] lg:h-[44px]"
-                    placeholder="กรุณากรอกโค้ดส่วนลด(ถ้ามี)"
-                  ></input>
+                    placeholder="กรุณากรอกโค้ดส่วนลด(ถ้ามี)"></input>
                   <button
                     type="button"
                     onClick={applyPromoCode}
-                    className="min-w-[90px] h-[44px] bg-blue-600 rounded-md text-white font-medium text-[16px]"
-                  >
+                    className="min-w-[90px] h-[44px] bg-blue-600 rounded-md text-white font-medium text-[16px]">
                     ใช้โค้ด
                   </button>
                 </div>
@@ -459,8 +451,7 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
             <button
               className="mx-3 mb-6 py-2 px-6 rounded-md bg-blue-600 text-white font-medium text-[16px] hidden lg:hidden"
               type="submit"
-              disabled={loading}
-            >
+              disabled={loading}>
               {loading ? "Processing..." : "Purchase Now"}
             </button>
           </form>
@@ -475,13 +466,11 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
                 value={promoCode}
                 onChange={(e) => setPromoCode(e.target.value)}
                 className="block min-w-[205px] h-[64px] lg:h-[44px] text-[16px] border border-gray-300 rounded-md py-3 px-2 placeholder:text-[16px]"
-                placeholder="กรุณากรอกโค้ดส่วนลด(ถ้ามี)"
-              ></input>
+                placeholder="กรุณากรอกโค้ดส่วนลด(ถ้ามี)"></input>
               <button
                 type="button"
                 onClick={applyPromoCode}
-                className="min-w-[90px] h-[44px] bg-blue-600 rounded-md text-white font-medium text-[16px]"
-              >
+                className="min-w-[90px] h-[44px] bg-blue-600 rounded-md text-white font-medium text-[16px]">
                 ใช้โค้ด
               </button>
             </div>
@@ -493,4 +482,5 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
   );
 });
 
+PaymentForm.displayName = "PaymentForm"; // <-- Add this line
 export default PaymentForm;
