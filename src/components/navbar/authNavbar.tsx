@@ -41,7 +41,7 @@ export default function AuthNavbar() {
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem
-            onClick={() => router.push(`/customerservice/${userId}`)}>
+            onClick={() => router.push(`/customerservice/${userId}/profile`)}>
             User Dashboard
           </DropdownMenuItem>
         )}
