@@ -171,7 +171,7 @@ export const AdminserviceDetailService = ({
               <div className="flex flex-col justify-between w-full gap-5 ">
                 <div className="flex gap-2">
                   <div>
-                    {new Date(createAt).toLocaleDateString("en-US", {
+                    {new Date(createAt).toLocaleDateString("th-TH", {
                       year: "numeric",
                       month: "2-digit",
                       day: "2-digit",
@@ -185,7 +185,7 @@ export const AdminserviceDetailService = ({
                 </div>
                 <div className="flex gap-2 ">
                   <div>
-                    {new Date(updateAt).toLocaleDateString("en-US", {
+                    {new Date(updateAt).toLocaleDateString("th-TH", {
                       year: "numeric",
                       month: "2-digit",
                       day: "2-digit",

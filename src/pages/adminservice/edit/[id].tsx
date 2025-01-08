@@ -26,7 +26,7 @@ export default function AdminEdit() {
 
   // file image to form.append for sent request
   const [inputImage, setInputImage] = useState<File>();
-  // console.log("check image when update", inputImage);
+  console.log("check image when update", inputImage);
 
   // at the navbar for show name of service
   const [nameTopic, setNameTopic] = useState<string>("loading");
@@ -41,15 +41,21 @@ export default function AdminEdit() {
   // console.log("check subserviceEmpty for sent waring empty", subserviceEmpty);
   const [imageEmpty, setImageEmpty] = useState<boolean>(false);
 
+  const [oldImageURL, setOldImageURL] = useState<string | null>(null);
+  // console.log("oldImageURL", oldImageURL);
+
   //ใช้สำหรับรับค่า id จาก endpoint params
   const router = useRouter();
   const { id } = router.query;
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+
     console.log("--------1--------");
+
     // ตั้งค่า isValid เป็น true ก่อนการตรวจสอบ
     let isValid = true;
+
     console.log("IsValid after checks:", isValid);
     console.log("--------1.1--------");
     // ตรวจสอบ title
@@ -57,12 +63,6 @@ export default function AdminEdit() {
       setTitleEmpty(true);
       isValid = false;
     }
-
-    // ตรวจสอบ category
-    // if (!inputCat) {
-    //   setCategoryEmpty(true);
-    //   isValid = false;
-    // }
 
     // ตรวจสอบ subservices
     // console.log("check value subservice", inputSubservice);
@@ -105,7 +105,7 @@ export default function AdminEdit() {
     console.log("--------1.4--------");
     // ถ้าข้อมูลไม่ครบถ้วน จะไม่ทำการส่งข้อมูล
     if (isValid === false) {
-      return ;
+      return;
     }
 
     console.log("--------2--------");
@@ -122,15 +122,18 @@ export default function AdminEdit() {
     if (inputImage) {
       formData.append("image", inputImage);
     }
+    if (oldImageURL) {
+      formData.append("oldImageURL", oldImageURL);
+    }
     // subservice is array of object must turn to be json to sent
     formData.append("subservices", JSON.stringify(inputSubservice));
 
     // loop in form for check data to sent
-    // let formDataObject: { [key: string]: any } = {};
-    // for (let [key, value] of formData.entries()) {
-    //   formDataObject[key] = value;
-    // }
-    // console.log("FormData contents: ", formDataObject);
+    let formDataObject: { [key: string]: any } = {};
+    for (let [key, value] of formData.entries()) {
+      formDataObject[key] = value;
+    }
+    console.log("FormData contents: ", formDataObject);
 
     // Commented out API call
     try {
@@ -180,6 +183,8 @@ export default function AdminEdit() {
               setTitleEmpty={setTitleEmpty}
               setImageEmpty={setImageEmpty}
               setSubserviceEmpty={setSubserviceEmpty}
+              // ตรสจสอบ image แรกจากการ get
+              setOldImageURL={setOldImageURL}
             />
           </div>
         </div>

@@ -1,6 +1,6 @@
 
 
-export default function IconTrash() {
+export default function IconTrashRed() {
   return (
     <>
       <svg
