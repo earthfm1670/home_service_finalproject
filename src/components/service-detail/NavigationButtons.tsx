@@ -7,9 +7,9 @@ interface NavigationButtonsProps {
   canProceed: boolean;
   disabled: boolean;
   handleProceed: () => void;
-  onBack?: () => void; // เพิ่ม prop สำหรับการจัดการการกลับ
-  backButtonText?: string; // เพิ่ม prop สำหรับข้อความปุ่มย้อนกลับ
-  proceedButtonText?: string; // เพิ่ม prop สำหรับข้อความปุ่มดำเนินการต่อ
+  onBack?: () => void; // prop สำหรับการจัดการการกลับ
+  backButtonText?: string; // prop สำหรับข้อความปุ่มย้อนกลับ
+  proceedButtonText?: string; // prop สำหรับข้อความปุ่มดำเนินการต่อ
 }
 
 export const NavigationButtons = ({

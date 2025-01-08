@@ -12,10 +12,6 @@ interface DesktopSummaryProps {
     description: string;
     unit?: string;
     unit_price: number;
-    discount: number;
-    totalAmount: number;
-    canProceed: boolean;
-    handleProceed: () => void;
   }>;
   getQuantityDisplay: (subServiceId: number) => number;
   calculateTotal: () => number;
@@ -29,7 +25,6 @@ interface DesktopSummaryProps {
     time: string;
     additionalDetails?: string;
   };
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   serviceInfo?: {
     name: string;
     description: string;
@@ -38,6 +33,10 @@ interface DesktopSummaryProps {
   };
   isServiceInfoPage?: boolean;
   isServiceDetailPage?: boolean;
+  discount?: number;
+  totalAmount: number;
+  // canProceed?: boolean;
+  // handleProceed?: () => void;
 }
 
 export const DesktopSummary: React.FC<DesktopSummaryProps> = ({
@@ -51,8 +50,8 @@ export const DesktopSummary: React.FC<DesktopSummaryProps> = ({
   isServiceDetailPage = false,
   discount = 0,
   totalAmount,
-  canProceed,
-  handleProceed,
+  // canProceed,
+  // handleProceed,
 }) => {
   const preDiscountTotal = totalAmount;
   const discountAmount = preDiscountTotal * discount;
@@ -127,16 +126,16 @@ export const DesktopSummary: React.FC<DesktopSummaryProps> = ({
           <div className="space-y-4">
             {getSelectedServices().map((subService) => {
               const quantity = getQuantityDisplay(subService.id);
-              const total = subService.unit_price * quantity;
+              // const total = subService.unit_price * quantity;
               return (
                 <div
                   key={subService.id}
-                  className="flex justify-between text-sm"
+                  className="flex justify-between text-sm mb-2"
                 >
-                  <span className="text-[14px] font-light text-black">
+                  <span className="flex-grow pr-2 break-words">
                     {subService.description}
                   </span>
-                  <span className="text-[14px] font-light text-gray-900">
+                  <span className="flex items-center gap-3 ml-2 text-right text-nowrap">
                     {quantity} รายการ
                   </span>
                 </div>

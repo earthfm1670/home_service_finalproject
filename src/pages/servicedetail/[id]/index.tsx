@@ -109,7 +109,6 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
     });
   };
 
-  // Rest of the component remains the same...
   if (isLoading) {
     return <ServiceHeroSkeleton />;
   }
@@ -125,11 +124,19 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
     }, 0);
   };
 
-  const getSelectedServices = () => {
-    return service.sub_services.filter(
-      (subService) => (quantities[subService.id]?.quantity || 0) > 0
-    );
-  };
+const getSelectedServices = () => {
+  return service.sub_services
+    .filter((subService) => (quantities[subService.id]?.quantity || 0) > 0)
+    .map((subService) => ({
+      ...subService,
+      quantity: quantities[subService.id]?.quantity || 0,
+      discount: 0,
+      totalAmount:
+        (quantities[subService.id]?.quantity || 0) * subService.unit_price,
+      canProceed: true, 
+      handleProceed: handleProceed, 
+    }));
+};
 
   const getQuantityDisplay = (subServiceId: number) => {
     return quantities[subServiceId]?.quantity || 0;
@@ -161,11 +168,11 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
         "selectedServices",
         JSON.stringify(selectedServicesData)
       );
-      // Keep the quantities in localStorage when proceeding
       saveQuantities(quantities);
       router.push(`/servicedetail/${id}/info`);
     }
   };
+  
 
   return (
     <div className="min-h-screen bg-gray-100 pb-32">
@@ -188,6 +195,7 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
               getQuantityDisplay={getQuantityDisplay}
               calculateTotal={calculateTotal}
               getPriceDisplay={getPriceDisplay}
+              totalAmount={calculateTotal()}
             />
           </div>
         </div>
@@ -199,11 +207,17 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
         getSelectedServices={getSelectedServices}
         getQuantityDisplay={getQuantityDisplay}
         handleProceed={handleProceed}
+        disabled={!canProceed}
+        discount={0}
+        totalAmount={calculateTotal()}
+        backButtonText="ย้อนกลับ"
+        proceedButtonText="ดำเนินการต่อ"
       />
 
       <NavigationButtons
         canProceed={canProceed}
         handleProceed={handleProceed}
+        disabled={!canProceed}
       />
     </div>
   );

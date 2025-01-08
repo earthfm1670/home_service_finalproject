@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { ClipboardList, FileText, CreditCard } from "lucide-react";
 
-export const ProgressStepsNew = ({ currentStep }: { currentStep: number }) => {
+export const ProgressSteps = ({ currentStep }: { currentStep: number }) => {
   const [animatedStep, setAnimatedStep] = useState(currentStep);
 
   useEffect(() => {

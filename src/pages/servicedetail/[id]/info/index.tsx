@@ -24,6 +24,36 @@ import {
 interface ServiceInfoPageProps {
   initialService?: Service | null;
 }
+type SelectedServicesData = {
+  serviceId: number;
+  selections: Array<{
+    id: number;
+    description: string;
+    unit?: string;
+    unit_price: number;
+    discount: number;
+    quantity: number;
+    totalAmount: number;
+    canProceed: boolean;
+    handleProceed: () => void;
+  }>;
+  totalAmount: number;
+};
+type Province = {
+  id: string;
+  name_th: string;
+  name_en: string;
+  amphure: Array<{
+    id: string;
+    name_th: string;
+    name_en: string;
+    tambon: Array<{
+      id: string;
+      name_th: string;
+      name_en: string;
+    }>;
+  }>;
+};
 
 interface LocationInfo {
   date: Date | null;
@@ -272,7 +302,6 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
   useEffect(() => {
     const loadDataFromStorage = async () => {
       try {
-        // Load services data
         const servicesData = sessionStorage.getItem("selectedServices");
         if (servicesData) {
           const parsedServices = JSON.parse(servicesData);
@@ -284,7 +313,6 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
           }
         }
 
-        // Load form data with priority given to payment data
         const paymentData = sessionStorage.getItem("paymentData");
         const formData = sessionStorage.getItem("serviceInfoFormData");
 
@@ -316,7 +344,6 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
         const provinceData = await response.json();
         setProvinces(provinceData);
 
-        // If we have payment data, we need to match location names with IDs
         if (paymentData) {
           const parsedPaymentData = JSON.parse(paymentData);
           const province = provinceData.find(
@@ -325,10 +352,10 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
 
           if (province) {
             const amphure = province.amphure.find(
-              (a) => a.name_th === parsedPaymentData.district
+              (a: {name_th: string}) => a.name_th === parsedPaymentData.district
             );
             const tambon = amphure?.tambon.find(
-              (t) => t.name_th === parsedPaymentData.subDistrict
+              (t: {name_th: string}) => t.name_th === parsedPaymentData.subDistrict
             );
 
             setSelected({
@@ -438,20 +465,45 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
             locationInfo={locationInfo}
             isServiceInfoPage={true}
             isServiceDetailPage={true}
+            totalAmount={selectedServices?.totalAmount || 0}
           />
         </div>
       </div>
 
       <MobileBottomBar
         canProceed={isFormComplete}
+        disabled={!isFormComplete}
         calculateTotal={() => selectedServices?.totalAmount || 0}
-        getSelectedServices={() => selectedServices?.selections || []}
+        getSelectedServices={() =>
+          selectedServices?.selections.map((s) => ({
+            sub_service_id: s.id,
+            id: s.id,
+            description: s.description,
+            unit: s.unit || "",
+            unit_price: s.unit_price,
+          })) || []
+        }
         getQuantityDisplay={(id) =>
           selectedServices?.selections.find((s) => s.id === id)?.quantity || 0
         }
         handleProceed={handleProceed}
-        locationInfo={locationInfo}
+        locationInfo={{
+          date: selectedDate,
+          time: selectedTime,
+          address: address,
+          province:
+            provinces.find((p) => p.id === selected.province_id)?.name_th || "",
+          district:
+            amphures.find((a) => a.id === selected.amphure_id)?.name_th || "",
+          subDistrict:
+            tambons.find((t) => t.id === selected.tambon_id)?.name_th || "",
+          additionalDetails: additionalDetails,
+        }}
         isServiceInfoPage={true}
+        discount={0}
+        totalAmount={selectedServices?.totalAmount || 0}
+        backButtonText="ย้อนกลับ"
+        proceedButtonText="ดำเนินการต่อ"
       />
 
       <NavigationButtons
@@ -471,6 +523,7 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
         }}
         handleProceed={handleProceed}
         canProceed={isFormComplete}
+        disabled={!isFormComplete}
       />
     </div>
   );
