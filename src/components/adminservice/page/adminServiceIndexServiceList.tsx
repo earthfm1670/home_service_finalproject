@@ -55,16 +55,6 @@ export const AdminserviceIndexServiceList = ({
     บริการห้องครัว: "text-purple-900 bg-purple-100 inline-block px-2 py-1",
     บริการห้องน้ำ: "text-green-900 bg-green-100 inline-block px-2 py-1",
   };
-
-  if (!serviceList) {
-    return (
-      <div className="w-screen h-screen flex justify-center items-center text-3xl gap-3">
-        <div>Loading</div>
-        <div className="animate-spin rounded-full h-10 w-10 border-4 border-t-transparent border-gray-800"></div>
-      </div>
-    );
-  }
-
   return (
     <>
       <div className="w-full flex flex-col">
