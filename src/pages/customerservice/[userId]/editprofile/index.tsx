@@ -42,12 +42,6 @@ export default function CustomerProfile() {
   //-----Loading state--------------------------------------------------------------
   const [isLoading, setIsLoading] = useState(true);
   //-----Fetch user------------------------------------------------------------
-  const [userInfo, setUserInfo] = useState<UserInfo>({
-    userId: null,
-    userName: null,
-    userPhone: null,
-    profileImage: null,
-  });
   const fetchUser = async () => {
     console.log("check authState");
     console.log(authState);
@@ -58,12 +52,10 @@ export default function CustomerProfile() {
         email,
       });
       const fetchedUser = respond.data.userInfo;
-      setUserInfo({
-        userId: fetchedUser.user_id,
-        userName: fetchedUser.name,
-        userPhone: fetchedUser.phone_number,
-        profileImage: fetchedUser.profile_picture_url,
-      });
+      setUserName(fetchedUser.name);
+      setPhoneNumber(fetchedUser.phone_number);
+      setUserAddress(fetchedUser.address);
+      setPreviewImage(fetchedUser.profile_picture_url);
       setIsLoading(false);
     } catch (err) {
       const error = err as Error;
@@ -136,16 +128,6 @@ export default function CustomerProfile() {
     if (email) {
       fetchUser();
     }
-    console.log("---------------------------------------");
-    console.log("userName: ");
-    console.log(userName);
-    console.log("phoneNumber: ");
-    console.log(phoneNumber);
-    console.log("userAddress: ");
-    console.log(userAddress);
-    console.log("authState: ");
-    console.log(authState);
-    console.log("---------------------------------------");
   }, [email]);
 
   return (
@@ -167,7 +149,7 @@ export default function CustomerProfile() {
           ) : (
             <div className="profile-body rounded-lg bg-white h-11/12 w-11/12 flex flex-col justify-center items-center gap-6">
               <h3 className="user-header font-semibold text-2xl">
-                {userInfo.userName} <span>| Edit Profile </span>
+                {userName} <span>| Edit Profile </span>
               </h3>
               <form
                 action=""
@@ -175,11 +157,11 @@ export default function CustomerProfile() {
                 className="form flex flex-col items-center justify-center gap-6">
                 <div className="picture-box flex flex-col lg:flex-row justify-center items-center gap-4">
                   <div className="empty-box rounded-full w-32 h-32 bg-white">
-                    {userInfo.profileImage ? (
+                    {previewImage ? (
                       <img
-                        src={userInfo.profileImage}
+                        src={previewImage}
                         alt="preview"
-                        className="w-full h-full object-cover rounded-lg"
+                        className="w-full h-full object-cover rounded-full"
                       />
                     ) : (
                       <div className="void-image rounded-full w-32 h-32 bg-slate-700"></div>
@@ -241,13 +223,13 @@ export default function CustomerProfile() {
                     className="submit-button text-white text-base font-medium py-2 px-6 w-36 h-10 rounded-lg bg-blue-600 mb-7 ">
                     Save
                   </button>
-                  <button
-                    onClick={handleRedirect}
-                    className="back-button text-blue-600 border border-blue-600 text-base font-medium py-2 px-6 w-36 h-10 rounded-lg bg-white mb-7">
-                    Back
-                  </button>
                 </div>
               </form>
+              <button
+                onClick={handleRedirect}
+                className="back-button text-blue-600 border border-blue-600 text-base font-medium py-2 px-6 w-36 h-10 rounded-lg bg-white mb-7">
+                Back
+              </button>
             </div>
           )}
         </div>
