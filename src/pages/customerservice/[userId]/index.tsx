@@ -23,33 +23,52 @@ export default function CustomerProfile() {
   const user = authState.user?.user_metadata;
   const userId = authState.userId;
   const email = authState.userEmail;
-  const userName = user?.name;
-  const userPhone = user?.phone;
-  const userAddress = user?.address;
+  const fetchedUserName = user?.name;
+  const fetchedPhoneNumber = user?.phone;
+  const fetchUserAddress = user?.address;
+
+  //--------State---------------------------------------------
+  const [userName, setUserName] = useState<string>(fetchedUserName || "");
+  const [phoneNumber, setPhoneNumber] = useState<string>(
+    fetchedPhoneNumber || ""
+  );
+  const [userAddress, setUserAddress] = useState<string>(
+    fetchUserAddress || ""
+  );
 
   //-----Loading state--------------------------------------------------------------
   const [isLoading, setIsLoading] = useState(true);
   //--------Get media---------------------------------------------
-  const getMedia = async () => {
-    try {
-      const mediaRespond = await axios.post("api/auth/getUser", { email });
-      const media = mediaRespond.data.userInfo.profile_picture_url;
-      setProfileImage(media);
-      setIsLoading(false);
-    } catch (e) {
-      const error = e as Error;
-      console.log("Get medai error", error.message);
-    }
-  };
 
   const handleRedirect = () => {
     router.push(`/customerservice/${userId}/editprofile`);
   };
-
+  //-------Get User-----------------------------------------
+  const fetchUser = async () => {
+    console.log("check authState");
+    console.log(authState);
+    console.log("check email");
+    console.log(email);
+    try {
+      const respond = await axios.post("api/auth/getUser", {
+        email,
+      });
+      const fetchedUser = respond.data.userInfo;
+      setUserName(fetchedUser.name);
+      setPhoneNumber(fetchedUser.phone_number);
+      setUserAddress(fetchedUser.address);
+      setProfileImage(fetchedUser.profile_picture_url);
+      setIsLoading(false);
+    } catch (err) {
+      const error = err as Error;
+      console.log("fetch user error.");
+      console.log(error.message);
+    }
+  };
+  //-------Use Effect--------------------------------------
   useEffect(() => {
     if (email) {
-      // fetchUser();
-      getMedia();
+      fetchUser();
       console.log("check authState--II-----------");
       console.log(authState);
       console.log("check email--II---------------");
@@ -108,7 +127,7 @@ export default function CustomerProfile() {
                 <div className="phone-box flex flex-col justify-start">
                   <label htmlFor="phone">Phone number</label>
                   <div className="phone w-80 h-12 rounded-lg border p-3 bg-gray-300">
-                    {userPhone}
+                    {phoneNumber}
                   </div>
                 </div>
                 <div className="address-box flex flex-col justify-start">
