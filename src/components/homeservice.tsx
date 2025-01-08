@@ -1,4 +1,3 @@
-import { Tag } from "lucide-react";
 import { useRouter } from "next/router";
 import React from "react";
 import { useServices } from "./ServicesContext";
@@ -13,8 +12,8 @@ export default function HomeService() {
   const router = useRouter();
   const { servicesData } = useServices();
 
-  const redirectToServiceDetail = (): void => {
-    router.push("/servicedetail");
+  const redirectToServiceDetail = (service_id: number): void => {
+    router.push(`/servicedetail/${service_id}`);
   };
 
   const redirectToServiceList = (): void => {
@@ -37,8 +36,9 @@ export default function HomeService() {
 
           return (
             <div
+              key={index}
               className="border h-[350px] mx-4 rounded-lg lg:h-[365px] lg:w-[349px]"
-              onClick={redirectToServiceDetail}
+              onClick={() => redirectToServiceDetail(service.service_id)}
             >
               <div className="h-[200px]">
                 <img
@@ -66,7 +66,10 @@ export default function HomeService() {
                   ></img>
                   {service.service_pricing}
                 </div>
-                <div className="my-3" onClick={redirectToServiceDetail}>
+                <div
+                  className="my-3"
+                  onClick={() => redirectToServiceDetail(service.service_id)}
+                >
                   <a className="text-[16px] font-semibold text-blue-600 underline cursor-pointer">
                     เลือกบริการ
                   </a>
