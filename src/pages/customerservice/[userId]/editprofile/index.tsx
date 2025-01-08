@@ -36,10 +36,6 @@ export default function CustomerProfile() {
   const [isLoading, setIsLoading] = useState(true);
   //-----Fetch user------------------------------------------------------------
   const fetchUser = async () => {
-    console.log("check authState");
-    console.log(authState);
-    console.log("check email");
-    console.log(email);
     try {
       const respond = await axios.post("api/auth/getUser", {
         email,
@@ -141,8 +137,8 @@ export default function CustomerProfile() {
             ProfileSkeleton()
           ) : (
             <div className="profile-body rounded-lg bg-white h-11/12 w-11/12 flex flex-col justify-center items-center gap-6">
-              <h3 className="user-header font-semibold text-2xl">
-                {userName} <span>| Edit Profile </span>
+              <h3 className="user-header font-semibold text-2xl mt-7">
+                Edit Profile
               </h3>
               <form
                 action=""
@@ -213,16 +209,18 @@ export default function CustomerProfile() {
                 <div className="buttons-collection flex justify-center items-center gap-8">
                   <button
                     type="submit"
+                    onClick={handleRedirect}
                     className="submit-button text-white text-base font-medium py-2 px-6 w-36 h-10 rounded-lg bg-blue-600 mb-7 ">
                     Save
                   </button>
+                  <button
+                    type="button"
+                    onClick={handleRedirect}
+                    className="back-button text-blue-600 border border-blue-600 text-base font-medium py-2 px-6 w-36 h-10 rounded-lg bg-white mb-7">
+                    Back
+                  </button>
                 </div>
               </form>
-              <button
-                onClick={handleRedirect}
-                className="back-button text-blue-600 border border-blue-600 text-base font-medium py-2 px-6 w-36 h-10 rounded-lg bg-white mb-7">
-                Back
-              </button>
             </div>
           )}
         </div>
