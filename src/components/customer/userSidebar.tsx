@@ -4,7 +4,6 @@ import {
   ClipboardList as ListIcon,
   History as HistoryIcon,
 } from "lucide-react";
-//TODO แก้โครงสร้าง folder
 interface ParamsProp {
   userId: string | null;
 }
@@ -17,7 +16,7 @@ export default function UserSidebar({ userId }: ParamsProp) {
   };
   const handleProfile = (): void => {
     pathBlockIfNoUser(userId);
-    router.push(`/customerservice/${userId}`);
+    router.push(`/customerservice/${userId}/profile`);
   };
   const handleOrderList = (): void => {
     pathBlockIfNoUser(userId);
@@ -43,7 +42,7 @@ export default function UserSidebar({ userId }: ParamsProp) {
           <button
             className={`font-normal text-base py-3 pr-5 pl-1 w-32 lg:w-44 text-start
             flex justify-start items-center gap-2 ${
-              router.pathname === `/customerservice`
+              router.pathname.endsWith(`/profile`)
                 ? `text-blue-700`
                 : `text-gray-950`
             } `}
@@ -51,7 +50,7 @@ export default function UserSidebar({ userId }: ParamsProp) {
             <span>
               <UserIcon
                 size={24}
-                color={router.pathname === "/customerservice" ? "blue" : "grey"}
+                color={router.pathname.endsWith(`/profile`) ? "blue" : "grey"}
               />
             </span>
             ข้อมูลผู้ใช้งาน
@@ -60,7 +59,7 @@ export default function UserSidebar({ userId }: ParamsProp) {
           <button
             className={`font-normal text-base py-3 pr-5 pl-1 w-32 lg:w-44 text-start 
             flex justify-start items-center gap-2 ${
-              router.pathname === "/orderlist"
+              router.pathname.endsWith(`/orderlist`)
                 ? `text-blue-700`
                 : `text-gray-950`
             }`}
@@ -68,7 +67,7 @@ export default function UserSidebar({ userId }: ParamsProp) {
             <span>
               <ListIcon
                 size={24}
-                color={router.pathname === "/orderlist" ? "blue" : "grey"}
+                color={router.pathname.endsWith(`/orderlist`) ? "blue" : "grey"}
               />
             </span>
             รายการคำสั่งซ่อม
@@ -77,13 +76,15 @@ export default function UserSidebar({ userId }: ParamsProp) {
           <button
             className={`font-normal text-base py-3 pr-5 pl-1 w-32 lg:w-44 text-start 
             flex justify-start items-center gap-2 ${
-              router.pathname === "/history" ? `text-blue-700` : `text-gray-950`
+              router.pathname.endsWith(`/history`)
+                ? `text-blue-700`
+                : `text-gray-950`
             } `}
             onClick={handleHistory}>
             <span>
               <HistoryIcon
                 size={24}
-                color={router.pathname === "/history" ? "blue" : "grey"}
+                color={router.pathname.endsWith(`/history`) ? "blue" : "grey"}
               />
             </span>
             ประวัติการซ่อม

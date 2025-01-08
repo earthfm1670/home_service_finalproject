@@ -7,12 +7,6 @@ import axios from "axios";
 import ProfileSkeleton from "@/components/customer/profileSkeleton";
 import { useRouter } from "next/router";
 
-//FIXME address on user meta data / database table
-//FIXME handle on change on input
-//FIXME handle image upload
-//FIXME handle previwe image
-//FIXME check onSubmit and onClick
-
 export default function CustomerProfile() {
   const { authState } = useAuth();
 
@@ -45,10 +39,6 @@ export default function CustomerProfile() {
   };
   //-------Get User-----------------------------------------
   const fetchUser = async () => {
-    console.log("check authState");
-    console.log(authState);
-    console.log("check email");
-    console.log(email);
     try {
       const respond = await axios.post("api/auth/getUser", {
         email,
@@ -69,11 +59,6 @@ export default function CustomerProfile() {
   useEffect(() => {
     if (email) {
       fetchUser();
-      console.log("check authState--II-----------");
-      console.log(authState);
-      console.log("check email--II---------------");
-      console.log(email);
-      console.log(user);
     }
   }, [email]);
 
@@ -95,7 +80,7 @@ export default function CustomerProfile() {
             ProfileSkeleton()
           ) : (
             <div className="profile-body rounded-lg bg-white h-11/12 w-11/12 flex flex-col justify-center items-center gap-6">
-              <h3 className="user-header font-semibold text-2xl">
+              <h3 className="user-header font-semibold text-2xl mt-7">
                 {userName} <span>| Profile </span>
               </h3>
               <div className="form flex flex-col items-center justify-center gap-6">
