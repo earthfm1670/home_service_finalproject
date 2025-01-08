@@ -157,6 +157,13 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
 
     try {
       const cardElement = elements.getElement(CardNumberElement);
+
+      if (!cardElement) {
+        setError("Card element is not available.");
+        setLoading(false);
+        return;
+      }
+
       const { error: paymentMethodError, paymentMethod } =
         await stripe.createPaymentMethod({
           type: "card",
