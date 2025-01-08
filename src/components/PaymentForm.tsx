@@ -121,12 +121,38 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
     // apply promo code and update total amount
     let discount = 0;
 
-    if (promoCodes[promoCode]) {
-      discount = promoCodes[promoCode];
-      setDiscount(discount);
+    if (promoCode.trim()) {
+      try {
+        const response = await axios.post("/api/discount", {
+          promotionCode: promoCode,
+          useCount: 1,
+        });
+        if (response.data && response.data.data) {
+          const promotion = response.data.data;
+          discount = promotion.discount_value;
+          setDiscount(discount);
+        } else {
+          setDiscount(0);
+        }
+      } catch (error) {
+        console.error("Error applying promo code:", error);
+        setError("An error occurred while fetching the promo code.");
+        setDiscount(0);
+        setLoading(false);
+        return;
+      }
     } else {
       setDiscount(0);
     }
+
+    const finalAmount = totalAmount - totalAmount * discount;
+
+    // if (promoCodes[promoCode]) {
+    //   discount = promoCodes[promoCode];
+    //   setDiscount(discount);
+    // } else {
+    //   setDiscount(0);
+    // }
 
     if (!isPaymentFormComplete()) {
       setError("Please fill in all required fields.");
@@ -203,7 +229,7 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          amount: totalAmount,
+          amount: finalAmount,
           promoCode,
           paymentMethodId: paymentMethod.id,
         }),
