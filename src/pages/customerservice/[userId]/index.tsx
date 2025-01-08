@@ -12,57 +12,33 @@ import { useRouter } from "next/router";
 //FIXME handle image upload
 //FIXME handle previwe image
 //FIXME check onSubmit and onClick
-interface UserInfo {
-  userId: null | string;
-  userName: null | string;
-  userPhone: null | string;
-  userAddress: null | string;
-  profileImage: null | string;
-}
+
 export default function CustomerProfile() {
   const { authState } = useAuth();
 
   const router = useRouter();
-  const [userInfo, setUserInfo] = useState<UserInfo>({
-    userId: null,
-    userName: null,
-    userPhone: null,
-    userAddress: null,
-    profileImage: null,
-  });
+  const [profileImage, setProfileImage] = useState<string>();
+
+  // change to get user from supabase
   const user = authState.user?.user_metadata;
   const userId = authState.userId;
-  const email = authState.userEmail; // change to get user from supabase
-
-  //--------Form Input---------------------------------------------
+  const email = authState.userEmail;
+  const userName = user?.name;
+  const userPhone = user?.phone;
+  const userAddress = user?.address;
 
   //-----Loading state--------------------------------------------------------------
   const [isLoading, setIsLoading] = useState(true);
-  //-----Fetch user------------------------------------------------------------
-  const fetchUser = async () => {
-    console.log("check authState-I------------");
-    console.log(authState);
-    console.log("check email-I----------------");
-    console.log(email);
+  //--------Get media---------------------------------------------
+  const getMedia = async () => {
     try {
-      const respond = await axios.post("api/auth/getUser", {
-        email,
-      });
-      const fetchedUser = respond.data.userInfo;
-      console.log("fetched User");
-      console.log(fetchedUser);
-      setUserInfo({
-        userId: fetchedUser.user_id,
-        userName: fetchedUser.name,
-        userPhone: fetchedUser.phone_number,
-        userAddress: fetchedUser.address,
-        profileImage: fetchedUser.profile_picture_url,
-      });
+      const mediaRespond = await axios.post("api/auth/getUser", { email });
+      const media = mediaRespond.data.userInfo.profile_picture_url;
+      setProfileImage(media);
       setIsLoading(false);
-    } catch (err) {
-      const error = err as Error;
-      console.log("fetch user error.");
-      console.log(error);
+    } catch (e) {
+      const error = e as Error;
+      console.log("Get medai error", error.message);
     }
   };
 
@@ -72,7 +48,8 @@ export default function CustomerProfile() {
 
   useEffect(() => {
     if (email) {
-      fetchUser();
+      // fetchUser();
+      getMedia();
       console.log("check authState--II-----------");
       console.log(authState);
       console.log("check email--II---------------");
@@ -100,16 +77,16 @@ export default function CustomerProfile() {
           ) : (
             <div className="profile-body rounded-lg bg-white h-11/12 w-11/12 flex flex-col justify-center items-center gap-6">
               <h3 className="user-header font-semibold text-2xl">
-                {userInfo.userName} <span>| Profile </span>
+                {userName} <span>| Profile </span>
               </h3>
               <div className="form flex flex-col items-center justify-center gap-6">
                 <div className="picture-box flex flex-col lg:flex-row justify-center items-center gap-4">
                   <div className="empty-box rounded-full w-32 h-32 bg-white">
-                    {userInfo.profileImage ? (
+                    {profileImage ? (
                       <img
-                        src={userInfo.profileImage}
+                        src={profileImage}
                         alt="preview"
-                        className="w-full h-full object-cover rounded-lg"
+                        className="w-full h-full object-cover rounded-full w-32 h-32"
                       />
                     ) : (
                       <div className="void-image rounded-full w-32 h-32 bg-slate-700"></div>
@@ -119,7 +96,7 @@ export default function CustomerProfile() {
                 <div className="name-box flex flex-col justify-start">
                   <label htmlFor="name">Name</label>
                   <div className="name w-80 h-12 rounded-lg border p-3 bg-gray-300">
-                    {userInfo.userName}
+                    {userName}
                   </div>
                 </div>
                 <div className="email-box flex flex-col justify-start">
@@ -131,13 +108,13 @@ export default function CustomerProfile() {
                 <div className="phone-box flex flex-col justify-start">
                   <label htmlFor="phone">Phone number</label>
                   <div className="phone w-80 h-12 rounded-lg border p-3 bg-gray-300">
-                    {userInfo.userPhone}
+                    {userPhone}
                   </div>
                 </div>
                 <div className="address-box flex flex-col justify-start">
                   <label htmlFor="address">Address</label>
                   <div className="address w-80 h-12 rounded-lg border p-3 bg-gray-300">
-                    {userInfo.userAddress}
+                    {userAddress}
                   </div>
                 </div>
                 <button
