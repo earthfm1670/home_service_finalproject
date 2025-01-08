@@ -239,17 +239,54 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
     handleSubmit,
   }));
 
-  const applyPromoCode = (): void => {
-    if (promoCodes[promoCode]) {
-      const appliedDiscount: number = promoCodes[promoCode];
-      setDiscount(appliedDiscount);
-      alert(
-        `Promotion code applied! You get ${appliedDiscount * 100}% discount!`
-      );
-    } else {
-      alert("Invalid promotion code.");
+  const applyPromoCode = async (): Promise<void> => {
+    if (!promoCode.trim()) {
+      alert("กรุณากรอกโค้ดส่วนลด");
+      setDiscount(0);
+      return;
+    }
+
+    try {
+      // Fetch promotion codes from the database
+      const response = await axios.post("/api/discount", {
+        promotionCode: promoCode,
+        useCount: 1,
+      });
+
+      // if (!response) {
+      //   alert("ไม่สามารถดึงข้อมูลโค้ดส่วนลดได้ กรุณาลองใหม่อีกครั้ง");
+      //   return;
+      // }
+
+      // parse data
+      const promotion = response.data.data;
+      console.log(promotion);
+
+      if (promotion.promotion_code.trim() === promoCode.trim()) {
+        const discount = promotion.discount_value;
+        setDiscount(discount);
+        alert(`โค้ดส่วนลดสามารถใช้งานได้ คุณได้รับส่วนลด ${discount * 100}%`);
+      } else {
+        alert("โค้ดส่วนลดไม่ถูกต้อง");
+        setDiscount(0);
+      }
+    } catch (error) {
+      console.error("Error applying promo code:", error);
+      alert("เกิดข้อผิดพลาด กรุณาลองใหม่");
       setDiscount(0);
     }
+
+    // old promo function
+    // if (promoCodes[promoCode]) {
+    //   const appliedDiscount: number = promoCodes[promoCode];
+    //   setDiscount(appliedDiscount);
+    //   alert(
+    //     `Promotion code applied! You get ${appliedDiscount * 100}% discount!`
+    //   );
+    // } else {
+    //   alert("Invalid promotion code.");
+    //   setDiscount(0);
+    // }
   };
 
   const elementStyle = {
