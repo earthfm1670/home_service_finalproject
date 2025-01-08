@@ -120,6 +120,7 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
 
     // apply promo code and update total amount
     let discount = 0;
+    let promotionId = 0;
 
     if (promoCode.trim()) {
       try {
@@ -129,6 +130,7 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
         });
         if (response.data && response.data.data) {
           const promotion = response.data.data;
+          promotionId = promotion.promotion_id;
           discount = promotion.discount_value;
           setDiscount(discount);
         } else {
@@ -146,13 +148,6 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
     }
 
     const finalAmount = totalAmount - totalAmount * discount;
-
-    // if (promoCodes[promoCode]) {
-    //   discount = promoCodes[promoCode];
-    //   setDiscount(discount);
-    // } else {
-    //   setDiscount(0);
-    // }
 
     if (!isPaymentFormComplete()) {
       setError("Please fill in all required fields.");
@@ -177,7 +172,7 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
         return;
       }
 
-      // send data to payment database
+      // // send data to payment database
       // const serviceInfo = sessionStorage.getItem("serviceInfoFormData");
       // const parsedServiceInfo = serviceInfo ? JSON.parse(serviceInfo) : null;
       // const selectedServices = sessionStorage.getItem("selectedServices");
@@ -185,17 +180,21 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
       //   ? JSON.parse(selectedServices)
       //   : [];
 
-      // const userId = localStorage.getItem("userId") || null;
+      // const userId: string | null =
+      //   JSON.parse(localStorage.getItem("localStorageData") || "{}")?.sub ||
+      //   null; //MARK <<< เช็คว่า userId มีจริงไหม ถ้าไม่มี เอาจาก params หรือ pares localstorage.user แล้วดูที่ sub
       // const scheduledDate = parsedServiceInfo?.selectedDate || null;
       // const paymentDate = new Date().toISOString();
       // const paymentMethodId = selectedPayment === "creditcard" ? 2 : 1;
-      // const promotionId = promoCodes[promoCode] ? 1 : 0;
-      // const subServices = Array.isArray(parsedSelectedServices)
-      //   ? parsedSelectedServices.map((service: any) => ({
-      //       subServiceId: service.id,
-      //       amount: service.quantity,
-      //     }))
-      //   : [];
+      // // const promotionId = promoCodes[promoCode] ? 1 : 0; //MARK <<< เปลี่ยนเป็นค่าของ promotion_id ถ้าไม่มี เป็น 0
+      // const subServices = parsedSelectedServices.selections.map(
+      //   (service: any) => ({
+      //     //MARK <<< เพิ่ม selections เพื่อเข้าถึง array
+      //     subServiceId: service.id,
+      //     amount: service.quantity,
+      //   })
+      // );
+      // console.log(subServices);
 
       // const apiPayload = {
       //   scheduledDate,
@@ -523,4 +522,5 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
   );
 });
 
+PaymentForm.displayName = "PaymentForm"; // <-- Add this line
 export default PaymentForm;
