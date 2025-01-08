@@ -42,7 +42,7 @@ export default function AdminEdit() {
   const [imageEmpty, setImageEmpty] = useState<boolean>(false);
 
   const [oldImageURL, setOldImageURL] = useState<string | null>(null);
-  console.log("oldImageURL", oldImageURL);
+  // console.log("oldImageURL", oldImageURL);
 
   //ใช้สำหรับรับค่า id จาก endpoint params
   const router = useRouter();

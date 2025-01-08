@@ -153,6 +153,20 @@ export default async function adminUpdate(
       if (updateService.image && "filepath" in updateService.image) {
         console.log("----------5----------");
 
+        // ดึงข้อมูล URL ของภาพเดิม
+        const { data: currentImageData, error: fetchError } = await adminSupabase
+          .from("services")
+          .select("service_picture_url")
+          .eq("service_id", updateService.service_id)
+          .single();
+
+        if (fetchError) {
+          console.log("Error fetching current image URL:", fetchError);
+          return res.status(500).json({ error: "Failed to fetch current image URL" });
+        }
+
+        const currentImageUrl = currentImageData?.service_picture_url;
+
         // อ่านข้อมูลไฟล์จาก path ของไฟล์ที่อัปโหลด
         const fileData = await fs.readFile(updateService.image.filepath);
         const fileExtension =
@@ -199,6 +213,21 @@ export default async function adminUpdate(
           return res
             .status(400)
             .json({ error: "Error during image URL update" });
+        }
+
+        // ลบไฟล์ภาพเก่า (ถ้ามี)
+        if (currentImageUrl) {
+          const oldFileName = currentImageUrl.split("/").pop();
+          if (oldFileName) {
+            const { error: deleteError } = await adminSupabase.storage
+              .from("service_pictures")
+              .remove([oldFileName]);
+
+            if (deleteError) {
+              console.log("Error deleting old image file:", deleteError);
+              // เราไม่ return ที่นี่เพราะเราต้องการให้การอัปเดตดำเนินต่อไป แม้จะลบไฟล์เก่าไม่สำเร็จ
+            }
+          }
         }
       }
 

@@ -1,7 +1,6 @@
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { useState } from "react";
 
-import { useRouter } from "next/router";
 
 import { AdminServiceIndexNavbar } from "@/components/adminservice/page/adminServiceIndexNavbar";
 import { AdminserviceIndexServiceList } from "@/components/adminservice/page/adminServiceIndexServiceList";
@@ -17,7 +16,6 @@ export default function AdminService() {
   // console.log("check state for search sent to endpoint query",search);
 
   // ใช้ router จาก Next.js เพื่อเปลี่ยนหน้า
-  const router = useRouter();
 
   return (
     <>
