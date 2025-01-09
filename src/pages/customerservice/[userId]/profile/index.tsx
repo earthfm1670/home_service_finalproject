@@ -91,7 +91,7 @@ export default function CustomerProfile() {
                       <img
                         src={profileImage}
                         alt="preview"
-                        className="w-full h-full object-cover rounded-full w-32 h-32"
+                        className="w-full h-full object-cover rounded-full"
                       />
                     ) : (
                       <div className="void-image rounded-full w-32 h-32 bg-slate-700"></div>
