@@ -12,7 +12,7 @@ export default function AdminNavbar() {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
   };
-  console.log(input);
+  // console.log(input);
 
   const router = useRouter();
 
@@ -38,7 +38,7 @@ export default function AdminNavbar() {
               />
               <button
                 className=" bg-defaultColor text-white text-base h-full px-7 flex items-center gap-3 rounded-lg"
-                onClick={() => router.push("/adminservice/add")}
+                onClick={() => router.push("/adminpromotioncode/add")}
               >
                 เพิ่มบริการ
                 <span>
@@ -57,32 +57,30 @@ export default function AdminNavbar() {
 //---------------------------------------------------------------------------------------
 
 export const AdminserviceIndex = ({ input }: { input: string | null }) => {
-  interface Service {
+  interface Promotion {
     id: string;
-    service_id: number;
-    service_name: string;
-    category: string;
-    category_id: any;
     created_at: string;
-    updated_at: string;
+    end_at: string;
+    discount_value: number;
+    promotion_code: string;
+    promotion_id: number;
+    promotion_status: string;
+    usage_limit: number;
+    usage_pool: number;
   }
 
   // ดึงข้อมูลจาก Context
   // สร้าง state เพื่อมารับข้อมูล service
   // const { getServicesData, servicesData } = useServices();
   // console.log(servicesData, 1);
-  const [serviceList, setServicesList] = useState<Service[]>([]);
-  console.log(serviceList);
+  const [promotionCodeList, setPromotionCodeList] = useState<Promotion[]>([]);
+  console.log("promotionCodeList", promotionCodeList);
 
   const fetchUser = async () => {
     try {
-      const response = await axios.get(
-        `/api/admin/getdataAdmin?search=${input}`
-      );
-      // console.log("test response 101");
-      if (response.data.data.length !== 0) {
-        setServicesList(response.data.data);
-      }
+      const response = await axios.get(`/api/admin/promotions?search=${input}`);
+      console.log("test response 101", response.data.data);
+      setPromotionCodeList(response.data.data);
 
       // console.log(response.data.data, "test response 103");
     } catch (error) {
@@ -95,21 +93,9 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
     // if (servicesData) {
     //   setServicesList(servicesData);
     // }
-    // fetchUser();
+    fetchUser();
   }, [input]);
 
-  // style text category
-  // const categoryNameMap: Record<number, string> = {
-  //   2: "บริการทั่วไป",
-  //   3: "บริการห้องครัว",
-  //   4: "บริการห้องน้ำ",
-  // };
-
-  const categoryBgClassMap: Record<string, string> = {
-    บริการทั่วไป: "text-blue-800 bg-blue-100 inline-block px-2 py-1",
-    บริการห้องครัว: "text-purple-900 bg-purple-100 inline-block px-2 py-1",
-    บริการห้องน้ำ: "text-green-900 bg-green-100 inline-block px-2 py-1",
-  };
   return (
     <>
       <div className="">
@@ -121,105 +107,115 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
             {/* <AdminNavbar /> */}
             {/* list detail for admin page */}
             <div className="min-h-screen w-full flex justify-center items-start py-12 min-w-[1200px]  bg-gray-100">
-              <div className="flex w-[1120px] border border-gray-300 rounded-lg overflow-x-auto">
+              <div className="flex max-w-[1120px] border border-gray-300 rounded-lg overflow-x-auto">
                 <table className="w-full text-gray-500">
                   <thead>
                     <tr className="h-10 bg-gray-200 text-gray-500">
-                      <th className="w-[55px]"></th>
-                      <th className="w-[58px] text-center font-normal">
-                        ลำดับ
+                      <th className="w-[166px] text-start pl-6 font-normal text-sm">
+                        Promotion Code
                       </th>
-                      <th className="max-w-[226px] text-start pl-6 font-normal">
-                        ชื่อบริการ
+                      <th className="w-[105px] text-start pl-6 font-normal text-sm">
+                        ประเภท
                       </th>
-                      <th className="w-[201px] text-start pl-6 font-normal">
-                        หมวดหมู่
+                      <th className="w-[140px] text-start pl-6 font-normal text-sm">
+                        โควต้าการใช้(ครั้ง)
                       </th>
-                      <th className="w-[230px] text-start pl-6 font-normal">
+                      <th className="w-[145px] text-start pl-6 font-normal text-sm">
+                        ราคาที่ลด
+                      </th>
+                      <th className="w-[209px] text-start pl-6 font-normal text-sm">
                         สร้างเมื่อ
                       </th>
-                      <th className="w-[230px] text-start pl-6 font-normal">
-                        แก้ไขล่าสุด
+                      <th className="w-[209px] text-start pl-6 font-normal text-sm">
+                        วันหมดอายุ
                       </th>
-                      <th className="w-[120px] text-center font-normal">
+                      <th className="w-[120px] text-center font-normal text-sm">
                         Action
                       </th>
                     </tr>
                   </thead>
+                  {/* render for thead body */}
                   <tbody>
-                    {serviceList
-                      // .sort((a, b) => a.service_id - b.service_id)
-                      .map((service: Service, index) => (
-                        <tr
-                          key={service.service_id}
-                          className="border-t bg-white h-20 text-black"
-                        >
-                          <td className="px-auto text-center active:bg-gray-600">
-                            <IconDrag />
-                          </td>
-                          <td className="px-auto  text-center">{index + 1}</td>
-                          <td className={`px-6`}>{service.service_name}</td>
-                          <td className="px-6">
-                            {/* {service.category} */}
-                            <div
-                              className={`rounded-md py-1 ${
-                                categoryBgClassMap[service.category] ||
-                                "default-class"
-                              }`}
-                            >
-                              {service.category}
-                            </div>
-                            {/* <Category category={service.category} /> */}
-                          </td>
-                          <td className="px-6">
-                            {new Date(service.created_at).toLocaleDateString(
-                              "en-US",
-                              {
+                    {Array.isArray(promotionCodeList) &&
+                    promotionCodeList.length > 0 ? (
+                      promotionCodeList.map(
+                        (promotionCode: Promotion, index: number) => (
+                          <tr
+                            key={promotionCode.promotion_id}
+                            className="border-t bg-white h-20 text-black"
+                          >
+                            <td className="px-auto text-start pl-6">
+                              {promotionCode.promotion_code}
+                            </td>
+                            <td className="px-auto text-start pl-6">
+                              {/* {promotionCode.promotion_status} */}
+                              {promotionCode.usage_pool === 0 ||
+                              promotionCode.usage_pool === null
+                                ? `Unabailable`
+                                : `Percent`}
+                            </td>
+                            <td className="px-auto text-start pl-6">
+                              {promotionCode.usage_pool != null &&
+                              promotionCode.usage_limit != null
+                                ? `${promotionCode.usage_pool}/${promotionCode.usage_limit}`
+                                : `0/0`}
+                            </td>
+                            <td className="px-auto text-start pl-6 text-red-600">
+                              {promotionCode.promotion_status === "fixed"
+                                ? `-${promotionCode.discount_value}฿`
+                                : `-${(
+                                    promotionCode.discount_value * 100
+                                  ).toFixed(2)}%`}
+                            </td>
+                            <td className="px-auto text-start pl-6">
+                              {new Date(
+                                promotionCode.created_at
+                              ).toLocaleDateString("th-TH", {
                                 year: "numeric",
                                 month: "2-digit",
                                 day: "2-digit",
-                              }
-                            )}{" "}
-                            {new Date(service.created_at).toLocaleTimeString(
-                              "en-US",
-                              {
+                              })}{" "}
+                              {new Date(
+                                promotionCode.created_at
+                              ).toLocaleTimeString("en-US", {
                                 hour: "2-digit",
                                 minute: "2-digit",
                                 hour12: true,
-                              }
-                            )}
-                          </td>
-                          <td className="px-6">
-                            {new Date(service.updated_at).toLocaleDateString(
-                              "en-US",
-                              {
+                              })}
+                            </td>
+                            <td className="px-auto text-start pl-6">
+                              {new Date(
+                                promotionCode.end_at
+                              ).toLocaleDateString("th-TH", {
                                 year: "numeric",
                                 month: "2-digit",
                                 day: "2-digit",
-                              }
-                            )}{" "}
-                            {new Date(service.updated_at).toLocaleTimeString(
-                              "en-US",
-                              {
+                              })}{" "}
+                              {new Date(
+                                promotionCode.end_at
+                              ).toLocaleTimeString("en-US", {
                                 hour: "2-digit",
                                 minute: "2-digit",
                                 hour12: true,
-                              }
-                            )}
-                          </td>
-
-                          <td className="flex flex-row items-center justify-between px-6 py-7 ">
-                            <IconTrash
-                              id={service.service_id}
-                              updateTable={serviceList}
-                              setUpdateTable={setServicesList}
-                              index={index}
-                              serviceName={service.service_name}
-                            />
-                            <IconEdit id={service.service_id} />
-                          </td>
-                        </tr>
-                      ))}
+                              })}
+                            </td>
+                            <td className="px-auto text-start pl-6">
+                              {/* ปุ่มหรือลิงก์ต่างๆ เช่น Edit หรือ Delete */}
+                            </td>
+                          </tr>
+                        )
+                      )
+                    ) : (
+                      <tr>
+                        <td colSpan={7} className="text-center py-4">
+                          {/* ไม่มีโปรโมชั่นโค้ด */}
+                          <div className="w-full py-10 flex justify-center items-center text-3xl gap-3">
+                            <div>Loading</div>
+                            <div className="animate-spin rounded-full h-10 w-10 border-4 border-t-transparent border-gray-800"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -230,49 +226,6 @@ export const AdminserviceIndex = ({ input }: { input: string | null }) => {
     </>
   );
 };
-
-export function IconDrag() {
-  // change color icon when active
-  const [active, setActive] = useState<boolean>(false);
-
-  // เปลี่ยนสถานะเป็น active เมื่อกดค้าง
-  const handleMouseDown = () => {
-    setActive(true);
-  };
-
-  // เปลี่ยนสถานะกลับเป็นไม่ active เมื่อปล่อยปุ่ม
-  const handleMouseUp = () => {
-    setActive(false);
-  };
-
-  return (
-    <svg
-      className="cursor-pointer"
-      width="56"
-      height="80"
-      viewBox="0 0 56 80"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-    >
-      <path
-        d="M24.5 33V33.01V33ZM24.5 40V40.01V40ZM24.5 47V47.01V47ZM24.5 34C24.2348 34 23.9804 33.8946 23.7929 33.7071C23.6054 33.5196 23.5 33.2652 23.5 33C23.5 32.7348 23.6054 32.4804 23.7929 32.2929C23.9804 32.1054 24.2348 32 24.5 32C24.7652 32 25.0196 32.1054 25.2071 32.2929C25.3946 32.4804 25.5 32.7348 25.5 33C25.5 33.2652 25.3946 33.5196 25.2071 33.7071C25.0196 33.8946 24.7652 34 24.5 34ZM24.5 41C24.2348 41 23.9804 40.8946 23.7929 40.7071C23.6054 40.5196 23.5 40.2652 23.5 40C23.5 39.7348 23.6054 39.4804 23.7929 39.2929C23.9804 39.1054 24.2348 39 24.5 39C24.7652 39 25.0196 39.1054 25.2071 39.2929C25.3946 39.4804 25.5 39.7348 25.5 40C25.5 40.2652 25.3946 40.5196 25.2071 40.7071C25.0196 40.8946 24.7652 41 24.5 41ZM24.5 48C24.2348 48 23.9804 47.8946 23.7929 47.7071C23.6054 47.5196 23.5 47.2652 23.5 47C23.5 46.7348 23.6054 46.4804 23.7929 46.2929C23.9804 46.1054 24.2348 46 24.5 46C24.7652 46 25.0196 46.1054 25.2071 46.2929C25.3946 46.4804 25.5 46.7348 25.5 47C25.5 47.2652 25.3946 47.5196 25.2071 47.7071C25.0196 47.8946 24.7652 48 24.5 48Z"
-        stroke={active ? "#9AA1B0" : "#CCD0D7"}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M31.5 33V33.01V33ZM31.5 40V40.01V40ZM31.5 47V47.01V47ZM31.5 34C31.2348 34 30.9804 33.8946 30.7929 33.7071C30.6054 33.5196 30.5 33.2652 30.5 33C30.5 32.7348 30.6054 32.4804 30.7929 32.2929C30.9804 32.1054 31.2348 32 31.5 32C31.7652 32 32.0196 32.1054 32.2071 32.2929C32.3946 32.4804 32.5 32.7348 32.5 33C32.5 33.2652 32.3946 33.5196 32.2071 33.7071C32.0196 33.8946 31.7652 34 31.5 34ZM31.5 41C31.2348 41 30.9804 40.8946 30.7929 40.7071C30.6054 40.5196 30.5 40.2652 30.5 40C30.5 39.7348 30.6054 39.4804 30.7929 39.2929C30.9804 39.1054 31.2348 39 31.5 39C31.7652 39 32.0196 39.1054 32.2071 39.2929C32.3946 39.4804 32.5 39.7348 32.5 40C32.5 40.2652 32.3946 40.5196 32.2071 40.7071C32.0196 40.8946 31.7652 41 31.5 41ZM31.5 48C31.2348 48 30.9804 47.8946 30.7929 47.7071C30.6054 47.5196 30.5 47.2652 30.5 47C30.5 46.7348 30.6054 46.4804 30.7929 46.2929C30.9804 46.1054 31.2348 46 31.5 46C31.7652 46 32.0196 46.1054 32.2071 46.2929C32.3946 46.4804 32.5 46.7348 32.5 47C32.5 47.2652 32.3946 47.5196 32.2071 47.7071C32.0196 47.8946 31.7652 48 31.5 48Z"
-        stroke={active ? "#9AA1B0" : "#CCD0D7"}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 function IconTrash({
   id,

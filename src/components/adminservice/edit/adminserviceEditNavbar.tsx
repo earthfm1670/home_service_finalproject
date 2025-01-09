@@ -14,7 +14,7 @@ export function AdminServiceEditNavbar({
   return (
     <>
       {/* navbar for admin page */}
-      <div className="flex flex-row items-center justify-between bg-white sticky top-0 h-20 px-10 py-5 min-w-[1200px] border-b  border-gray-300 z-1 ">
+      <div className="flex flex-row items-center justify-between bg-white sticky top-0 h-20 px-10 py-5 min-w-[1200px] border-b  border-gray-300 z-0 ">
         <div
           className="flex flex-row items-center cursor-pointer"
           onClick={() => router.push("/adminservice")}

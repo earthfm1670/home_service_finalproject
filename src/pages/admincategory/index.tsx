@@ -73,6 +73,7 @@ export const AdminserviceIndex = ({ search }: { search: string | null }) => {
   // console.log(serviceList);
 
   const [getCategoriesData, setGetCategoriesData] = useState<Categories[]>([]);
+  console.log("getCategoriesData",getCategoriesData)
 
   const fetchUser = async () => {
     try {
@@ -116,90 +117,104 @@ export const AdminserviceIndex = ({ search }: { search: string | null }) => {
                   <thead>
                     <tr className="h-10 bg-gray-200 text-gray-500">
                       <th className="w-[55px]"></th>
-                      <th className="w-[58px] text-center font-normal">
+                      <th className="w-[58px] text-center font-normal text-sm">
                         ลำดับ
                       </th>
-                      <th className="max-w-[262px] text-start pl-6 font-normal">
+                      <th className="max-w-[262px] text-start pl-6 font-normal text-sm">
                         ชื่อหมวดหมู่
                       </th>
-                      <th className="w-[245px] text-start pl-6 font-normal">
+                      <th className="w-[245px] text-start pl-6 font-normal text-sm">
                         สร้างเมื่อ
                       </th>
-                      <th className="w-[357px] text-start pl-6 font-normal">
+                      <th className="w-[357px] text-start pl-6 font-normal text-sm">
                         แก้ไขล่าสุด
                       </th>
-                      <th className="w-[120px] text-center font-normal">
+                      <th className="w-[120px] text-center font-normal text-sm">
                         Action
                       </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {getCategoriesData.map((category: Categories, index) => (
-                      <tr
-                        key={category.id}
-                        className="border-t bg-white h-20 text-black"
-                      >
-                        <td className="px-auto text-center active:bg-gray-600">
-                          <IconDrag />
-                        </td>
-                        <td className="px-auto  text-center">{index + 1}</td>
-                        <td
-                          className={`px-6 cursor-pointer`}
-                          onClick={() =>
-                            router.push(`/admincategory/detail/${category.id}`)
-                          }
+                    {Array.isArray(getCategoriesData) &&
+                    getCategoriesData.length > 0 ? (
+                      getCategoriesData.map((category: Categories, index) => (
+                        <tr
+                          key={category.id}
+                          className="border-t bg-white h-20 text-black"
                         >
-                          {category.category}
-                        </td>
-                        <td className="px-6">
-                          {new Date(category.created_at).toLocaleDateString(
-                            "th-TH",
-                            {
-                              year: "numeric",
-                              month: "2-digit",
-                              day: "2-digit",
+                          <td className="px-auto text-center active:bg-gray-600">
+                            <IconDrag />
+                          </td>
+                          <td className="px-auto  text-center">{index + 1}</td>
+                          <td
+                            className={`px-6 cursor-pointer`}
+                            onClick={() =>
+                              router.push(
+                                `/admincategory/detail/${category.id}`
+                              )
                             }
-                          )}{" "}
-                          {new Date(category.created_at).toLocaleTimeString(
-                            "en-US",
-                            {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: true,
-                            }
-                          )}
-                        </td>
-                        <td className="px-6">
-                          {new Date(category.updated_at).toLocaleDateString(
-                            "th-TH",
-                            {
-                              year: "numeric",
-                              month: "2-digit",
-                              day: "2-digit",
-                            }
-                          )}{" "}
-                          {new Date(category.updated_at).toLocaleTimeString(
-                            "en-US",
-                            {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: true,
-                            }
-                          )}
-                        </td>
+                          >
+                            {category.category}
+                          </td>
+                          <td className="px-6">
+                            {new Date(category.created_at).toLocaleDateString(
+                              "th-TH",
+                              {
+                                year: "numeric",
+                                month: "2-digit",
+                                day: "2-digit",
+                              }
+                            )}{" "}
+                            {new Date(category.created_at).toLocaleTimeString(
+                              "en-US",
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                              }
+                            )}
+                          </td>
+                          <td className="px-6">
+                            {new Date(category.updated_at).toLocaleDateString(
+                              "th-TH",
+                              {
+                                year: "numeric",
+                                month: "2-digit",
+                                day: "2-digit",
+                              }
+                            )}{" "}
+                            {new Date(category.updated_at).toLocaleTimeString(
+                              "en-US",
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                              }
+                            )}
+                          </td>
 
-                        <td className="flex flex-row items-center justify-between px-6 py-7 ">
-                          <IconTrash
-                            id={category.id}
-                            updateTable={getCategoriesData}
-                            setUpdateTable={setGetCategoriesData}
-                            index={index}
-                            serviceName={category.id}
-                          />
-                          <IconEdit id={category.id} />
+                          <td className="flex flex-row items-center justify-between px-6 py-7 ">
+                            <IconTrash
+                              id={category.id}
+                              updateTable={getCategoriesData}
+                              setUpdateTable={setGetCategoriesData}
+                              index={index}
+                              serviceName={category.id}
+                            />
+                            <IconEdit id={category.id} />
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={7} className="text-center py-4">
+                          <div className="w-full py-10 flex justify-center items-center text-3xl gap-3">
+                            <div>Loading</div>
+                            <div className="animate-spin rounded-full h-10 w-10 border-4 border-t-transparent border-gray-800"></div>
+                          </div>
                         </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>
