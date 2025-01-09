@@ -15,7 +15,6 @@ export async function isToken(req: NextRequest) {
     console.log(`No auth cookie`);
     return NextResponse.next(); //<< need to logout
   }
-
   // 2. decode and verify
   try {
     const { payload } = await jwtVerify(
@@ -33,9 +32,9 @@ export async function isToken(req: NextRequest) {
     console.error("JWT verification failed:", error);
     if (error instanceof Error && error.message.includes("jwt expired")) {
       console.log("Token Expired.");
-      return NextResponse.redirect(new URL("/login", req.url)); // Redirect to login page
+      return NextResponse.redirect(new URL("/logout", req.url)); // Redirect to login page
     }
     console.log("Token check fail:", error);
-    return NextResponse.redirect(new URL("/login", req.url)); // Redirect to login page
+    return NextResponse.redirect(new URL("/logout", req.url)); // Redirect to login page
   }
 }

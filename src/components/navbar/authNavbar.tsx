@@ -24,12 +24,11 @@ export const AuthNavbar: React.FC<AuthNavbarProps> = ({ media }) => {
     router.push("/");
   };
   const userId = authState.user?.sub;
-  const email = authState.userEmail;
   useEffect(() => {
-    if (email) {
+    if (media) {
       setIsProfileLoading(false);
     }
-  }, [email]);
+  }, [media]);
 
   return (
     <DropdownMenu>
