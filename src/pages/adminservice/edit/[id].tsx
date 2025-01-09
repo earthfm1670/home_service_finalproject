@@ -190,14 +190,7 @@ export default function AdminEdit() {
         </div>
       </form>
 
-      <AdminSubmitPopUp
-        setShowPopUpSubmit={setShowPopUpSubmit}
-        showPopUpSubmit={showPopUpSubmit}
-        message="แก้ไขรายการสำเร็จ"
-        subMessage="กรุณากดยืนยันเพื่อกลับสู่หน้าหลัก ?"
-        confirmationText="ยืนยัน"
-        redirectPath="/adminservice"
-      />
+
     </>
   );
 }

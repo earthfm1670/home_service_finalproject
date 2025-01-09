@@ -68,27 +68,31 @@ export const AdminserviceIndexServiceList = ({
               <thead>
                 <tr className="h-10 bg-gray-200 text-gray-500">
                   <th className="w-[55px]"></th>
-                  <th className="w-[58px] text-center font-normal">ลำดับ</th>
-                  <th className="max-w-[226px] text-start pl-6 font-normal">
+                  <th className="w-[58px] text-center font-normal text-sm">
+                    ลำดับ
+                  </th>
+                  <th className="max-w-[226px] text-start pl-6 font-normal text-sm">
                     ชื่อบริการ
                   </th>
-                  <th className="w-[201px] text-start pl-6 font-normal">
+                  <th className="w-[201px] text-start pl-6 font-normal text-sm">
                     หมวดหมู่
                   </th>
-                  <th className="w-[230px] text-start pl-6 font-normal">
+                  <th className="w-[230px] text-start pl-6 font-normal text-sm">
                     สร้างเมื่อ
                   </th>
-                  <th className="w-[230px] text-start pl-6 font-normal">
+                  <th className="w-[230px] text-start pl-6 font-normal text-sm">
                     แก้ไขล่าสุด
                   </th>
-                  <th className="w-[120px] text-center font-normal">Action</th>
+                  <th className="w-[120px] text-center font-normal text-sm">
+                    Action
+                  </th>
                 </tr>
               </thead>
               {/* for content rendering list form data */}
+              {/* .sort((a, b) => a.service_id - b.service_id) */}
               <tbody>
-                {serviceList
-                  // .sort((a, b) => a.service_id - b.service_id)
-                  .map((service: Service, index) => (
+                {Array.isArray(serviceList) && serviceList.length > 0 ? (
+                  serviceList.map((service: Service, index) => (
                     <tr
                       key={service.service_id}
                       className="border-t bg-white h-20 text-black"
@@ -168,7 +172,17 @@ export const AdminserviceIndexServiceList = ({
                         <IconEdit id={service.service_id} />
                       </td>
                     </tr>
-                  ))}
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={7} className="text-center py-4">
+                      <div className="w-full py-10 flex justify-center items-center text-3xl gap-3">
+                        <div>Loading</div>
+                        <div className="animate-spin rounded-full h-10 w-10 border-4 border-t-transparent border-gray-800"></div>
+                      </div>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
