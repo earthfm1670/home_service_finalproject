@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import axios from "axios";
+import { useAuth } from "@/context/authContext";
 
 interface ButtonComponentProps {
   status: string;
@@ -109,6 +110,7 @@ const HandymanComponent: React.FC = () => {
   const [bookingsData, setBookingsData] = useState<Booking[]>([]);
   const [filteredData, setFilteredData] = useState(bookingsData);
   const router = useRouter();
+  const { authState } = useAuth();
 
   // ฟังก์ชันสำหรับดึงข้อมูลจาก API
 
