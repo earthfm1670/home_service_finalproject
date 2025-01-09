@@ -5,6 +5,7 @@ import axios from "axios";
 import { setCookie, removeCookie } from "@/utils/cookies";
 //define user structure
 interface UserMetadata {
+  address: string;
   email: string;
   email_verified: boolean;
   name: string;

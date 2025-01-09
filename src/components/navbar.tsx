@@ -1,30 +1,35 @@
 import React, { useEffect, useState } from "react";
-import AuthNavbar from "./navbar/authNavbar";
+import { AuthNavbar } from "./navbar/authNavbar";
 import { useRouter } from "next/router";
-
+import { NavbarSkeleton } from "./customer/navbarSkeleton";
 import { useAuth } from "@/context/authContext";
-//import Image from "next/image";
+import axios from "axios";
+
 
 export function Navbar() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const router = useRouter();
   const { authState, isLoggedIn } = useAuth();
+  const [media, setMedia] = useState<string>("");
   const user = authState.user;
+  const email = authState.userEmail;
 
-  // useEffect(() => {
-  //   console.log("login successful");
-  //   console.log("user data");
-  //   console.log(user);
-  //   console.log("auth state");
-  //   console.log(authState);
-  //   console.log("is login " + isLoggedIn);
-  //   console.log("is admin " + isAdmin);
-  //   console.log("is staff " + isStaff);
-  //   console.log("user role" + user?.user_metadata.role);
-  // }, [authState, user]);
-  useEffect(() => {
-    setIsLoading(false);
-  }, []);
+  const getMedia = async () => {
+    try {
+      const res = await axios.post("api/auth/getUser", {
+        email,
+      });
+      const profileImage = res.data.userInfo.profile_picture_url;
+      if (profileImage) {
+        setMedia(profileImage);
+        setIsLoading(false);
+      }
+    } catch (e) {
+      const error = e as Error;
+      console.log("get medai error: ", error.message);
+    }
+  };
+
   const redirectToHome = (): void => {
     router.push("/");
   };
@@ -37,6 +42,13 @@ export function Navbar() {
     router.push("/login");
   };
 
+  useEffect(() => {
+    console.log("Navbar loading");
+    if (email) {
+      getMedia();
+    }
+  }, [email]);
+
   return (
     <div className="flex justify-between items-center border shadow-lg p-2 px-4 bg-white lg:px-32 ">
       <div className="flex gap-10 cursor-pointer lg:items-center lg:ml-8">
@@ -47,8 +59,7 @@ export function Navbar() {
         />
         <div
           className="hidden lg:block text-[16px] font-medium"
-          onClick={redirectToServiceList}
-        >
+          onClick={redirectToServiceList}>
           บริการของเรา
         </div>
       </div>
@@ -58,14 +69,14 @@ export function Navbar() {
         </div>
 
         {isLoading ? (
-          <div>Loading...</div>
+          <NavbarSkeleton />
         ) : isLoggedIn ? (
           <div className="flex gap-2 items-center lg:mr-20">
             <p className="hidden lg:block lg:text-[14px] text-gray-700">
               {user?.user_metadata.name || "Guest"}
             </p>
             <div className="w-[32px] h-[32px] lg:w-[40px] lg:h-[40px]">
-              <AuthNavbar />
+              <AuthNavbar media={media} />
             </div>
             <div className="w-[32px] h-[32px] lg:w-[40px] lg:h-[40px]">
               <img
@@ -78,8 +89,7 @@ export function Navbar() {
         ) : (
           <div
             onClick={redirectToLogin}
-            className="flex justify-center items-center lg:mr-16 w-[90px] h-[37px] text-[14px] font-medium text-blue-600 bg-white border border-blue-600 px-2 hover:text-blue-400 hover:border-blue-400 rounded-lg cursor-pointer"
-          >
+            className="flex justify-center items-center lg:mr-16 w-[90px] h-[37px] text-[14px] font-medium text-blue-600 bg-white border border-blue-600 px-2 hover:text-blue-400 hover:border-blue-400 rounded-lg cursor-pointer">
             <button>เข้าสู่ระบบ</button>
           </div>
         )}
