@@ -5,9 +5,18 @@ export default async function getUser(
   res: NextApiResponse
 ) {
   try {
-    const { email } = req.body;
+    const { email, userRole } = req.body;
+    let table;
+    if (userRole === "admin") {
+      table = "admins";
+    } else if (userRole === "staff") {
+      table = "staffs";
+    } else if (userRole === "customer") {
+      table = "users";
+    }
+
     const { data: userInfo, error: userInfoError } = await supabase
-      .from("users")
+      .from(`${table}`)
       .select()
       .eq("email", email)
       .single();
