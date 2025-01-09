@@ -25,7 +25,7 @@ export function AdminSubmitPopUp({
     <>
       {/* Popup for submit */}
       {showPopUpSubmit && (
-        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 z-99">
           <div
             className="bg-white w-[360px] h-auto flex flex-col items-center rounded-xl 
             p-3 gap-3 absolute"

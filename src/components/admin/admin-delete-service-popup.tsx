@@ -23,7 +23,7 @@ export function AdminDeleteServicePopUp({
   return (
     <>
       {deleteServiceButton && (
-        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 z-20">
           <div className="bg-white w-[360px] h-auto flex flex-col items-center rounded-xl p-4 gap-3">
             <div className="w-full">
               <div

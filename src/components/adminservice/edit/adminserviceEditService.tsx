@@ -33,7 +33,6 @@ interface AdminServiceAddIndexProps {
   setImageEmpty: (value: boolean) => void;
   setNameTopic: (value: string) => void;
   setOldImageURL: (value: string) => void;
-  
 }
 
 export const AdminserviceEditService = ({
@@ -240,7 +239,6 @@ export const AdminserviceEditService = ({
       fetchService();
     }
   }, [id]);
-
 
   const [deleteServiceButton, setDeleteServiceButton] =
     useState<boolean>(false);
