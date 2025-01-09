@@ -17,261 +17,116 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import axios from "axios";
 
 interface ButtonComponentProps {
   status: string;
+  booking_id: string;
+  fetchData: () => void;
 }
 
-const mockData = [
-  {
-    id: "AD1022103",
-    date: "31/12/2024",
-    status: "กำลังดำเนินการ",
-    statusColor: "text-orange-400",
-    name: "Mr. Jack Richer",
-    email: "Richer@mission.io",
-    address: "33 Fordland Road, Benton Tower",
-    service: [
-      {
-        category: "บริการทั่วไป",
-        service_name: "ติดตั้งแอร์",
-        amount: "1",
-        price_total: "3000",
-      },
-    ],
-  },
-  {
-    id: "AD3027103",
-    date: "25/12/2024",
-    status: "รอดำเนินการ",
-    statusColor: "text-red-500",
-    name: "Ms. Scarlet Witch",
-    email: "scarlet@avengers.io",
-    address: "100 Hex Road, Mystical Plaza",
-    service: [
-      {
-        category: "บริการทั่วไป",
-        service_name: "ทำความสะอาดทั่วไป",
-        amount: "2",
-        price_total: "1000",
-      },
-      {
-        category: "บริการทั่วไป",
-        service_name: "ซ่อมเครื่องซักผ้า",
-        amount: "1",
-        price_total: "800",
-      },
-    ],
-  },
-  {
-    id: "AD9185463",
-    date: "30/12/2024",
-    status: "ดำเนินการสำเร็จ",
-    statusColor: "text-green-400",
-    name: "Mr. Alexander Pierce",
-    email: "pierce@shield.io",
-    address: "33 Fordland Road, Impossible Tower",
-    service: [
-      {
-        category: "บริการห้องครัว",
-        service_name: "ติดตั้งเตาแก๊ส",
-        amount: "1",
-        price_total: "1500",
-      },
-    ],
-  },
-  {
-    id: "AD2456103",
-    date: "15/11/2024",
-    status: "กำลังดำเนินการ",
-    statusColor: "text-orange-400",
-    name: "Ms. Natasha Romanoff",
-    email: "blackwidow@shield.io",
-    address: "789 Covert Lane, Blackout District",
-    service: [
-      {
-        category: "บริการห้องน้ำ",
-        service_name: "ติดตั้งชักโครก",
-        amount: "1",
-        price_total: "2000",
-      },
-      {
-        category: "บริการทั่วไป",
-        service_name: "ล้างเครื่องบิน",
-        amount: "1",
-        price_total: "8000",
-      },
-    ],
-  },
-  {
-    id: "AD6754102",
-    date: "01/01/2025",
-    status: "รอดำเนินการ",
-    statusColor: "text-red-500",
-    name: "Mr. Tony Stark",
-    email: "ironman@starkindustries.io",
-    address: "10880 Malibu Point, New York",
-    service: [
-      {
-        category: "บริการทั่วไป",
-        service_name: "ซ่อมแอร์",
-        amount: "1",
-        price_total: "3000",
-      },
-      {
-        category: "บริการทั่วไป",
-        service_name: "ติดตั้งแอร์",
-        amount: "1",
-        price_total: "4000",
-      },
-      {
-        category: "บริการห้องครัว",
-        service_name: "ติดตั้งเตาแก๊ส",
-        amount: "1",
-        price_total: "3500",
-      },
-    ],
-  },
-  {
-    id: "AD7895132",
-    date: "20/12/2024",
-    status: "ดำเนินการสำเร็จ",
-    statusColor: "text-green-400",
-    name: "Mr. Steve Rogers",
-    email: "cap@avengers.io",
-    address: "100 Shield Road, Brooklyn",
-    service: [
-      {
-        category: "บริการทั่วไป",
-        service_name: "ติดตั้งเครื่องดูดควัน",
-        amount: "1",
-        price_total: "5000",
-      },
-      {
-        category: "บริการห้องน้ำ",
-        service_name: "ติดตั้งชักโครก",
-        amount: "1",
-        price_total: "3000",
-      },
-    ],
-  },
-  {
-    id: "AD4563019",
-    date: "10/12/2024",
-    status: "กำลังดำเนินการ",
-    statusColor: "text-orange-400",
-    name: "Mr. Bruce Banner",
-    email: "hulk@avengers.io",
-    address: "Gamma Lab, Avengers Tower",
-    service: [
-      {
-        category: "บริการห้องครัว",
-        service_name: "ติดตั้งเตาแก๊ส",
-        amount: "1",
-        price_total: "3500",
-      },
-      {
-        category: "บริการทั่วไป",
-        service_name: "ทำความสะอาดทั่วไป",
-        amount: "1",
-        price_total: "500",
-      },
-    ],
-  },
-  {
-    id: "AD1112223",
-    date: "05/12/2024",
-    status: "รอดำเนินการ",
-    statusColor: "text-red-500",
-    name: "Ms. Wanda Maximoff",
-    email: "wanda@avengers.io",
-    address: "Hex Village, Sokovia",
-    service: [
-      {
-        category: "บริการทั่วไป",
-        service_name: "ซ่อมเครื่องซักผ้า",
-        amount: "2",
-        price_total: "3000",
-      },
-      {
-        category: "บริการทั่วไป",
-        service_name: "ล้างเครื่องบิน",
-        amount: "1",
-        price_total: "8000",
-      },
-    ],
-  },
-  {
-    id: "AD3102114",
-    date: "28/12/2024",
-    status: "ดำเนินการสำเร็จ",
-    statusColor: "text-green-400",
-    name: "Ms. Carol Danvers",
-    email: "captain@marvel.io",
-    address: "Starforce HQ, Hala",
-    service: [
-      {
-        category: "บริการทั่วไป",
-        service_name: "ทำความสะอาดทั่วไป",
-        amount: "1",
-        price_total: "500",
-      },
-      {
-        category: "บริการห้องครัว",
-        service_name: "ติดตั้งเตาแก๊ส",
-        amount: "1",
-        price_total: "2500",
-      },
-    ],
-  },
-  {
-    id: "AD7841224",
-    date: "22/12/2024",
-    status: "กำลังดำเนินการ",
-    statusColor: "text-orange-400",
-    name: "Mr. Peter Parker",
-    email: "spiderman@avengers.io",
-    address: "Queens, New York",
-    service: [
-      {
-        category: "บริการทั่วไป",
-        service_name: "ซ่อมแอร์",
-        amount: "1",
-        price_total: "2000",
-      },
-      {
-        category: "บริการห้องครัว",
-        service_name: "ติดตั้งเครื่องดูดควัน",
-        amount: "1",
-        price_total: "3000",
-      },
-    ],
-  },
-];
+interface BookingDetail {
+  service_name: string;
+  sub_service_description: string;
+  amount: number;
+  sub_service_unit_price: number;
+  sub_service_unit: string;
+  order_price: number;
+}
+interface Booking {
+  id: number;
+  booking_id: string;
+  booked_at: string;
+  completed_at: string | null;
+  in_progress_at: string | null;
+  status_name: string;
+  total_price: number;
+  address: string | null;
+  user_name: string;
+  user_phone: string;
+  user_email: string;
+  staff_name: string;
+  bookingDetail: BookingDetail[];
+}
 
-const ButtonComponent: React.FC<ButtonComponentProps> = ({ status }) => (
-  <button
-    className={`px-8 py-2 text-sm md:text-base font-medium transition-all duration-700 ease-in-out text-white ${
-      status === "รอดำเนินการ"
-        ? "bg-blue-500 hover:bg-blue-600 active:bg-blue-700"
+const ButtonComponent: React.FC<ButtonComponentProps> = ({
+  status,
+  booking_id,
+  fetchData,
+}) => {
+  const handleClick = async () => {
+    let status_id;
+    let completedTime: string | undefined;
+    let inProgressTime: string | undefined;
+    if (status === "รอดำเนินการ") {
+      status_id = 2;
+      inProgressTime = new Date().toLocaleString("en-US", {
+        timeZone: "Asia/Bangkok",
+      });
+    } else if (status === "กำลังดำเนินการ") {
+      status_id = 3;
+      completedTime = new Date().toLocaleString("en-US", {
+        timeZone: "Asia/Bangkok",
+      });
+    }
+    if (status_id) {
+      try {
+        const response = await axios.patch(`/api/handyman`, {
+          booking_id: booking_id,
+          status_id: status_id,
+          completed_at: completedTime,
+          inProgress_at: inProgressTime,
+        });
+        fetchData();
+      } catch (error) {
+        console.error("Error updating status:", error);
+      }
+    }
+  };
+  return (
+    <button
+      onClick={handleClick}
+      className={`px-8 py-2 text-sm md:text-base font-medium transition-all duration-700 ease-in-out text-white ${
+        status === "รอดำเนินการ"
+          ? "bg-blue-500 hover:bg-blue-600 active:bg-blue-700"
+          : status === "กำลังดำเนินการ"
+          ? "bg-green-500 hover:bg-green-600 active:bg-green-700"
+          : ""
+      } rounded-md shadow-md disabled:bg-gray-400 transition duration-150 ease-in-out`}
+    >
+      {" "}
+      {status === "รอดำเนินการ"
+        ? "ตกลง ดำเนินการ"
         : status === "กำลังดำเนินการ"
-        ? "bg-green-500 hover:bg-green-600 active:bg-green-700"
-        : ""
-    } rounded-md shadow-md disabled:bg-gray-400 transition duration-150 ease-in-out`}
-  >
-    {status === "รอดำเนินการ"
-      ? "ตกลง ดำเนินการ"
-      : status === "กำลังดำเนินการ"
-      ? "ดำเนินการ สำเร็จ"
-      : ""}
-  </button>
-);
+        ? "ดำเนินการ สำเร็จ"
+        : ""}{" "}
+    </button>
+  );
+};
 
 const HandymanComponent: React.FC = () => {
   const [list, setList] = useState<boolean>(true);
-  const [filteredData, setFilteredData] = useState(mockData);
-
+  const [bookingsData, setBookingsData] = useState<Booking[]>([]);
+  const [filteredData, setFilteredData] = useState(bookingsData);
   const router = useRouter();
+
+  // ฟังก์ชันสำหรับดึงข้อมูลจาก API
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`api/handyman`);
+
+      // ตรวจสอบว่าข้อมูลที่ได้รับเป็นอาร์เรย์
+      const data = Array.isArray(response.data.data) ? response.data.data : [];
+      setBookingsData(data);
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const handleLogOut = (value: string) => {
     if (value === "logout") {
@@ -283,21 +138,34 @@ const HandymanComponent: React.FC = () => {
     setList(listStatus);
     if (listStatus) {
       setFilteredData(
-        mockData.filter(
-          (service) =>
-            service.status === "กำลังดำเนินการ" ||
-            service.status === "รอดำเนินการ"
-        )
+        bookingsData
+          .filter(
+            (booking) =>
+              booking.status_name === "กำลังดำเนินการ" ||
+              booking.status_name === "รอดำเนินการ"
+          )
+          .sort((a, b) => b.booking_id.localeCompare(a.booking_id))
       );
     } else {
       setFilteredData(
-        mockData.filter((service) => service.status === "ดำเนินการสำเร็จ")
+        bookingsData
+          .filter((booking) => booking.status_name === "ดำเนินการสำเร็จ")
+          .sort((a, b) => {
+            if (a.completed_at && b.completed_at) {
+              return (
+                new Date(b.completed_at).getTime() -
+                new Date(a.completed_at).getTime()
+              ); // เรียงลำดับตามเวลาล่าสุด
+            }
+            return 0;
+          })
       );
     }
   };
+
   useEffect(() => {
     handleSelectList(list);
-  }, [list]);
+  }, [list, bookingsData]);
 
   return (
     <section className="flex flex-col lg:flex-row bg-gray-100">
@@ -350,7 +218,7 @@ const HandymanComponent: React.FC = () => {
         </div>
       </aside>
       <article className="flex flex-col w-full">
-        <nav>
+        <nav className="sticky top-0 z-10">
           <div className="flex items-center justify-between bg-white h-20 px-10 py-5 border-b border-gray-300">
             <div className="hidden lg:block text-xl">
               บริการ / ประวัติรายการ
@@ -396,7 +264,7 @@ const HandymanComponent: React.FC = () => {
             </div>
           </div>
         </nav>
-        <aside className="flex lg:hidden bg-[#001C59] w-screen h-12 sticky top-0 justify-between text-white">
+        <aside className="flex lg:hidden bg-[#001C59] w-screen h-12 sticky top-20 justify-between text-white">
           <div className="flex w-screen">
             <div
               className={`${
@@ -428,26 +296,45 @@ const HandymanComponent: React.FC = () => {
         </aside>
         <div>
           <Accordion type="single" collapsible className="w-full bg-white">
-            {filteredData.map((service) => (
-              <AccordionItem key={service.id} value={service.id}>
+            {filteredData.map((booking) => (
+              <AccordionItem
+                key={booking.booking_id}
+                value={booking.booking_id}
+              >
                 <AccordionTrigger className="justify-around lg:text-xl md:text-lg transition-all duration-700 ease-in-out font-normal h-20 px-10 py-5 hover:no-underline focus:no-underline hover:bg-blue-50">
-                  <h1>{service.id}</h1>
-                  <h1 className="tracking-widest">{service.date}</h1>
-                  <h1 className={service.statusColor}>{service.status}</h1>
+                  <h1>{booking.booking_id}</h1>
+                  <h1 className="tracking-widest">
+                    {booking.booked_at.slice(0, 10)}
+                  </h1>
+                  <h1
+                    className={
+                      booking.status_name === "ดำเนินการสำเร็จ"
+                        ? "text-green-400"
+                        : booking.status_name === "รอดำเนินการ"
+                        ? "text-red-500"
+                        : booking.status_name === "กำลังดำเนินการ"
+                        ? "text-orange-400"
+                        : ""
+                    }
+                  >
+                    {" "}
+                    {booking.status_name}
+                  </h1>
                 </AccordionTrigger>
                 <AccordionContent className="w-full sm:max-h-[420px] lg:max-h-[540px] overflow-y-auto flex flex-col px-10 rounded-lg shadow-lg lg:text-lg md:text-base transition-all duration-700 ease-in-out">
                   <div className="flex justify-evenly py-6">
                     <div className="flex flex-col px-2 space-y-4 text-gray-800 flex-1">
                       <span className="pb-2 font-medium flex justify-center text-gray-500">
                         <h1 className="px-2 py-1 sm:px-12 sm:py-2 flex justify-center items-center text-center rounded-full shadow-md transition-all duration-700 ease-in-out">
-                          รายละเอียดผู้ให้บริการ
+                          รายละเอียดผู้ใช้บริการ
                         </h1>
                       </span>
                       <div className="flex flex-col items-center">
                         <span className="space-y-4 ">
-                          <h1 className="pt-4 ">Name : {service.name}</h1>
-                          <h1>Phone / Email : {service.email}</h1>
-                          <h1>Address : {service.address}</h1>
+                          <h1 className="pt-4 ">Name : {booking.user_name}</h1>
+                          <h1>Phone : {booking.user_phone}</h1>
+                          <h1>Email : {booking.user_email}</h1>
+                          <h1>Address : {booking.address}</h1>
                         </span>
                       </div>
                     </div>
@@ -458,31 +345,60 @@ const HandymanComponent: React.FC = () => {
                           รายละเอียดบริการ
                         </h1>
                       </span>
-                      {service.service.map((detail, index) => (
+                      <div className="md:px-4 lg:px-8 xl:px-20 2xl:px-32">
+                        {booking.status_name === "กำลังดำเนินการ" ? (
+                          <h1 className="w-auto px-3 py-1 font-medium text-center text-white bg-orange-400 rounded-2xl">
+                            เริ่มดำเนินการ{" "}
+                            {booking.in_progress_at?.slice(0, 10)} เวลา{" "}
+                            {booking.in_progress_at?.slice(11, 19)} น.
+                          </h1>
+                        ) : (
+                          ""
+                        )}
+                        {booking.status_name === "ดำเนินการสำเร็จ" ? (
+                          <h1 className="w-auto px-3 py-1 font-medium text-center text-white bg-green-400 rounded-2xl">
+                            ดำเนินการสำเร็จ {booking.completed_at?.slice(0, 10)}{" "}
+                            เวลา {booking.completed_at?.slice(11, 19)} น.
+                          </h1>
+                        ) : (
+                          ""
+                        )}
+                      </div>
+                      {booking.bookingDetail.map((detail, index) => (
                         <div
                           key={index}
                           className="flex flex-col space-y-4 sm:px-2 md:px-4 lg:px-8 xl:px-20 2xl:px-32 text-gray-800 transition-all duration-700 ease-in-out"
                         >
-                          <h1 className="pt-4 ">บริการ : {detail.category}</h1>
+                          <h1 className="pt-4 ">
+                            บริการ : {detail.service_name}
+                          </h1>
                           <h1>
-                            รายการ : {detail.service_name} จำนวน {detail.amount}{" "}
-                            รายการ
+                            รายการ : {detail.sub_service_description} จำนวน{" "}
+                            {detail.amount} {detail.sub_service_unit}
                           </h1>
                           <h1 className="font-medium  pb-1 border-solid border-b-2 border-gray-100">
-                            รวม : {detail.price_total} ฿
+                            รวม : {detail.order_price} ฿
                           </h1>
                         </div>
                       ))}
                       <div className="hidden sm:flex justify-center pt-2">
-                        {service.status !== "ดำเนินการสำเร็จ" && (
-                          <ButtonComponent status={service.status} />
+                        {booking.status_name !== "ดำเนินการสำเร็จ" && (
+                          <ButtonComponent
+                            status={booking.status_name}
+                            booking_id={booking.booking_id}
+                            fetchData={fetchData}
+                          />
                         )}
                       </div>
                     </div>
                   </div>
                   <div className="sm:hidden flex justify-center pt-2">
-                    {service.status !== "ดำเนินการสำเร็จ" && (
-                      <ButtonComponent status={service.status} />
+                    {booking.status_name !== "ดำเนินการสำเร็จ" && (
+                      <ButtonComponent
+                        status={booking.status_name}
+                        booking_id={booking.booking_id}
+                        fetchData={fetchData}
+                      />
                     )}
                   </div>
                 </AccordionContent>

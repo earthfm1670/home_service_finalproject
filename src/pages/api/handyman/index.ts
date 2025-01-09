@@ -1,12 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "@/utils/supabase";
-
-// const formatPrice = (price: number): string => {
-//   return price.toLocaleString("en-US", {
-//     minimumFractionDigits: 2,
-//     maximumFractionDigits: 2,
-//   });
-// };
+import moment from "moment-timezone";
 
 export default async function handlerHandyman(
   req: NextApiRequest,
@@ -14,75 +8,111 @@ export default async function handlerHandyman(
 ) {
   if (req.method === "GET") {
     try {
-      const { query } = req;
-      // Pagination params
-      const page = parseInt((query.page as string) || "1");
-      const limit = parseInt((query.limit as string) || "10");
-
-      // Base query with join
-      let dbQuery = supabase
-        .from("order_list")
+      // ดึงข้อมูลจากตาราง bookings ก่อน
+      let { data: bookings, error: bookingsError } = await supabase
+        .from("bookings")
         .select(
-          ` id, booking_id, sub_services_id, amount, order_price, sub_services:sub_services ( description, unit, unit_price, services:services ( service_name ) ), booking:bookings ( booked_at, completed_at, status_id, total_price, address, booking_status:booking_status ( status_name ), user_id, users ( name ), staff_id, staffs ( name ) ) `,
-          { count: "exact" }
+          "booking_id, booked_at, completed_at, in_progress_at, status_id, total_price, address, booking_status:booking_status ( status_name ), user_id, users ( name, phone_number, email ), staff_id, staffs ( name )"
         );
 
-      // let dbQuery = supabase.from("bookings").select(` * `, { count: "exact" });
+      if (bookingsError) throw bookingsError;
 
-      // let dbQuery = supabase
-      //   .from("bookings")
-      //   .select(
-      //     ` booking_id, booked_at, completed_at, status_id, booking_status ( status_name ), total_price, address, user_id, users ( name ) `,
-      //     { count: "exact" }
-      //   );
+      // ตรวจสอบว่าข้อมูล bookings ไม่เป็น null หรือ undefined
+      if (!bookings) {
+        throw new Error("No bookings data found");
+      }
 
-      const { data: bookings, error } = await dbQuery;
-      if (error) throw error;
+      // ดึงข้อมูลจากตาราง order_list โดยใช้ booking_id จาก bookings
+      let { data: orders, error: ordersError } = await supabase
+        .from("order_list")
+        .select(
+          "booking_id, sub_services_id, amount, order_price, sub_services:sub_services ( description, unit, unit_price, services:services ( service_name ) )"
+        );
 
-      // Apply pagination
-      const startIndex = (page - 1) * limit;
-      const endIndex = page * limit;
-      const paginatedBookings = bookings.slice(startIndex, endIndex);
-      const totalCount = bookings.length;
-      const totalPages = Math.ceil(totalCount / limit);
+      if (ordersError) throw ordersError;
 
-      // Format response
+      // ตรวจสอบว่าข้อมูล orders ไม่เป็น null หรือ undefined
+      if (!orders) {
+        throw new Error("No orders data found");
+      }
 
-      const bookingsData = paginatedBookings.map((booking: any) => ({
-        id: booking.id,
-        booking_id: booking.booking_id,
-        service_name: booking.sub_services.services.service_name,
-        sub_service_description: booking.sub_services.description,
-        amount: booking.amount,
-        sub_service_unit_price: booking.sub_services.unit_price,
-        sub_service_unit: booking.sub_services.unit,
-        order_price: booking.order_price,
-        booked_at: booking.booking?.booked_at,
-        completed_at: booking.booking?.completed_at,
-        status_name: booking.booking?.booking_status?.status_name,
-        total_price: booking.booking?.total_price,
-        address: booking.booking?.address,
-        user_name: booking.booking?.users.name,
-        staff_name: booking.booking?.staffs.name,
-      }));
+      // จัดรูปแบบ response
+      const bookingsData = bookings.map((booking: any) => {
+        const relatedOrders = orders.filter(
+          (order: any) => order.booking_id === booking.booking_id
+        );
 
-      console.log("Formatted Bookings:", bookingsData); // Debugging log
+        const bookingDetail = relatedOrders.map((order: any) => ({
+          service_name: order.sub_services?.services?.service_name || " ",
+          sub_service_description: order.sub_services?.description || " ",
+          amount: order.amount,
+          sub_service_unit_price: order.sub_services?.unit_price || " ",
+          sub_service_unit: order.sub_services?.unit || " ",
+          order_price: order.order_price,
+        }));
+
+        return {
+          booking_id: booking.booking_id,
+          booked_at: booking.booked_at || " ",
+          completed_at: booking.completed_at || " ",
+          in_progress_at: booking.in_progress_at || " ",
+          status_name: booking.booking_status?.status_name || " ",
+          total_price: booking.total_price || " ",
+          address: booking.address || " ",
+          user_name: booking.users?.name || " ",
+          user_phone: booking.users?.phone_number || " ",
+          user_email: booking.users?.email || " ",
+          staff_name: booking.staffs?.name || " ",
+          bookingDetail: bookingDetail,
+        };
+      });
 
       res.status(200).json({
         data: bookingsData,
-        totalCount,
-        currentPage: page,
-        totalPages,
       });
     } catch (error) {
       console.error("API Error:", error);
       res.status(500).json({
         data: null,
-        totalCount: 0,
-        currentPage: 1,
-        totalPages: 0,
         error: "Internal Server Error: " + (error as Error).message,
       });
+    }
+  } else if (req.method === "PATCH") {
+    try {
+      const { booking_id, status_id, completed_at, inProgress_at } = req.body;
+
+      const updateData: {
+        status_id: number;
+        completed_at?: string;
+        in_progress_at?: string;
+      } = {
+        status_id: status_id,
+      };
+
+      // ถ้ามีค่า completed_at ให้แปลงเวลาเป็นเวลาท้องถิ่นของประเทศไทย
+      if (completed_at) {
+        const localTime = moment.tz(completed_at, "Asia/Bangkok").format();
+        updateData.completed_at = localTime;
+      }
+
+      if (inProgress_at) {
+        const localTime = moment.tz(inProgress_at, "Asia/Bangkok").format();
+        updateData.in_progress_at = localTime;
+      }
+
+      const { data, error } = await supabase
+        .from("bookings")
+        .update(updateData)
+        .eq("booking_id", booking_id);
+      if (error) throw error;
+      res
+        .status(200)
+        .json({ message: "Status updated successfully", data: data });
+    } catch (error) {
+      console.error("API Error:", error);
+      res
+        .status(500)
+        .json({ error: "Internal Server Error: " + (error as Error).message });
     }
   } else {
     res.setHeader("Allow", ["GET"]);
