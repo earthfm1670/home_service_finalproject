@@ -67,13 +67,12 @@ export default function Login() {
       return;
     }
     //---Change to login useAuth------------------------------------------
-    try {
-      login(email, password);
-      router.push("/");
-    } catch (error) {
-      const err = error as Error;
-      console.log(`error occore during login, see detail: ${err.message}`);
+    const passLogin = await login(email, password);
+    if (!passLogin) {
+      console.log("Invalid email or password");
       setShowPopup(true);
+    } else {
+      router.push("/");
     }
   };
   return (
@@ -114,9 +113,7 @@ export default function Login() {
                   />
                   <div className="h-3">
                     {emailError && (
-                      <p className="text-red-500 text-sm">
-                        อีเมลไม่ถูกต้อง
-                      </p>
+                      <p className="text-red-500 text-sm">อีเมลไม่ถูกต้อง</p>
                     )}
                   </div>
                 </div>
