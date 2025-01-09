@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import ProfileSkeleton from "@/components/customer/profileSkeleton";
 import { useRouter } from "next/router";
+import { CustomerLocation } from "@/components/customer/customerLocation";
 
 export default function CustomerProfile() {
   const { authState } = useAuth();
@@ -103,14 +104,6 @@ export default function CustomerProfile() {
       console.log("send request fail");
       console.log(error.message);
     }
-    //----------WORK------------------
-
-    // const formDataObject: { [key: string]: string | File } = {};
-    // for (const [key, value] of formData.entries()) {
-    //   formDataObject[key] = value;
-    // }
-
-    //await axios.put(`/api/someThing`, formData, { headers: { "Content-Type": "multipart/form-data" }, });
   };
 
   useEffect(() => {
@@ -198,13 +191,7 @@ export default function CustomerProfile() {
                 </div>
                 <div className="address-box flex flex-col justify-start">
                   <label htmlFor="address">Address</label>
-                  <input
-                    type="address"
-                    name="userAddress"
-                    onChange={handleInputAddress}
-                    value={userAddress}
-                    className="address w-80 h-12 rounded-lg border p-3"
-                  />
+                  <CustomerLocation />
                 </div>
                 <div className="buttons-collection flex justify-center items-center gap-8">
                   <button
