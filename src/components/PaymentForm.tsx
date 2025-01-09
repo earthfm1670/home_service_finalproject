@@ -26,6 +26,10 @@ interface PaymentFormProps {
   onCvcCompleteChange: (isComplete: boolean) => void;
 }
 
+interface PaymentFormHandle {
+  handleSubmit: () => Promise<void>;
+}
+
 const promoCodes: PromoCodes = {
   DISCOUNT10: 0.1,
   DISCOUNT20: 0.2,
@@ -95,18 +99,17 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
       const cvcElement = elements?.getElement(CardCvcElement);
 
       const isCreditCardSelected = selectedPayment === "creditcard";
-      const cardComplete = cardElement && !cardElement._empty;
-      const expiryComplete = expiryElement && !expiryElement._empty;
-      const cvcComplete = cvcElement && !cvcElement._empty;
+      // const cardComplete = cardElement && !cardElement._empty;
+      // const expiryComplete = expiryElement && !expiryElement._empty;
+      // const cvcComplete = cvcElement && !cvcElement._empty;
 
-      console.log("isCreditCardSelected:", selectedPayment === "creditcard");
-      console.log("Card complete:", cardElement && !cardElement._empty);
-      console.log("Expiry complete:", expiryElement && !expiryElement._empty);
-      console.log("CVC complete:", cvcElement && !cvcElement._empty);
-      console.log("Name entered:", name !== "");
+      // console.log("isCreditCardSelected:", selectedPayment === "creditcard");
+      // console.log("Card complete:", cardElement && !cardElement._empty);
+      // console.log("Expiry complete:", expiryElement && !expiryElement._empty);
+      // console.log("CVC complete:", cvcElement && !cvcElement._empty);
+      // console.log("Name entered:", name !== "");
 
       // validate all inputs
-
       if (!isCreditCardSelected) return true;
 
       if (!cardComplete) {
@@ -145,8 +148,7 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
       // );
     };
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
+    const handleSubmit = async () => {
       setLoading(true);
 
       if (!stripe || !elements) {
