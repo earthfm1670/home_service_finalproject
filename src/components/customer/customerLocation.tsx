@@ -26,15 +26,44 @@ type Province = {
   }>;
 };
 
-export const CustomerLocation = () => {
+interface CustomerLocationProps {
+  address: string;
+  province: string;
+  district: string;
+  subDistrict: string;
+  additionalDetails: string;
+  fullAddress: string;
+
+  // State setter functions
+  setAddress: React.Dispatch<React.SetStateAction<string>>;
+  setProvince: React.Dispatch<React.SetStateAction<string>>;
+  setDistrict: React.Dispatch<React.SetStateAction<string>>;
+  setSubDistrict: React.Dispatch<React.SetStateAction<string>>;
+  setAdditionalDetails: React.Dispatch<React.SetStateAction<string>>;
+  setFullAddress: React.Dispatch<React.SetStateAction<string>>;
+}
+export const CustomerLocation: React.FC<CustomerLocationProps> = ({
+  address,
+  province,
+  district,
+  subDistrict,
+  additionalDetails,
+  fullAddress,
+  setAddress,
+  setProvince,
+  setDistrict,
+  setSubDistrict,
+  setAdditionalDetails,
+  setFullAddress,
+}) => {
   const [provincesData, setProvincesData] = useState<Province[]>([]); //ข้อมูลจังหวัดทั้งหมด
-  const [address, setAddress] = useState<string>("");
   //----for stringdify------------------
-  const [province, setProvince] = useState<string>("");
-  const [district, setDistrict] = useState<string>("");
-  const [subDistrict, setSubDistrict] = useState<string>("");
-  const [additionalDetails, setAdditionalDetails] = useState<string>("");
-  const [fullAddress, setFullAddress] = useState<string>("");
+  //const [address, setAddress] = useState<string>("");
+  //   const [province, setProvince] = useState<string>("");
+  //   const [district, setDistrict] = useState<string>("");
+  //   const [subDistrict, setSubDistrict] = useState<string>("");
+  //   const [additionalDetails, setAdditionalDetails] = useState<string>("");
+  //   const [fullAddress, setFullAddress] = useState<string>("");
   //----Set selecte menu-----------------------------------
   const [selectedAddress, setSelectedAddress] = useState({
     province_name: "",

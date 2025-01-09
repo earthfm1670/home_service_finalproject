@@ -118,7 +118,7 @@ export default function CustomerProfile() {
                 </div>
                 <div className="address-box flex flex-col justify-start">
                   <label htmlFor="address">Address</label>
-                  <div className="address w-80 h-12 rounded-lg border p-3 bg-gray-300">
+                  <div className="address w-80 min-h-12 rounded-lg border p-3 bg-gray-300">
                     {userAddress}
                   </div>
                 </div>

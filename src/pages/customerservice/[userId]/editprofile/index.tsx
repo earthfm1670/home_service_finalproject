@@ -17,7 +17,6 @@ export default function CustomerProfile() {
   const email = authState.userEmail; // change to get user from supabase
   const fetchedUserName = user?.name;
   const fetchedPhoneNumber = user?.phone;
-  const fetchUserAddress = user?.address;
   const fetchImage = null;
 
   //--------Form Input---------------------------------------------
@@ -25,16 +24,30 @@ export default function CustomerProfile() {
   const [phoneNumber, setPhoneNumber] = useState<string>(
     fetchedPhoneNumber || ""
   );
-  const [userAddress, setUserAddress] = useState<string>(
-    fetchUserAddress || ""
-  );
   const [uploadImage, setUploadImage] = useState<Blob>();
   const [previewImage, setPreviewImage] = useState<string>(
     fetchImage || "/image/footerhouse.svg"
   );
+  //-----Address State-----------------------------------------------------
+  const [userAddress, setUserAddress] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
+  const [province, setProvince] = useState<string>("");
+  const [district, setDistrict] = useState<string>("");
+  const [subDistrict, setSubDistrict] = useState<string>("");
+  const [additionalDetails, setAdditionalDetails] = useState<string>("");
+  const [fullAddress, setFullAddress] = useState<string>("");
 
+  //-----Handle Address------------------------------------------------------------------
+  const handleSetFullAddress = () => {
+    const fa = `${address} แขวง ${subDistrict} เขต ${district} จังหวัด ${province} 
+    ${additionalDetails}
+    `;
+    setFullAddress(fa);
+    setUserAddress(fa);
+  };
   //-----Loading state--------------------------------------------------------------
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSubmited, setIsSummited] = useState<boolean>(false);
   //-----Fetch user------------------------------------------------------------
   const fetchUser = async () => {
     try {
@@ -44,7 +57,6 @@ export default function CustomerProfile() {
       const fetchedUser = respond.data.userInfo;
       setUserName(fetchedUser.name);
       setPhoneNumber(fetchedUser.phone_number);
-      setUserAddress(fetchedUser.address);
       setPreviewImage(fetchedUser.profile_picture_url);
       setIsLoading(false);
     } catch (err) {
@@ -74,16 +86,18 @@ export default function CustomerProfile() {
   const handleInputPhone = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPhoneNumber(e.target.value);
   };
-  const handleInputAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserAddress(e.target.value);
-  };
+
   const handleRedirect = () => {
     router.push(`/customerservice/${userId}/profile`);
   };
   //------Form Submission-----------------------------------------------------------------------------
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     //Send form data to edit profile api
+    console.log("hitting submit");
     e.preventDefault();
+    handleSetFullAddress();
+    console.log("fullAddress", fullAddress);
+    console.log("userAddress", userAddress);
     const fd = new FormData();
     fd.append("userName", userName);
     fd.append("phoneNumber", phoneNumber);
@@ -91,19 +105,22 @@ export default function CustomerProfile() {
     if (uploadImage) {
       fd.append("image", uploadImage);
     }
-    console.log("formData----------");
-    console.log(Array.from(fd));
+    console.log("-----------formData----------");
+
     for (const i of fd) {
       console.log(i);
     }
-    try {
-      const result = await axios.put(`/api/customer/editprofile/${userId}`, fd);
-      console.log(result);
-    } catch (e) {
-      const error = e as Error;
-      console.log("send request fail");
-      console.log(error.message);
-    }
+    console.log("fullAddress check after submit");
+    console.log(userAddress);
+    // try {
+    //   const result = await axios.put(`/api/customer/editprofile/${userId}`, fd);
+    //   console.log(result);
+    //   setIsSummited(true);
+    // } catch (e) {
+    //   const error = e as Error;
+    //   console.log("send request fail");
+    //   console.log(error.message);
+    // }
   };
 
   useEffect(() => {
@@ -191,12 +208,30 @@ export default function CustomerProfile() {
                 </div>
                 <div className="address-box flex flex-col justify-start">
                   <label htmlFor="address">Address</label>
-                  <CustomerLocation />
+                  <CustomerLocation
+                    address={address}
+                    province={province}
+                    district={district}
+                    subDistrict={subDistrict}
+                    additionalDetails={additionalDetails}
+                    fullAddress={fullAddress}
+                    setAddress={setAddress}
+                    setProvince={setProvince}
+                    setDistrict={setDistrict}
+                    setSubDistrict={setSubDistrict}
+                    setAdditionalDetails={setAdditionalDetails}
+                    setFullAddress={setFullAddress}
+                  />
                 </div>
                 <div className="buttons-collection flex justify-center items-center gap-8">
                   <button
                     type="submit"
-                    onClick={handleRedirect}
+                    onClick={() => {
+                      if (isSubmited) {
+                        console.log("sending req");
+                        //handleRedirect();
+                      }
+                    }}
                     className="submit-button text-white text-base font-medium py-2 px-6 w-36 h-10 rounded-lg bg-blue-600 mb-7 ">
                     Save
                   </button>

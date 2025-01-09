@@ -35,14 +35,14 @@ export default async function editUserProfile(
       error: error.message,
     });
   }
-  //   console.log("fields: ", fields);
-  //   console.log("files: ", files);
+    console.log("fields: ", fields);
+    console.log("files: ", files);
 
   //-----------------Image Query-------------------
   if (fields && files) {
     const userName = fields.userName?.[0];
     const phoneNumber = fields.phoneNumber?.[0];
-    const userAddress = fields.address?.[0] || "";
+    const userAddress = fields.address?.[0];
     const file = files.image?.[0];
     let imageFile;
     let imagePath;
@@ -53,7 +53,6 @@ export default async function editUserProfile(
 
     // const imageFile = files.image[0];
     if (file && imageFile) {
-      console.log(imageFile);
       const { data: insertedImageUrl, error: insertedImageError } =
         await adminSupabase.storage
           .from("profile_pictures")
@@ -89,13 +88,16 @@ export default async function editUserProfile(
         if (data) {
           console.log("Update profile with image success: ");
           console.log(data);
+          return res.status(201).json({
+            message: "Profile updated successfully",
+          });
         }
         if (error) {
           console.log("Update profile with image fale: ");
           console.log(error);
           console.log("_____________________");
           console.log(error.message);
-          res.status(400).json({
+          return res.status(400).json({
             message: "Update profile fail",
             error: error.message,
           });
@@ -104,14 +106,11 @@ export default async function editUserProfile(
         console.log(e);
         const error = e as Error;
         console.log(error.message);
-        res.status(500).json({
+        return res.status(500).json({
           message: "Update profile fail",
           error: error.message,
         });
       }
-      return res.status(200).json({
-        message: "Profile updated successfully",
-      });
     } else {
       //------Main Query Witout Image-----------------------------------
       try {
@@ -128,11 +127,17 @@ export default async function editUserProfile(
         if (data) {
           console.log("Update profile without image success: ");
           console.log(data);
+          return res
+            .status(201)
+            .json({ message: "Profile updated successfully" });
         }
         if (error) {
           console.log("Update profile without image fale: ");
           console.log(error);
-          console.log("_____________________");
+          return res.status(400).json({
+            message: "Update profile fail",
+            error: error.message,
+          });
         }
       } catch (e) {
         const error = e as Error;
@@ -144,10 +149,6 @@ export default async function editUserProfile(
       }
     }
   }
-
-  res.status(500).json({
-    error: "Internal server error",
-  });
 }
 
 //------base image url >> `https://frqdeijtcguxcozmpucc.supabase.co/storage/v1/object/public/${imagePath}`,
