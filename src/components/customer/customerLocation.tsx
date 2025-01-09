@@ -227,17 +227,6 @@ export const CustomerLocation: React.FC<CustomerLocationProps> = ({
           </div>
         </CardContent>
       </Card>
-      <button
-        type="button"
-        className="w-10 h-10 bg-green-400 rounded-xl"
-        onClick={() => {
-          handleSetFullAddress();
-          if (fullAddress) {
-            handleConsoleLog();
-          }
-        }}>
-        test value
-      </button>
     </div>
   );
 };

@@ -7,6 +7,7 @@ import axios from "axios";
 import ProfileSkeleton from "@/components/customer/profileSkeleton";
 import { useRouter } from "next/router";
 import { CustomerLocation } from "@/components/customer/customerLocation";
+import { SubmitDialog } from "@/components/customer/submitEditPopup";
 
 export default function CustomerProfile() {
   const { authState } = useAuth();
@@ -29,7 +30,6 @@ export default function CustomerProfile() {
     fetchImage || "/image/footerhouse.svg"
   );
   //-----Address State-----------------------------------------------------
-  const [userAddress, setUserAddress] = useState<string>("");
   const [address, setAddress] = useState<string>("");
   const [province, setProvince] = useState<string>("");
   const [district, setDistrict] = useState<string>("");
@@ -37,17 +37,9 @@ export default function CustomerProfile() {
   const [additionalDetails, setAdditionalDetails] = useState<string>("");
   const [fullAddress, setFullAddress] = useState<string>("");
 
-  //-----Handle Address------------------------------------------------------------------
-  const handleSetFullAddress = () => {
-    const fa = `${address} แขวง ${subDistrict} เขต ${district} จังหวัด ${province} 
-    ${additionalDetails}
-    `;
-    setFullAddress(fa);
-    setUserAddress(fa);
-  };
   //-----Loading state--------------------------------------------------------------
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isSubmited, setIsSummited] = useState<boolean>(false);
+  const [submitPopup, setSubmitPopup] = useState<boolean>(false);
   //-----Fetch user------------------------------------------------------------
   const fetchUser = async () => {
     try {
@@ -95,13 +87,11 @@ export default function CustomerProfile() {
     //Send form data to edit profile api
     console.log("hitting submit");
     e.preventDefault();
-    handleSetFullAddress();
     console.log("fullAddress", fullAddress);
-    console.log("userAddress", userAddress);
     const fd = new FormData();
     fd.append("userName", userName);
     fd.append("phoneNumber", phoneNumber);
-    fd.append("address", userAddress);
+    fd.append("address", fullAddress);
     if (uploadImage) {
       fd.append("image", uploadImage);
     }
@@ -111,7 +101,7 @@ export default function CustomerProfile() {
       console.log(i);
     }
     console.log("fullAddress check after submit");
-    console.log(userAddress);
+    console.log(fullAddress);
     // try {
     //   const result = await axios.put(`/api/customer/editprofile/${userId}`, fd);
     //   console.log(result);
@@ -121,6 +111,13 @@ export default function CustomerProfile() {
     //   console.log("send request fail");
     //   console.log(error.message);
     // }
+  };
+  //-----Handle Address------------------------------------------------------------------
+  const handleSetFullAddress = () => {
+    const fa = `${address} แขวง ${subDistrict} เขต ${district} จังหวัด ${province} 
+    ${additionalDetails}
+    `;
+    setFullAddress(fa);
   };
 
   useEffect(() => {
@@ -151,7 +148,6 @@ export default function CustomerProfile() {
                 Edit Profile
               </h3>
               <form
-                action=""
                 onSubmit={handleSubmit}
                 className="form flex flex-col items-center justify-center gap-6">
                 <div className="picture-box flex flex-col lg:flex-row justify-center items-center gap-4">
@@ -225,12 +221,11 @@ export default function CustomerProfile() {
                 </div>
                 <div className="buttons-collection flex justify-center items-center gap-8">
                   <button
-                    type="submit"
+                    type="button"
                     onClick={() => {
-                      if (isSubmited) {
-                        console.log("sending req");
-                        //handleRedirect();
-                      }
+                      handleSetFullAddress();
+                      console.log("Hittig Save button");
+                      setSubmitPopup(true);
                     }}
                     className="submit-button text-white text-base font-medium py-2 px-6 w-36 h-10 rounded-lg bg-blue-600 mb-7 ">
                     Save
@@ -241,6 +236,13 @@ export default function CustomerProfile() {
                     className="back-button text-blue-600 border border-blue-600 text-base font-medium py-2 px-6 w-36 h-10 rounded-lg bg-white mb-7">
                     Back
                   </button>
+                  {/* <button
+                    onClick={() => {
+                      console.log("Hittig check button");
+                      console.log(fullAddress);
+                    }}>
+                    Check
+                  </button> */}
                 </div>
               </form>
             </div>
