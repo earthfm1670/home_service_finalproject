@@ -5,7 +5,6 @@ import { NavbarSkeleton } from "./customer/navbarSkeleton";
 import { useAuth } from "@/context/authContext";
 import axios from "axios";
 
-
 export function Navbar() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const router = useRouter();
@@ -13,16 +12,17 @@ export function Navbar() {
   const [media, setMedia] = useState<string>("");
   const user = authState.user;
   const email = authState.userEmail;
+  const userRole = authState.userRole;
 
   const getMedia = async () => {
     try {
       const res = await axios.post("api/auth/getUser", {
         email,
+        userRole,
       });
       const profileImage = res.data.userInfo.profile_picture_url;
       if (profileImage) {
         setMedia(profileImage);
-        setIsLoading(false);
       }
     } catch (e) {
       const error = e as Error;
@@ -46,7 +46,10 @@ export function Navbar() {
     console.log("Navbar loading");
     if (email) {
       getMedia();
+      console.log("check auth state");
+      console.log(authState);
     }
+    setIsLoading(false);
   }, [email]);
 
   return (

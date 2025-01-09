@@ -55,6 +55,7 @@ interface AuthState {
   userId: string | null;
   userEmail: string | null;
   user: UserPayload | null;
+  userRole: string | null;
   token: string | null;
 }
 interface AuthProviderProps {
@@ -85,6 +86,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     userId: null,
     userEmail: null,
     user: null,
+    userRole: null,
     token: null,
   });
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
@@ -118,6 +120,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       userId: savedUser.sub,
       userEmail: savedUser.email,
       user: savedUser,
+      userRole: savedUser.user_metadata.role,
       token: savedToken,
     });
     roleValidation(userRole);
@@ -193,6 +196,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       userId: null,
       userEmail: null,
       user: null,
+      userRole: null,
       token: null,
     });
     setIsAdmin(false);
