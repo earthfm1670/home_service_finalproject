@@ -42,7 +42,7 @@ interface UserPayload {
 //define context interface
 interface AuthContextType {
   authState: AuthState;
-  login: (email: string, password: string) => void;
+  login: (email: string, password: string) => Promise<boolean>;
   adminLogin: (email: string, password: string) => void;
   logout: () => void;
   isAdmin: boolean;
@@ -159,10 +159,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       //setauth state to store user / token
       const userRole = userInfo.user_metadata.role;
       handleSessionLogin(authToken, userInfo, userRole);
-    } catch (error) {
-      const err = error as Error;
-      console.log(err.message);
+      return true;
+    } catch (err) {
+      const error = err as Error;
+      console.log(error.message);
       console.error("Invalid email or password");
+      return false;
     }
   };
 
