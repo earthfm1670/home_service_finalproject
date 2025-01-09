@@ -24,10 +24,17 @@ interface PaymentFormProps {
   onCardCompleteChange: (isComplete: boolean) => void;
   onExpiryCompleteChange: (isComplete: boolean) => void;
   onCvcCompleteChange: (isComplete: boolean) => void;
+  cardDetails: {
+    cardNumber: string;
+
+    cardExpiry: string;
+
+    cardCvc: string;
+  };
 }
 
-interface PaymentFormHandle {
-  handleSubmit: () => Promise<void>;
+export interface PaymentFormHandle {
+  handleSubmit: (event: Event) => Promise<void>;
 }
 
 const promoCodes: PromoCodes = {
