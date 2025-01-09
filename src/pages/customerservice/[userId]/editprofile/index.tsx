@@ -77,7 +77,7 @@ export default function CustomerProfile() {
     setUserAddress(e.target.value);
   };
   const handleRedirect = () => {
-    router.push(`/customerservice/${userId}`);
+    router.push(`/customerservice/${userId}/profile`);
   };
   //------Form Submission-----------------------------------------------------------------------------
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

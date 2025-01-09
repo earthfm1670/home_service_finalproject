@@ -49,6 +49,7 @@ export default function CustomerProfile() {
       setUserAddress(fetchedUser.address);
       setProfileImage(fetchedUser.profile_picture_url);
       setIsLoading(false);
+      console.log("test profile picture:", fetchedUser.profile_picture_url);
     } catch (err) {
       const error = err as Error;
       console.log("fetch user error.");
