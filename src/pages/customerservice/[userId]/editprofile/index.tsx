@@ -7,14 +7,15 @@ import axios from "axios";
 import ProfileSkeleton from "@/components/customer/profileSkeleton";
 import { useRouter } from "next/router";
 import { CustomerLocation } from "@/components/customer/customerLocation";
-import { SubmitDialog } from "@/components/customer/submitEditPopup";
+import { UserSubmitPopUp } from "@/components/customer/profileSubmitPopup";
+// import { SubmitDialog } from "@/components/customer/submitEditPopup";
 
 export default function CustomerProfile() {
   const { authState } = useAuth();
-
   const router = useRouter();
   const user = authState.user?.user_metadata;
   const userId = authState.userId;
+  const redirectPath = `/customerservice/${userId}/profile`;
   const email = authState.userEmail; // change to get user from supabase
   const fetchedUserName = user?.name;
   const fetchedPhoneNumber = user?.phone;
@@ -102,15 +103,14 @@ export default function CustomerProfile() {
     }
     console.log("fullAddress check after submit");
     console.log(fullAddress);
-    // try {
-    //   const result = await axios.put(`/api/customer/editprofile/${userId}`, fd);
-    //   console.log(result);
-    //   setIsSummited(true);
-    // } catch (e) {
-    //   const error = e as Error;
-    //   console.log("send request fail");
-    //   console.log(error.message);
-    // }
+    try {
+      const result = await axios.put(`/api/customer/editprofile/${userId}`, fd);
+      console.log(result);
+    } catch (e) {
+      const error = e as Error;
+      console.log("send request fail");
+      console.log(error.message);
+    }
   };
   //-----Handle Address------------------------------------------------------------------
   const handleSetFullAddress = () => {
@@ -236,6 +236,11 @@ export default function CustomerProfile() {
                     className="back-button text-blue-600 border border-blue-600 text-base font-medium py-2 px-6 w-36 h-10 rounded-lg bg-white mb-7">
                     Back
                   </button>
+                  <UserSubmitPopUp
+                    showPopUpSubmit={submitPopup}
+                    redirectPath={redirectPath}
+                    handleSubmit={handleSubmit}
+                  />
                   {/* <button
                     onClick={() => {
                       console.log("Hittig check button");

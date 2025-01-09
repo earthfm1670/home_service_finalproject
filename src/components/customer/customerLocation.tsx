@@ -44,17 +44,12 @@ interface CustomerLocationProps {
 }
 export const CustomerLocation: React.FC<CustomerLocationProps> = ({
   address,
-  province,
-  district,
-  subDistrict,
   additionalDetails,
-  fullAddress,
   setAddress,
   setProvince,
   setDistrict,
   setSubDistrict,
   setAdditionalDetails,
-  setFullAddress,
 }) => {
   const [provincesData, setProvincesData] = useState<Province[]>([]); //ข้อมูลจังหวัดทั้งหมด
   //----for stringdify------------------
@@ -94,22 +89,7 @@ export const CustomerLocation: React.FC<CustomerLocationProps> = ({
     setProvincesData(provinceData);
     //---set selected province---
   };
-  const handleConsoleLog = () => {
-    console.log("Test addres values");
-    console.log("selected address: ", selectedAddress);
-    console.log("province: ", province);
-    console.log("district: ", district);
-    console.log("subDistrict: ", subDistrict);
-    console.log("additional detai: ", additionalDetails);
-    console.log("full address: ", fullAddress);
-    console.log("------_________-------------__________-----------");
-  };
-  const handleSetFullAddress = () => {
-    const fa = `${address} ${subDistrict} ${district} ${province} 
-    ${additionalDetails}
-    `;
-    setFullAddress(fa);
-  };
+
   useEffect(() => {
     loadProvinceData();
   }, []);
