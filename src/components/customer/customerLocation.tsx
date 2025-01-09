@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Card, CardContent } from "../ui/card";
 import { Label } from "../ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Button } from "../ui/button";
+
 import {
   Select,
   SelectContent,
@@ -10,38 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import TimeSelector from "../TimeSelector";
-import { format } from "date-fns";
-import { th } from "date-fns/locale";
 
-// interface LocationFormProps {
-//   isCalendarOpen: boolean;
-//   setIsCalendarOpen: (open: boolean) => void;
-//   selectedDate: Date | null;
-//   handleDateSelect: (date: Date | undefined) => void;
-//   isDateSelectable: (date: Date) => boolean;
-//   dateError: string | null;
-//   selectedTime: string;
-//   handleTimeChange: (time: string) => void;
-//   timeError: string | null;
-//   address: string;
-//   setAddress: (address: string) => void;
-//   selected: {
-//     province_id: string;
-//     amphure_id: string;
-//     tambon_id: string;
-//   };
-//   setSelected: (selected: {
-//     province_id: string;
-//     amphure_id: string;
-//     tambon_id: string;
-//   }) => void;
-//   provinces: Array<{ id: string; name_th: string }>;
-//   amphures: Array<{ id: string; name_th: string }>;
-//   tambons: Array<{ id: string; name_th: string }>;
-//   additionalDetails: string;
-//   setAdditionalDetails: (details: string) => void;
-// }
 type Province = {
   id: string;
   name_th: string;
@@ -61,40 +29,57 @@ type Province = {
 export const CustomerLocation = () => {
   const [provincesData, setProvincesData] = useState<Province[]>([]); //ข้อมูลจังหวัดทั้งหมด
   const [address, setAddress] = useState<string>("");
+  //----for stringdify------------------
   const [province, setProvince] = useState<string>("");
   const [district, setDistrict] = useState<string>("");
   const [subDistrict, setSubDistrict] = useState<string>("");
   const [additionalDetails, setAdditionalDetails] = useState<string>("");
-  const [selectedProvince, setSelectedProvince] = useState({
-    province_id: "",
-    amphure_id: "",
-    tambon_id: "",
+  const [fullAddress, setFullAddress] = useState<string>("");
+  //----Set selecte menu-----------------------------------
+  const [selectedAddress, setSelectedAddress] = useState({
+    province_name: "",
+    amphure_name: "",
+    tambon_name: "",
   });
+  //---Lock district and sub district--------------------
+  const amphures = useMemo(() => {
+    const selectedadProvince = provincesData.find(
+      (p) => p.name_th === selectedAddress.province_name
+    );
+    return selectedadProvince?.amphure || [];
+  }, [selectedAddress.province_name, provincesData]);
 
+  const tambons = useMemo(() => {
+    const selectedAmphure = amphures.find(
+      (a) => a.name_th === selectedAddress.amphure_name
+    );
+    return selectedAmphure?.tambon || [];
+  }, [selectedAddress.amphure_name, amphures]);
+
+  //---set all province---
   const loadProvinceData = async () => {
     const response = await fetch(
       "https://raw.githubusercontent.com/kongvut/thai-province-data/master/api_province_with_amphure_tambon.json"
     );
     const provinceData = await response.json();
-    //---set all province---
     setProvincesData(provinceData);
     //---set selected province---
-    // const province = provinceData.find(
-    //   (p: Province) => p.name_th === parsedPaymentData.province
-    // );
-    // if (province) {
-    //   const amphure = province.amphure.find(
-    //     (a: { name_th: string }) => a.name_th === parsedPaymentData.district
-    //   );
-    //   const tambon = amphure?.tambon.find(
-    //     (t: { name_th: string }) => t.name_th === parsedPaymentData.subDistrict
-    //   );
-    //   setSelected({
-    //     province_id: province.id,
-    //     amphure_id: amphure?.id || "",
-    //     tambon_id: tambon?.id || "",
-    //   });
-    // }
+  };
+  const handleConsoleLog = () => {
+    console.log("Test addres values");
+    console.log("selected address: ", selectedAddress);
+    console.log("province: ", province);
+    console.log("district: ", district);
+    console.log("subDistrict: ", subDistrict);
+    console.log("additional detai: ", additionalDetails);
+    console.log("full address: ", fullAddress);
+    console.log("------_________-------------__________-----------");
+  };
+  const handleSetFullAddress = () => {
+    const fa = `${address} ${subDistrict} ${district} ${province} 
+    ${additionalDetails}
+    `;
+    setFullAddress(fa);
   };
   useEffect(() => {
     loadProvinceData();
@@ -125,43 +110,50 @@ export const CustomerLocation = () => {
                 จังหวัด<span className="text-red-500">*</span>
               </Label>
               <Select
-              //   value={selected.province_id}
-              //   onValueChange={(value) =>
-              //     setSelected({ ...selected, province_id: value })
-              //   }
-              >
+                value={selectedAddress.province_name}
+                onValueChange={(value) => {
+                  setSelectedAddress({
+                    ...selectedAddress,
+                    province_name: value,
+                  });
+                  setProvince(value);
+                }}>
                 <SelectTrigger>
                   <SelectValue placeholder="เลือกจังหวัด" />
                 </SelectTrigger>
                 <SelectContent>
                   {provincesData.map((province) => (
-                    <SelectItem key={province.id} value={province.id}>
+                    <SelectItem key={province.id} value={province.name_th}>
                       {province.name_th}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
+
             {/* Amphure */}
             <div className="district-box">
               <Label>
                 เขต/อำเภอ<span className="text-red-500">*</span>
               </Label>
               <Select
-              //   value={selected.amphure_id}
-              //   onValueChange={(value) =>
-              //     setSelected({ ...selected, amphure_id: value })
-              //   }
-              >
+                value={selectedAddress.amphure_name}
+                onValueChange={(value) => {
+                  setSelectedAddress({
+                    ...selectedAddress,
+                    amphure_name: value,
+                  });
+                  setDistrict(value);
+                }}>
                 <SelectTrigger>
                   <SelectValue placeholder="เลือกเขต / อำเภอ" />
                 </SelectTrigger>
                 <SelectContent>
-                  {/* {amphures.map((amphure) => (
-                      <SelectItem key={amphure.id} value={amphure.id}>
-                        {amphure.name_th}
-                      </SelectItem>
-                    ))} */}
+                  {amphures.map((amphure) => (
+                    <SelectItem key={amphure.id} value={amphure.name_th}>
+                      {amphure.name_th}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -171,27 +163,30 @@ export const CustomerLocation = () => {
                 แขวง/ตำบล <span className="text-red-500">*</span>
               </Label>
               <Select
-              //   value={selected.tambon_id}
-              //   onValueChange={(value) =>
-              //     setSelected({ ...selected, tambon_id: value })
-              //   }
-              >
+                value={selectedAddress.tambon_name}
+                onValueChange={(value) => {
+                  setSelectedAddress({
+                    ...selectedAddress,
+                    tambon_name: value,
+                  });
+                  setSubDistrict(value);
+                }}>
                 <SelectTrigger>
                   <SelectValue placeholder="เลือกแขวง / ตำบล" />
                 </SelectTrigger>
                 <SelectContent>
-                  {/* {tambons.map((tambon) => (
-                      <SelectItem key={tambon.id} value={tambon.id}>
-                        {tambon.name_th}
-                      </SelectItem>
-                    ))} */}
+                  {tambons.map((tambon) => (
+                    <SelectItem key={tambon.id} value={tambon.name_th}>
+                      {tambon.name_th}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           {/* Additional Details */}
-          <div className="additional-box">
+          <div className="additional-box mt-5">
             <Label>ระบุข้อมูลเพิ่มเติม</Label>
             <textarea
               className="w-full p-2 border rounded-md text-sm"
@@ -203,6 +198,17 @@ export const CustomerLocation = () => {
           </div>
         </CardContent>
       </Card>
+      <button
+        type="button"
+        className="w-10 h-10 bg-green-400 rounded-xl"
+        onClick={() => {
+          handleSetFullAddress();
+          if (fullAddress) {
+            handleConsoleLog();
+          }
+        }}>
+        test value
+      </button>
     </div>
   );
 };
