@@ -8,11 +8,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/context/authContext";
 import { useRouter } from "next/router";
-import Image from "next/image";
 
 export default function UnauthNavbar() {
   const router = useRouter();
-  const { logout, authState, isAdmin, isStaff, isLoggedIn } = useAuth();
+  const { logout } = useAuth();
   const handleLogout = (): void => {
     logout();
     router.push("/");
