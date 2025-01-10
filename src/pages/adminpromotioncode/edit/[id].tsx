@@ -1,5 +1,5 @@
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { IconBath } from "@/components/ui/IconBath";
@@ -15,36 +15,39 @@ import { Calendar } from "@/components/ui/calendar";
 import { TimeSelectorAdminPromotionCode } from "@/components/admin/admin-time-selector-promotioncode";
 import { format } from "date-fns";
 import { th } from "date-fns/locale"; // เพิ่มการ import locale ภาษาไทย
-import { AdminPromotionAddNavbar } from "@/components/admin-promotion/add/adminpromotionAddNavbar";
+
+import { AdminPromotionEditNavbar } from "@/components/admin-promotion/edit/adminPromotionEditNavbar";
 import { AdminSubmitPopUp } from "@/components/admin/admin-submit-popup";
 
 export default function AdminPromotionCodeAddIndex() {
   // input for sent name of code discount
-  const [inputTitleCode, setInputTitleCode] = useState<string>();
-  // console.log("input category for check", inputTitleCode);
+  const [inputTitleCode, setInputTitleCode] = useState<string>("");
+  //   console.log("input title code for check", inputTitleCode);
 
   // choose type of disscount between percent and fixed
   const [isYesSelected, setIsYesSelected] = useState<boolean | null>(null);
   const [inputPercentDiscount, setInputPercentDiscount] = useState<
     number | null
   >(null);
-  // console.log("inputPercentDiscount", inputPercentDiscount);
+  //   console.log("inputPercentDiscount", inputPercentDiscount);
 
   // set number of time to use
-  const [inputLimitCode, setInputLimitCode] = useState<number | null>(null);
-  // console.log("inputLimitCode", inputLimitCode);
+  const [inputLimitCode, setInputLimitCode] = useState<number | null>();
+  console.log("inputLimitCode", inputLimitCode);
 
   // select expiration date
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
-  console.log("selectedEndDate", selectedEndDate);
+  //   console.log("selectedEndDate", selectedEndDate);
 
   // select expiration time
   const [selectedTime, setSelectedTime] = useState<string>(""); // กำหนดเป็น string แทน null
-  console.log("selectedTime", selectedTime);
+  //   console.log("selectedTime", selectedTime);
 
   // popup for create code successfuly
   const [showPopUpSubmit, setShowPopUpSubmit] = useState<boolean>(false);
+
+  const [nameTopic, setNameTopic] = useState<string>("loading");
 
   const router = useRouter();
 
@@ -150,9 +153,29 @@ export default function AdminPromotionCodeAddIndex() {
     setIsYesSelected(false); // เมื่อเลือกปุ่ม "ไม่เอา"
   };
 
-  // const handleTimeChange = (time: string) => {
-  //   setSelectedTime(time); // อัปเดตเวลาเมื่อเลือกใหม่
-  // };
+  const { id } = router.query;
+
+  const FetchPromotionCode = async () => {
+    try {
+      const response = await axios.get(
+        `/api/admin/promotions/selectedit/${id}`
+      );
+      console.log("test response fetching data", response.data.data);
+      setNameTopic(response.data.data.promotion_code);
+      setInputTitleCode(response.data.data.promotion_code);
+      setIsYesSelected(false); // เมื่อเลือกปุ่ม "ไม่เอา"
+      setInputPercentDiscount(response.data.data.discount_value * 100);
+      setInputLimitCode(response.data.data.usage_limit);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      FetchPromotionCode();
+    }
+  }, [id]);
 
   return (
     <>
@@ -171,7 +194,7 @@ export default function AdminPromotionCodeAddIndex() {
           </div>
           <div className="w-full flex flex-col">
             {/* navbar for admin page */}
-            <AdminPromotionAddNavbar />
+            <AdminPromotionEditNavbar nameTopic={nameTopic} />
 
             {/* AdminPromotionCodeAddPromotionCode */}
             <div>
@@ -186,6 +209,7 @@ export default function AdminPromotionCodeAddIndex() {
                       <input
                         type="text"
                         onChange={handleInputCodeTitle}
+                        value={inputTitleCode}
                         className="border border-gray-300 h-11 rounded-lg w-[433px] pl-5 text-black font-normal"
                       />
                     </div>

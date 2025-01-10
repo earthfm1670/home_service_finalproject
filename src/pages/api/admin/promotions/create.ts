@@ -11,30 +11,31 @@ export default async function createPromotion(
   }
   console.log("Create promotion I");
 
-  const { promotionCode, discountValue, useLimit, selectedEndDate } = req.body;
+  const { promotion_code, discount_value, usage_limit, end_at } = req.body;
+
   // log ค่า req.body ที่ได้รับจาก client
   console.log("Request Body:", req.body);
 
   console.log("----------------------1----------------------");
 
   // Validate request body
-  // if (!promotionCode || !discountValue || !useLimit) {
-  //   return res.status(400).json({ error: "Missing required fields" });
-  // }
+  if (!promotion_code || !discount_value || !usage_limit || !end_at) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
 
   console.log("----------------------2----------------------");
 
   // Validate date format
-  if (!selectedEndDate || isNaN(new Date(selectedEndDate).getTime())) {
-    return res.status(400).json({ error: "Invalid or missing end date" });
-  }
-  let end_at = new Date(selectedEndDate);
-  console.log("selectedEndDate", end_at);
-  
+  // if (!selectedEndDate || isNaN(new Date(selectedEndDate).getTime())) {
+  //   return res.status(400).json({ error: "Invalid or missing end date" });
+  // }
+  // let end_at = new Date(selectedEndDate);
+  // console.log("selectedEndDate", end_at);
+
   // To avoid toISOString() causing errors
-  if (isNaN(end_at.getTime())) {
-    return res.status(400).json({ error: "Invalid date format for end_at" });
-  }
+  // if (isNaN(end_at.getTime())) {
+  //   return res.status(400).json({ error: "Invalid date format for end_at" });
+  // }
 
   console.log("----------------------3----------------------");
   try {
@@ -43,12 +44,12 @@ export default async function createPromotion(
         .from("promotion_codes")
         .insert([
           {
-            promotion_code: promotionCode,
-            discount_value: discountValue,
-            usage_limit: useLimit,
-            usage_pool: useLimit,
+            promotion_code: promotion_code,
+            discount_value: discount_value,
+            usage_limit: usage_limit,
+            usage_pool: usage_limit,
             promotion_status: "available",
-            end_at: new Date(selectedEndDate).toISOString(),
+            end_at: end_at,
           },
         ])
         .select();
