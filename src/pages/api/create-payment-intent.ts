@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2020-08-27" as any,
+  apiVersion: "2020-08-27",
 });
 
 const promoCodes: { [key: string]: number } = {
@@ -39,7 +39,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       });
 
       res.status(200).json({ clientSecret: paymentIntent.client_secret });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error creating payment intent:", error.message);
       res.status(500).json({ error: error.message });
     }

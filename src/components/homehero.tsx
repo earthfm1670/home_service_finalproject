@@ -15,7 +15,7 @@ export default function HomeHero() {
             เรื่องบ้าน...ให้เราช่วยดูแลคุณ
           </h1>
           <h2 className="w-full my-4 text-[20px] text-black font-medium lg:text-[42px] lg:mb-12">
-            "สะดวก ราคาคุ้มค่า เชื่อถือได้"
+            &quot;สะดวก ราคาคุ้มค่า เชื่อถือได้&quot;
           </h2>
           <p className="mt-8 w-full text-[18px] text-gray-700 font-medium lg:hidden">
             ซ่อมเครื่องใช้ไฟฟ้า ซ่อมแอร์
