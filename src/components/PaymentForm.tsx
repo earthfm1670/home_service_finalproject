@@ -146,10 +146,6 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
       setError(null);
       return true;
 
-<<<<<<< HEAD
-    // apply promo code and update total amount
-    let discount = 0;
-=======
       // return (
       //   isCreditCardSelected &&
       //   cardComplete &&
@@ -204,7 +200,6 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
         setLoading(false);
         return;
       }
->>>>>>> 975863c (fix: payment api to properly send to database, add payment form validation)
 
       try {
         const cardElement = elements.getElement(CardNumberElement);
@@ -338,11 +333,6 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
           promotionCode: promoCode,
           useCount: 1,
         });
-<<<<<<< HEAD
-        if (response.data && response.data.data) {
-          const promotion = response.data.data;
-          discount = promotion.discount_value;
-=======
 
         // if (!response) {
         //   alert("ไม่สามารถดึงข้อมูลโค้ดส่วนลดได้ กรุณาลองใหม่อีกครั้ง");
@@ -355,7 +345,6 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
 
         if (promotion.promotion_code.trim() === promoCode.trim()) {
           const discount = promotion.discount_value;
->>>>>>> 975863c (fix: payment api to properly send to database, add payment form validation)
           setDiscount(discount);
           alert(`โค้ดส่วนลดสามารถใช้งานได้ คุณได้รับส่วนลด ${discount * 100}%`);
         } else {
@@ -364,191 +353,7 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
         }
       } catch (error) {
         console.error("Error applying promo code:", error);
-<<<<<<< HEAD
-        setError("An error occurred while fetching the promo code.");
-        setDiscount(0);
-        setLoading(false);
-        return;
-      }
-    } else {
-      setDiscount(0);
-    }
-
-    const finalAmount = totalAmount - totalAmount * discount;
-
-    // if (promoCodes[promoCode]) {
-    //   discount = promoCodes[promoCode];
-    //   setDiscount(discount);
-    // } else {
-    //   setDiscount(0);
-    // }
-
-    if (!isPaymentFormComplete()) {
-      setError("Please fill in all required fields.");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const cardElement = elements.getElement(CardNumberElement);
-
-      if (!cardElement) {
-        setError("Card element is not available.");
-        setLoading(false);
-        return;
-      }
-
-      const { error: paymentMethodError, paymentMethod } =
-        await stripe.createPaymentMethod({
-          type: "card",
-          card: cardElement,
-          billing_details: { name },
-        });
-
-      if (paymentMethodError) {
-        setError(
-          paymentMethodError.message || "Failed to create payment method."
-        );
-        setLoading(false);
-        return;
-      }
-
-      // send data to payment database
-      // const serviceInfo = sessionStorage.getItem("serviceInfoFormData");
-      // const parsedServiceInfo = serviceInfo ? JSON.parse(serviceInfo) : null;
-      // const selectedServices = sessionStorage.getItem("selectedServices");
-      // const parsedSelectedServices = selectedServices
-      //   ? JSON.parse(selectedServices)
-      //   : [];
-
-<<<<<<< HEAD
-      // const userId = localStorage.getItem("userId") || null;
-      // const scheduledDate = parsedServiceInfo?.selectedDate || null;
-      // const paymentDate = new Date().toISOString();
-      // const paymentMethodId = selectedPayment === "creditcard" ? 2 : 1;
-      // const promotionId = promoCodes[promoCode] ? 1 : 0;
-      // const subServices = Array.isArray(parsedSelectedServices)
-      //   ? parsedSelectedServices.map((service: any) => ({
-      //       subServiceId: service.id,
-      //       amount: service.quantity,
-      //     }))
-      //   : [];
-=======
-      const userId = localStorage.getItem("userId") || null; //MARK <<< เช็คว่า userId มีจริงไหม ถ้าไม่มี เอาจาก params หรือ pares localstorage.user แล้วดูที่ sub 
-      const scheduledDate = parsedServiceInfo?.selectedDate || null;
-      const paymentDate = new Date().toISOString();
-      const paymentMethodId = selectedPayment === "creditcard" ? 2 : 1;
-      const promotionId = promoCodes[promoCode] ? 1 : 0; //MARK <<< เปลี่ยนเป็นค่าของ promotion_id ถ้าไม่มี เป็น 0
-      const subServices = parsedSelectedServices.selections.map((service: any) => ({ //MARK <<< เพิ่ม selections เพื่อเข้าถึง array
-        subServiceId: service.id,
-        amount: service.quantity,
-      }));
->>>>>>> 3cd22c7 (fix: update payment api, and add MARK on payment form)
-
-      // const apiPayload = {
-      //   scheduledDate,
-      //   totalPrice: totalAmount,
-      //   paymentMethod: paymentMethodId,
-      //   paymentDate,
-      //   promotionId,
-      //   subServices,
-      // };
-
-      // // send payment data to api
-      // const apiResponse = await axios.post(
-      //   `/api/customer/payment/${userId}`,
-      //   apiPayload
-      // );
-
-      // if (apiResponse.status === 201) {
-      //   alert("Payment successful! Thank you for your purchase.");
-      //   console.log("Redirecting to /paymentsuccess...");
-      //   setLoading(false);
-      //   router.push("/paymentsuccess");
-      // } else {
-      //   setError(apiResponse.data.message || "Failed to process the payment.");
-      //   setLoading(false);
-      // }
-
-      // send payment data to create payment intent
-      const response = await fetch("/api/create-payment-intent", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          amount: finalAmount,
-          promoCode,
-          paymentMethodId: paymentMethod.id,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.clientSecret) {
-        setError(data.message || "Failed to create payment intent.");
-        setLoading(false);
-        return;
-      }
-
-      const { clientSecret } = data;
-
-      const { error: stripeError, paymentIntent } =
-        await stripe.confirmCardPayment(clientSecret, {
-          payment_method: paymentMethod.id,
-        });
-
-      if (stripeError) {
-        setError(stripeError.message || "Payment failed. Please try again.");
-        setLoading(false);
-      } else if (paymentIntent && paymentIntent.status === "succeeded") {
-        alert("Payment successful! Thank you for your purchase.");
-        console.log("Redirecting to /paymentsuccess...");
-        setLoading(false);
-      }
-    } catch (err) {
-      console.error("Payment error:", err);
-      setError("An error occurred during payment. Please try again.");
-      setLoading(false);
-    }
-  };
-
-  useImperativeHandle(ref, () => ({
-    handleSubmit,
-  }));
-
-  const applyPromoCode = async (): Promise<void> => {
-    if (!promoCode.trim()) {
-      alert("กรุณากรอกโค้ดส่วนลด");
-      setDiscount(0);
-      return;
-    }
-
-    try {
-      // Fetch promotion codes from the database
-      const response = await axios.post("/api/discount", {
-        promotionCode: promoCode,
-        useCount: 1,
-      });
-
-      // if (!response) {
-      //   alert("ไม่สามารถดึงข้อมูลโค้ดส่วนลดได้ กรุณาลองใหม่อีกครั้ง");
-      //   return;
-      // }
-
-      // parse data
-      const promotion = response.data.data;
-      console.log(promotion);
-
-      if (promotion.promotion_code.trim() === promoCode.trim()) {
-        const discount = promotion.discount_value;
-        setDiscount(discount);
-        alert(`โค้ดส่วนลดสามารถใช้งานได้ คุณได้รับส่วนลด ${discount * 100}%`);
-      } else {
-        alert("โค้ดส่วนลดไม่ถูกต้อง");
-=======
         alert("เกิดข้อผิดพลาด กรุณาลองใหม่");
->>>>>>> 975863c (fix: payment api to properly send to database, add payment form validation)
         setDiscount(0);
       }
     };
@@ -583,115 +388,6 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
       placeholder: "XXX",
     };
 
-<<<<<<< HEAD
-  return (
-    <div className="border mx-4 mb-10 rounded-lg bg-white lg:w-[735px]">
-      <div className="mx-3 mt-2 text-[18px] text-gray-700 font-medium lg:mx-6 lg:text-[20px] lg:py-6 lg:hidden">
-        กรอกข้อมูลบริการ
-      </div>
-      <div className="mx-3 mt-2 text-[18px] text-gray-700 font-medium lg:mx-6 lg:text-[20px] lg:py-6 hidden lg:block">
-        ชำระเงิน
-      </div>
-      <div className="mx-3 mb-2 h-[95px] flex justify-between lg:justify-center lg:gap-6 lg:mb-6">
-        {/* Promptpay Option */}
-        <div
-          className={`w-[147px] h-[95px] lg:w-[331px] lg:h-[86px] border rounded-sm flex flex-col justify-center items-center cursor-pointer ${
-            selectedPayment === "qrcode" ? "bg-blue-100 border-blue-600" : ""
-          }`}
-          onClick={() => handlePaymentMethodChange("qrcode")}>
-          {selectedPayment === "qrcode" ? (
-            <>
-              <img
-                src="/image/qrclicked.svg"
-                className="w-[35px] h-[35px]"></img>
-              <p className="text-[16px] text-blue-600 font-semibold">
-                พร้อมเพย์
-              </p>
-            </>
-          ) : (
-            <>
-              <img src="/image/qricon.svg" className="w-[35px] h-[35px]"></img>
-              <p className="text-[16px] text-gray-800 font-semibold">
-                พร้อมเพย์
-              </p>
-            </>
-          )}
-        </div>
-        {/* Credit Card Option */}
-        <div
-          className={`w-[147px] h-[95px] lg:w-[331px] lg:h-[86px] border rounded-sm flex flex-col justify-center items-center cursor-pointer ${
-            selectedPayment === "creditcard"
-              ? "bg-blue-100 border-blue-600"
-              : ""
-          }`}
-          onClick={() => handlePaymentMethodChange("creditcard")}>
-          {selectedPayment === "creditcard" ? (
-            <>
-              <img
-                src="/image/creditcardclicked.svg"
-                className="w-[35px] h-[35px]"></img>
-              <p className="text-[16px] text-blue-600 font-semibold">
-                บัตรเครดิต
-              </p>
-            </>
-          ) : (
-            <>
-              <img
-                src="/image/creditcard.svg"
-                className="w-[35px] h-[35px]"></img>
-              <p className="text-[16px] text-gray-800 font-semibold">
-                บัตรเครดิต
-              </p>
-            </>
-          )}
-        </div>
-      </div>
-      {/* Payment Form */}
-      {selectedPayment === "creditcard" ? (
-        <>
-          <form onSubmit={handleSubmit} className="bg-white">
-            <div className="mx-3 my-2 lg:mx-6 lg:my-6">
-              <label className="block">
-                หมายเลขบัตรเครดิต<span className="text-[#C82438]">*</span>
-              </label>
-              <CardNumberElement
-                options={customCardNumberOptions}
-                className="block w-full h-[44px] border border-gray-300 rounded-md py-2 px-2"
-              />
-            </div>
-            <div className="mx-3 lg:mx-6 lg:my-6">
-              <label className="block mb-2">
-                ชื่อบนบัตร<span className="text-[#C82438]">*</span>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="block w-full h-[44px] border border-gray-300 rounded-md py-1 px-3 placeholder:text-gray-500 placeholder:text-[16px] placeholder:font-normal"
-                  placeholder="กรุณากรอกชื่อบนบัตร"></input>
-              </label>
-            </div>
-            <div>
-              {/* div for expiry and cvc */}
-              <div className="lg:flex lg:w-[686px] lg:ml-6 lg:justify-between lg:my-6">
-                <div className="mx-3 mb-4 lg:mx-0">
-                  <label className="block">
-                    วันหมดอายุ<span className="text-[#C82438]">*</span>
-                  </label>
-                  <CardExpiryElement
-                    options={{ style: elementStyle }}
-                    className="block w-full lg:w-[331px] h-[44px] border border-gray-300 rounded-md py-2 px-2"
-                  />
-                </div>
-                <div className="mx-3 mb-4 lg:mx-0">
-                  <label className="block">
-                    รหัส CVC / CVV<span className="text-[#C82438]">*</span>
-                  </label>
-                  <CardCvcElement
-                    options={customCvcOptions}
-                    className="block w-full lg:w-[331px] h-[44px] border border-gray-300 rounded-md py-2 px-2"
-                  />
-                </div>
-=======
     return (
       <div className="border mx-4 mb-10 rounded-lg bg-white lg:w-[735px]">
         <div className="mx-3 mt-2 text-[18px] text-gray-700 font-medium lg:mx-6 lg:text-[20px] lg:py-6 lg:hidden">
@@ -775,52 +471,12 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
                   options={customCardNumberOptions}
                   className="block w-full h-[44px] border border-gray-300 rounded-md py-2 px-2"
                 />
->>>>>>> 975863c (fix: payment api to properly send to database, add payment form validation)
               </div>
               <div className="mx-3 lg:mx-6 lg:my-6">
                 <label className="block mb-2">
                   ชื่อบนบัตร<span className="text-[#C82438]">*</span>
                   <input
                     type="text"
-<<<<<<< HEAD
-                    value={promoCode}
-                    onChange={(e) => setPromoCode(e.target.value)}
-                    className="block min-w-[205px] h-[64px] text-[16px] border border-gray-300 rounded-md py-3 px-2 placeholder:text-[16px] lg:h-[44px]"
-                    placeholder="กรุณากรอกโค้ดส่วนลด(ถ้ามี)"></input>
-                  <button
-                    type="button"
-                    onClick={applyPromoCode}
-                    className="min-w-[90px] h-[44px] bg-blue-600 rounded-md text-white font-medium text-[16px]">
-                    ใช้โค้ด
-                  </button>
-                </div>
-              </div>
-            </div>
-            <button
-              className="mx-3 mb-6 py-2 px-6 rounded-md bg-blue-600 text-white font-medium text-[16px] hidden lg:hidden"
-              type="submit"
-              disabled={loading}>
-              {loading ? "Processing..." : "Purchase Now"}
-            </button>
-          </form>
-        </>
-      ) : (
-        <>
-          <div className="mx-3 mb-6">
-            <label>Promotion Code</label>{" "}
-            <div className="flex items-center gap-4 mb-4">
-              <input
-                type="text"
-                value={promoCode}
-                onChange={(e) => setPromoCode(e.target.value)}
-                className="block min-w-[205px] h-[64px] lg:h-[44px] text-[16px] border border-gray-300 rounded-md py-3 px-2 placeholder:text-[16px]"
-                placeholder="กรุณากรอกโค้ดส่วนลด(ถ้ามี)"></input>
-              <button
-                type="button"
-                onClick={applyPromoCode}
-                className="min-w-[90px] h-[44px] bg-blue-600 rounded-md text-white font-medium text-[16px]">
-                ใช้โค้ด
-=======
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="block w-full h-[44px] border border-gray-300 rounded-md py-1 px-3 placeholder:text-gray-500 placeholder:text-[16px] placeholder:font-normal"
@@ -881,7 +537,6 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
                 disabled={loading}
               >
                 {loading ? "Processing..." : "Purchase Now"}
->>>>>>> 975863c (fix: payment api to properly send to database, add payment form validation)
               </button>
             </form>
           </>

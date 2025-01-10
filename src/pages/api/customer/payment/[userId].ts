@@ -68,51 +68,23 @@ export default async function getOrderList(
     subServices,
   } = req.body;
   try {
-    const {
-      subServices,
-      scheduledDate,
-      totalPrice,
-      paymentMethod,
-      paymentDate,
-      promotionId,
-    } = req.body;
-    const userId = req.query.userId;
-    const statusId = 1;
-
-    let query = `
-BEGIN;
-    WITH inserted_payment AS (
-        INSERT INTO payments (user_id, total_price, payment_date, payment_method_id, promotion_id)
-        VALUES ($1, $2, $3, $4, $5)
-        RETURNING payment_id
-),
-        inserted_promotion_history AS (
-        INSERT INTO promotions_history (payment_id, promotion_id)
-        VALUES ((SELECT payment_id FROM inserted_payment), $5)
-        ),
-        inserted_booking AS(
-        INSERT INTO bookings (user_id, scheduled_date, total_price, payment_id, status_id)
-        VALUES ($1, $6, $2, (SELECT payment_id FROM inserted_payment), $7)
-        RETURNING booking_id
-)
-  `;
-    const values = [
-      userId,
-      totalPrice,
-      paymentDate,
-      paymentMethod,
-      promotionId,
-      scheduledDate,
-      statusId,
-    ];
-
-    for (const item of subServices) {
-      query += `
-    INSERT INTO order_list (sub_services_id, amount, booking_id)
-    VALUES ${
-      (item.subServiceId, item.amount)
-    }, (SELECT booking_id FROM inserted_booking);
-    `;
+    const { error } = await supabase.rpc("insert_payment_and_related_data", {
+      p_user_id: userId,
+      p_total_price: totalPrice,
+      p_payment_date: paymentDate,
+      p_payment_method_id: paymentMethod,
+      p_promotion_id: promotionId,
+      p_scheduled_date: scheduledDate,
+      p_booking_status_id: bookingStatus,
+      p_sub_services: subServices,
+    });
+    if (error) {
+      console.log("Fail to insert data________________________________");
+      console.log(error.message);
+      return res.status(400).json({
+        message: "Fail to insert payment data.",
+        error: error.message,
+      });
     }
     return res.status(201).json({ success: "Pending booking successfully." });
   } catch (e) {
