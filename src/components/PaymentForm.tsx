@@ -8,7 +8,12 @@ import {
 } from "@stripe/react-stripe-js";
 import axios from "axios";
 import { useRouter } from "next/router";
-import React, { forwardRef, useImperativeHandle, useState } from "react";
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 
 interface PromoCodes {
   [key: string]: number;
@@ -31,6 +36,7 @@ interface PaymentFormProps {
 
     cardCvc: string;
   };
+  ref: ReturnType<typeof useRef<PaymentFormHandle | null>>;
 }
 
 export interface PaymentFormHandle {
@@ -43,10 +49,7 @@ const promoCodes: PromoCodes = {
   FURRY: 0.99,
 };
 
-const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
-  PaymentFormHandle,
-  PaymentFormProps
->(
+const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
   (
     {
       setDiscount,
@@ -316,8 +319,11 @@ const PaymentForm: React.FC<PaymentFormProps> = forwardRef<
       }
     };
 
-    useImperativeHandle(ref, () => ({
-      handleSubmit,
+    React.useImperativeHandle(ref, () => ({
+      handleSubmit: async (event) => {
+        console.log("Submitting the payment form...");
+        await handleSubmit();
+      },
     }));
 
     const applyPromoCode = async (): Promise<void> => {

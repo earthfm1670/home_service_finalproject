@@ -252,7 +252,9 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
 
         <div className="mt-14 lg:flex lg:mt-28 lg:flex-row lg:justify-center lg:gap-5 lg:mr-4">
           <div className="overflow-y-auto pb-28 lg:pb-0">
+            
             <PaymentForm
+              ref={formRef}
               setDiscount={setDiscount}
               updateCardDetails={updateCardDetails}
               cardDetails={cardDetails}
@@ -260,7 +262,6 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
               setSelectedPayment={handlePaymentChange}
               calculateTotal={calculateTotal}
               totalAmount={totalAmount}
-              ref={formRef}
               onCardCompleteChange={setCardComplete}
               onExpiryCompleteChange={setExpiryComplete}
               onCvcCompleteChange={setCvcComplete}
