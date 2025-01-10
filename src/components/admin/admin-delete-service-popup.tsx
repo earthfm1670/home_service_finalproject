@@ -5,11 +5,8 @@ interface AdminDeleteServicePopUp {
   deleteServiceButton: boolean;
   setDeleteServiceButton: React.Dispatch<React.SetStateAction<boolean>>;
   inputTitle: string;
-  handleDelete: (
-    id: string | string[] | undefined,
-  ) => Promise<void>;
+  handleDelete: (id: string | string[] | undefined) => Promise<void>;
   id: string | string[] | undefined;
-
 }
 
 export function AdminDeleteServicePopUp({
@@ -18,12 +15,12 @@ export function AdminDeleteServicePopUp({
   inputTitle,
   handleDelete,
   id,
-
 }: AdminDeleteServicePopUp) {
   return (
     <>
       {deleteServiceButton && (
         <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 z-20">
+          {/* <div className="flex h-[200px] w-[200px] bg-fuchsia-400 z-10">abc</div> */}
           <div className="bg-white w-[360px] h-auto flex flex-col items-center rounded-xl p-4 gap-3">
             <div className="w-full">
               <div
