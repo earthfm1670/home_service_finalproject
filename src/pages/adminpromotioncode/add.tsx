@@ -17,38 +17,66 @@ import { Calendar } from "@/components/ui/calendar";
 import { TimeSelectorAdminPromotionCode } from "@/components/admin/admin-time-selector-promotioncode";
 import { format } from "date-fns";
 import { th } from "date-fns/locale"; // เพิ่มการ import locale ภาษาไทย
+import { AdminPromotionAddNavbar } from "@/components/admin-promotion/add/adminpromotionAddNavbar";
 
 export default function AdminPromotionCodeAddIndex() {
-  const [showPopUpSubmit, setShowPopUpSubmit] = useState<Boolean>(false);
+  // input for sent name of code discount
   const [inputTitleCode, setInputTitleCode] = useState<string>();
   console.log("input category for check", inputTitleCode);
-  const [inputLimitCode, setInputLimitCode] = useState<string>();
-  const [inputPercentDiscount, setInputPercentDiscount] = useState<string | undefined>();
+
+  // choose type of disscount between percent and fixed
+  const [isYesSelected, setIsYesSelected] = useState<boolean | null>(null);
+  const [inputPercentDiscount, setInputPercentDiscount] = useState<
+    number | null
+  >(null);
   console.log("inputPercentDiscount", inputPercentDiscount);
-  const [isYesSelected, setIsYesSelected] = useState<boolean | null>(null); // กำหนดสถานะ Boolean
-  const [selectedTime, setSelectedTime] = useState<string>(""); // กำหนดเป็น string แทน null
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  // set number of time to use
+  const [inputLimitCode, setInputLimitCode] = useState<number | null>(null);
+  console.log("inputLimitCode", inputLimitCode);
+
+  // select expiration date
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  console.log("selectedDate", selectedDate);
+
+  // select expiration time
+  const [selectedTime, setSelectedTime] = useState<string>(""); // กำหนดเป็น string แทน null
+
+  // popup for create code successfuly
+  const [showPopUpSubmit, setShowPopUpSubmit] = useState<Boolean>(false);
 
   const router = useRouter();
 
+  // before sent data to .post must change decimal of number
+  let NumberTodecimal = null;
+  if (
+    inputPercentDiscount != null &&
+    typeof inputPercentDiscount === "number"
+  ) {
+    NumberTodecimal = inputPercentDiscount / 100;
+  }
+  console.log("numberTodecimal", NumberTodecimal);
+
+  // function handle submit button for .post code
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
     try {
       const newInputData = {
         promotion_code: inputTitleCode,
+        discount_value: NumberTodecimal,
+        usage_limit: inputLimitCode,
       };
       console.log("new input data for create check", newInputData);
-
-      // await axios.post(`/api/admin/management/create`, newInputData);
       await axios.post(`/api/admin/promotion/create`, newInputData, {
         headers: { "Content-Type": "application/json" },
       });
       // router.push("/adminpromotioncode");
       // setShowPopup(true);
       console.log("newInputData2", newInputData);
-      setShowPopUpSubmit(true);
+
+      // setShowPopUpSubmit(true);
     } catch (error) {
       console.log(error);
     }
@@ -57,8 +85,25 @@ export default function AdminPromotionCodeAddIndex() {
   const handleInputCodeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputTitleCode(event.target.value);
   };
+
+  const handleInputPercentChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = event.target.value;
+    if (value === "") {
+      setInputPercentDiscount(null); // ถ้าเป็นค่าว่างให้ใช้ null
+    } else if (!isNaN(Number(value))) {
+      setInputPercentDiscount(Number(value)); // ถ้าเป็นตัวเลขให้แปลงเป็น number
+    }
+  };
+
   const handleInputCodeLimit = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputLimitCode(event.target.value);
+    const value = event.target.value;
+    if (value === "") {
+      setInputLimitCode(null); // ถ้าเป็นค่าว่างให้ใช้ null
+    } else if (!isNaN(Number(value))) {
+      setInputLimitCode(Number(value)); // ถ้าเป็นตัวเลขให้แปลงเป็น number
+    }
   };
 
   const handleYesClick = () => {
@@ -67,13 +112,6 @@ export default function AdminPromotionCodeAddIndex() {
 
   const handleNoClick = () => {
     setIsYesSelected(false); // เมื่อเลือกปุ่ม "ไม่เอา"
-  };
-
-  const handleInputPercentChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = Number(event.target.value);
-    setInputPercentDiscount(event.target.value); // อัปเดตค่าใน state
   };
 
   const handleTimeChange = (time: string) => {
@@ -97,23 +135,8 @@ export default function AdminPromotionCodeAddIndex() {
           </div>
           <div className="w-full flex flex-col">
             {/* navbar for admin page */}
-            <div className="flex flex-row items-center justify-between bg-white sticky top-0 h-20 px-10 py-5 min-w-[1200px] border-b  border-gray-300 z-10">
-              <div className="text-xl">เพิ่มหมวดหมู่</div>
-              <div className="h-full flex flex-row items-center gap-6 relative">
-                <button
-                  className=" bg-white text-defaultColor text-base h-full px-7 flex items-center gap-3 rounded-lg w-32 text-center justify-center border border-defaultColor"
-                  onClick={() => router.push("/admincategory")}
-                >
-                  ยกเลิก
-                </button>
-                <button
-                  className=" bg-defaultColor text-white text-base h-full px-7 flex items-center gap-3 rounded-lg w-32 text-center justify-center "
-                  type="submit"
-                >
-                  สร้าง
-                </button>
-              </div>
-            </div>
+            <AdminPromotionAddNavbar />
+
             {/* AdminPromotionCodeAddPromotionCode */}
             <div>
               {/* พื้นหลัง */}
@@ -158,8 +181,6 @@ export default function AdminPromotionCodeAddIndex() {
                                     : "bg-transparent"
                                 } w-1 h-1 rounded-full`}
                               />
-
-                              {/* ตัวอักษร "Fixed" เปลี่ยนสีตามการเลือก */}
                             </button>
                             <h1
                               className={`text-sm pl-2 ${
@@ -194,6 +215,7 @@ export default function AdminPromotionCodeAddIndex() {
                           >
                             <button
                               onClick={handleNoClick}
+                              type="button"
                               className={`${
                                 isYesSelected === false
                                   ? "bg-blue-500"
@@ -228,7 +250,11 @@ export default function AdminPromotionCodeAddIndex() {
                             } w-[140px] h-[42px] ml-4 pl-5 pr-10 border border-gray-300 rounded-md  appearance-none`}
                             disabled={isYesSelected === null} // ถ้าเลือก "เอา" จะไม่สามารถพิมพ์ได้
                             onChange={handleInputPercentChange}
-                            value={inputPercentDiscount}
+                            value={
+                              inputPercentDiscount === null
+                                ? ""
+                                : inputPercentDiscount
+                            }
                           />
                           <div className="absolute left-[245px]">
                             <IconPercent />
@@ -236,24 +262,26 @@ export default function AdminPromotionCodeAddIndex() {
                         </div>
                       </div>
                     </div>
+
                     {/* limit of usesage */}
                     <div className="flex items-center justify-between w-[662px] text-gray-500 font-medium relative">
                       <label htmlFor="โควต้าการใช้">โควต้าการใช้</label>
                       <input
                         type="text"
                         onChange={handleInputCodeLimit}
+                        value={inputLimitCode === null ? "" : inputLimitCode}
                         className="border border-gray-300 h-11 rounded-lg w-[433px] pl-5 text-black font-normal"
                       />
                       <h1 className="absolute right-[10px] text-gray-400">
                         ครั้ง
                       </h1>
                     </div>
-                    {/* end date */}
+
+                    {/* popup for select date */}
                     <div className="flex items-center justify-between w-[662px] text-gray-500 font-medium">
                       <label htmlFor="วันหมดอายุ" className="">
                         วันหมดอายุ
                       </label>
-                      {/* date */}
                       <div className="w-[433px] flex flex-row gap-6 ">
                         <div className="w-[205px]">
                           <Popover
@@ -276,14 +304,8 @@ export default function AdminPromotionCodeAddIndex() {
                                 <CalendarIcon className="h-4 w-4 flex-shrink-0" />
                               </Button>
                             </PopoverTrigger>
-
                             <PopoverContent className="bg-white  rounded-lg shadow-lg">
                               <Calendar
-                                // mode="single"
-                                // selected={selectedDate || undefined}
-                                // onSelect={handleDateSelect}
-                                // disabled={(date) => !isDateSelectable(date)}
-                                // initialFocus
                                 mode="single"
                                 selected={selectedDate || undefined}
                                 initialFocus
@@ -296,7 +318,12 @@ export default function AdminPromotionCodeAddIndex() {
                             </PopoverContent>
                           </Popover>
                         </div>
-                        <button className="w-[205px] absolute right-[428px]">
+
+                        {/* popup for select time */}
+                        <button
+                          className="w-[205px] absolute right-[428px]"
+                          type="button"
+                        >
                           <TimeSelectorAdminPromotionCode
                             value={selectedTime} // ส่งค่าเวลา
                             onChange={handleTimeChange} // ส่งฟังก์ชันจัดการการเปลี่ยนแปลงเวลา
