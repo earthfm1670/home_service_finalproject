@@ -28,10 +28,6 @@ import { connectionPool } from "@/utils/db";
  * promotionId: promotion id : number ถ้าไม่มีใส่ 0
  * subServices: array of object [{subServiceId: id ของ sub-service(number) , amount: จำนวนที่จอง (number)}, {}, ......]
  */
-interface SubServices {
-  subServiceId: number;
-  amount: number;
-} //AAA ลบได้
 
 export default async function getOrderList(
   req: NextApiRequest,
@@ -59,6 +55,10 @@ BEGIN;
         VALUES ($1, $2, $3, $4, $5)
         RETURNING payment_id
 ),
+        inserted_promotion_history AS (
+        INSERT INTO promotions_history (payment_id, promotion_id)
+        VALUES ((SELECT payment_id FROM inserted_payment), $5)
+        ),
         inserted_booking AS(
         INSERT INTO bookings (user_id, scheduled_date, total_price, payment_id, status_id)
         VALUES ($1, $6, $2, (SELECT payment_id FROM inserted_payment), $7)
