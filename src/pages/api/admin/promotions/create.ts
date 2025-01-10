@@ -28,9 +28,9 @@ export default async function createPromotion(
   if (!selectedEndDate || isNaN(new Date(selectedEndDate).getTime())) {
     return res.status(400).json({ error: "Invalid or missing end date" });
   }
-  let end_at = new Date(selectedEndDate);
+  const end_at = new Date(selectedEndDate);
   console.log("selectedEndDate", end_at);
-  
+
   // To avoid toISOString() causing errors
   if (isNaN(end_at.getTime())) {
     return res.status(400).json({ error: "Invalid date format for end_at" });
