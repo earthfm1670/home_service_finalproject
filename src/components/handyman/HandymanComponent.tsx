@@ -25,6 +25,28 @@ interface ButtonComponentProps {
   fetchData: () => void;
 }
 
+interface BookingStatus {
+  status_name: string;
+}
+
+interface User {
+  name: string;
+  email: string | null;
+  phone_number: string;
+}
+
+interface Order {
+  amount: number;
+  order_price: number;
+  sub_services: {
+    unit: string;
+    services: { service_name: string };
+    unit_price: number;
+    description: string;
+  };
+  sub_services_id: number;
+}
+
 interface BookingDetail {
   service_name: string;
   sub_service_description: string;
@@ -39,14 +61,13 @@ interface Booking {
   booked_at: string;
   completed_at: string | null;
   in_progress_at: string | null;
-  status_name: string;
+  booking_status: BookingStatus;
   total_price: number;
   address: string | null;
-  user_name: string;
-  user_phone: string;
-  user_email: string;
+  users: User;
   staff_name: string;
   bookingDetail: BookingDetail[];
+  order_list: Order[];
 }
 
 const ButtonComponent: React.FC<ButtonComponentProps> = ({
@@ -71,7 +92,7 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
     }
     if (status_id) {
       try {
-        const response = await axios.patch(`/api/handyman`, {
+        await axios.patch(`/api/handyman`, {
           booking_id: booking_id,
           status_id: status_id,
           completed_at: completedTime,
@@ -154,15 +175,18 @@ const HandymanComponent: React.FC = () => {
         bookingsData
           .filter(
             (booking) =>
-              booking.status_name === "กำลังดำเนินการ" ||
-              booking.status_name === "รอดำเนินการ"
+              booking.booking_status.status_name === "กำลังดำเนินการ" ||
+              booking.booking_status.status_name === "รอดำเนินการ"
           )
           .sort((a, b) => b.booking_id.localeCompare(a.booking_id))
       );
     } else {
       setFilteredData(
         bookingsData
-          .filter((booking) => booking.status_name === "ดำเนินการสำเร็จ")
+          .filter(
+            (booking) =>
+              booking.booking_status.status_name === "ดำเนินการสำเร็จ"
+          )
           .sort((a, b) => {
             if (a.completed_at && b.completed_at) {
               return (
@@ -321,17 +345,18 @@ const HandymanComponent: React.FC = () => {
                   </h1>
                   <h1
                     className={
-                      booking.status_name === "ดำเนินการสำเร็จ"
+                      booking.booking_status.status_name === "ดำเนินการสำเร็จ"
                         ? "text-green-400"
-                        : booking.status_name === "รอดำเนินการ"
+                        : booking.booking_status.status_name === "รอดำเนินการ"
                         ? "text-red-500"
-                        : booking.status_name === "กำลังดำเนินการ"
+                        : booking.booking_status.status_name ===
+                          "กำลังดำเนินการ"
                         ? "text-orange-400"
                         : ""
                     }
                   >
                     {" "}
-                    {booking.status_name}
+                    {booking.booking_status.status_name}
                   </h1>
                 </AccordionTrigger>
                 <AccordionContent className="w-full sm:max-h-[420px] lg:max-h-[540px] overflow-y-auto flex flex-col px-10 rounded-lg shadow-lg lg:text-lg md:text-base transition-all duration-700 ease-in-out">
@@ -344,9 +369,9 @@ const HandymanComponent: React.FC = () => {
                       </span>
                       <div className="flex flex-col items-center">
                         <span className="space-y-4 ">
-                          <h1 className="pt-4 ">Name : {booking.user_name}</h1>
-                          <h1>Phone : {booking.user_phone}</h1>
-                          <h1>Email : {booking.user_email}</h1>
+                          <h1 className="pt-4 ">Name : {booking.users.name}</h1>
+                          <h1>Phone : {booking.users.phone_number}</h1>
+                          <h1>Email : {booking.users.email}</h1>
                           <h1>Address : {booking.address}</h1>
                         </span>
                       </div>
@@ -359,7 +384,8 @@ const HandymanComponent: React.FC = () => {
                         </h1>
                       </span>
                       <div className="md:px-4 lg:px-8 xl:px-20 2xl:px-32">
-                        {booking.status_name === "กำลังดำเนินการ" ? (
+                        {booking.booking_status.status_name ===
+                        "กำลังดำเนินการ" ? (
                           <h1 className="w-auto px-3 py-1 font-medium text-center text-white bg-orange-400 rounded-2xl">
                             เริ่มดำเนินการ{" "}
                             {booking.in_progress_at?.slice(0, 10)} เวลา{" "}
@@ -368,7 +394,8 @@ const HandymanComponent: React.FC = () => {
                         ) : (
                           ""
                         )}
-                        {booking.status_name === "ดำเนินการสำเร็จ" ? (
+                        {booking.booking_status.status_name ===
+                        "ดำเนินการสำเร็จ" ? (
                           <h1 className="w-auto px-3 py-1 font-medium text-center text-white bg-green-400 rounded-2xl">
                             ดำเนินการสำเร็จ {booking.completed_at?.slice(0, 10)}{" "}
                             เวลา {booking.completed_at?.slice(11, 19)} น.
@@ -377,17 +404,17 @@ const HandymanComponent: React.FC = () => {
                           ""
                         )}
                       </div>
-                      {booking.bookingDetail.map((detail, index) => (
+                      {booking.order_list.map((detail, index) => (
                         <div
                           key={index}
                           className="flex flex-col space-y-4 sm:px-2 md:px-4 lg:px-8 xl:px-20 2xl:px-32 text-gray-800 transition-all duration-700 ease-in-out"
                         >
                           <h1 className="pt-4 ">
-                            บริการ : {detail.service_name}
+                            บริการ : {detail.sub_services.services.service_name}
                           </h1>
                           <h1>
-                            รายการ : {detail.sub_service_description} จำนวน{" "}
-                            {detail.amount} {detail.sub_service_unit}
+                            รายการ : {detail.sub_services.description} จำนวน{" "}
+                            {detail.amount} {detail.sub_services.unit}
                           </h1>
                           <h1 className="font-medium  pb-1 border-solid border-b-2 border-gray-100">
                             รวม : {detail.order_price} ฿
@@ -395,9 +422,10 @@ const HandymanComponent: React.FC = () => {
                         </div>
                       ))}
                       <div className="hidden sm:flex justify-center pt-2">
-                        {booking.status_name !== "ดำเนินการสำเร็จ" && (
+                        {booking.booking_status.status_name !==
+                          "ดำเนินการสำเร็จ" && (
                           <ButtonComponent
-                            status={booking.status_name}
+                            status={booking.booking_status.status_name}
                             booking_id={booking.booking_id}
                             fetchData={fetchData}
                           />
@@ -406,9 +434,10 @@ const HandymanComponent: React.FC = () => {
                     </div>
                   </div>
                   <div className="sm:hidden flex justify-center pt-2">
-                    {booking.status_name !== "ดำเนินการสำเร็จ" && (
+                    {booking.booking_status.status_name !==
+                      "ดำเนินการสำเร็จ" && (
                       <ButtonComponent
-                        status={booking.status_name}
+                        status={booking.booking_status.status_name}
                         booking_id={booking.booking_id}
                         fetchData={fetchData}
                       />
