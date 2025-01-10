@@ -21,7 +21,8 @@ export default async function handler(
       }
 
       return res.status(200).json(user);
-    } catch (error: any) {
+    } catch (e) {
+      const error = e as Error
       return res.status(500).json({ error: error.message });
     }
   }
