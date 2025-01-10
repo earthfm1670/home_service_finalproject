@@ -37,8 +37,8 @@ export default function AdminPromotionCodeAddIndex() {
 
   // select expiration date
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  console.log("selectedDate", selectedDate);
+  const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
+  console.log("selectedDate", selectedEndDate);
 
   // select expiration time
   const [selectedTime, setSelectedTime] = useState<string>(""); // กำหนดเป็น string แทน null
@@ -58,18 +58,34 @@ export default function AdminPromotionCodeAddIndex() {
   }
   console.log("numberTodecimal", NumberTodecimal);
 
+
+
   // function handle submit button for .post code
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
+    //  // ตรวจสอบว่า selectedDate มีค่าแล้ว
+    // if (selectedDate) {
+    //   // แปลง selectedDate ให้เป็น string รูปแบบ ISO 8601
+    //   const formattedDate = selectedDate.toISOString();
+    // ตรวจสอบและแปลง selectedDate ให้เป็น string หากมันเป็น Date object
+
+
     try {
+
+      if (!selectedEndDate) {
+        console.log("selectedDate is missing");
+        return; // หยุดการทำงานถ้า selectedDate ไม่มีค่า
+      }
+
       const newInputData = {
         promotion_code: inputTitleCode,
         discount_value: NumberTodecimal,
         usage_limit: inputLimitCode,
+        end_at: selectedEndDate.toISOString(),
       };
       console.log("new input data for create check", newInputData);
-      await axios.post(`/api/admin/promotion/create`, newInputData, {
+      await axios.post(`/api/admin/promotions/create`, newInputData, {
         headers: { "Content-Type": "application/json" },
       });
       // router.push("/adminpromotioncode");
@@ -295,8 +311,8 @@ export default function AdminPromotionCodeAddIndex() {
                                 onClick={() => setIsCalendarOpen(true)}
                               >
                                 <span className="truncate mr-2">
-                                  {selectedDate
-                                    ? format(selectedDate, "d MMMM yyyy", {
+                                  {selectedEndDate
+                                    ? format(selectedEndDate, "d MMMM yyyy", {
                                         locale: th,
                                       }) // แสดงวันที่ที่เลือก
                                     : ""}
@@ -307,10 +323,10 @@ export default function AdminPromotionCodeAddIndex() {
                             <PopoverContent className="bg-white  rounded-lg shadow-lg">
                               <Calendar
                                 mode="single"
-                                selected={selectedDate || undefined}
+                                selected={selectedEndDate || undefined}
                                 initialFocus
                                 onSelect={(day) => {
-                                  setSelectedDate(day ?? null); // กำหนดวันที่ที่เลือก
+                                  setSelectedEndDate(day ?? null); // กำหนดวันที่ที่เลือก
                                   setIsCalendarOpen(false); // ปิด Popover หลังจากเลือกวันที่
                                 }}
                                 disabled={(date) => date < new Date()} // ปิดวันที่ในอดีต
@@ -327,7 +343,7 @@ export default function AdminPromotionCodeAddIndex() {
                           <TimeSelectorAdminPromotionCode
                             value={selectedTime} // ส่งค่าเวลา
                             onChange={handleTimeChange} // ส่งฟังก์ชันจัดการการเปลี่ยนแปลงเวลา
-                            selectedDate={selectedDate} // ส่งค่าของวันที่เลือก
+                            selectedDate={selectedEndDate} // ส่งค่าของวันที่เลือก
                           />
                         </button>
                       </div>
