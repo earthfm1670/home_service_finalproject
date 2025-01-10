@@ -1,8 +1,10 @@
 import { Navbar } from "@/components/navbar";
+import { useAuth } from "@/context/authContext";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 function PaymentSuccess() {
+  const { authState } = useAuth();
   const router = useRouter();
   const {
     selectedServices,
@@ -54,7 +56,11 @@ function PaymentSuccess() {
   }, ${subDistrict}, ${district}, ${province}`;
 
   const proceedButton = () => {
-    router.push("/");
+    if (authState && authState.userId) {
+      router.push(`/customerservice/${authState.userId}/orderlist`);
+    } else {
+      console.error("User ID not found in auth state");
+    }
   };
 
   return (
