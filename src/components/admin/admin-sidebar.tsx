@@ -1,10 +1,8 @@
 import homeservicelogo from "../../../public/image/homeservicelogo.svg";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useState } from "react";
 
 export function AdminSidebar() {
-  const [activeButton, setActiveButton] = useState("");
   const router = useRouter();
 
   const getButtonClass = (path: string) => {
