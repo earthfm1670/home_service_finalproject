@@ -46,6 +46,7 @@ export default function CustomerProfile() {
     try {
       const respond = await axios.post("api/auth/getUser", {
         email,
+        userRole: authState.userRole,
       });
       const fetchedUser = respond.data.userInfo;
       setUserName(fetchedUser.name);

@@ -24,12 +24,11 @@ export const AuthNavbar: React.FC<AuthNavbarProps> = ({ media }) => {
     router.push("/");
   };
   const userId = authState.user?.sub;
-  const email = authState.userEmail;
   useEffect(() => {
-    if (email) {
+    if (media) {
       setIsProfileLoading(false);
     }
-  }, [email]);
+  }, [media]);
 
   return (
     <DropdownMenu>
@@ -41,7 +40,7 @@ export const AuthNavbar: React.FC<AuthNavbarProps> = ({ media }) => {
             <img
               src={media}
               alt="profile image"
-              className="w-full h-full object-cover"
+              className="w-full h-full rounded-full object-cover"
             />
           )}
         </div>

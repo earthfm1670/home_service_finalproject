@@ -42,7 +42,7 @@ interface UserPayload {
 //define context interface
 interface AuthContextType {
   authState: AuthState;
-  login: (email: string, password: string) => void;
+  login: (email: string, password: string) => Promise<boolean>;
   adminLogin: (email: string, password: string) => void;
   logout: () => void;
   isAdmin: boolean;
@@ -55,6 +55,7 @@ interface AuthState {
   userId: string | null;
   userEmail: string | null;
   user: UserPayload | null;
+  userRole: string | null;
   token: string | null;
 }
 interface AuthProviderProps {
@@ -85,6 +86,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     userId: null,
     userEmail: null,
     user: null,
+    userRole: null,
     token: null,
   });
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
@@ -118,6 +120,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       userId: savedUser.sub,
       userEmail: savedUser.email,
       user: savedUser,
+      userRole: savedUser.user_metadata.role,
       token: savedToken,
     });
     roleValidation(userRole);
@@ -156,10 +159,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       //setauth state to store user / token
       const userRole = userInfo.user_metadata.role;
       handleSessionLogin(authToken, userInfo, userRole);
-    } catch (error) {
-      const err = error as Error;
-      console.log(err.message);
+      return true;
+    } catch (err) {
+      const error = err as Error;
+      console.log(error.message);
       console.error("Invalid email or password");
+      return false;
     }
   };
 
@@ -193,6 +198,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       userId: null,
       userEmail: null,
       user: null,
+      userRole: null,
       token: null,
     });
     setIsAdmin(false);
