@@ -1,31 +1,43 @@
 import React, { useEffect, useRef, useState } from "react";
 import StripeContext from "@/components/StripeContext";
-import PaymentForm from "@/components/PaymentForm";
+import PaymentForm, { PaymentFormHandle } from "@/components/PaymentForm";
 import { Navbar } from "@/components/navbar";
-import { ProgressStepsNew } from "@/components/service-detail/ProgressSteps";
-import Link from "next/link";
-import MobileSummary from "@/components/service-detail/MobileSummary";
 import MobileBottomBar from "@/components/service-detail/MobileBottomBar";
 import ServiceHero from "@/components/service-detail/ServiceHero";
 import { useRouter } from "next/router";
 import type { Service } from "@/types/service";
 import DesktopSummary from "@/components/service-detail/DesktopSummary";
-import {
-  isWeekend,
-  isAfter,
-  isBefore,
-  isSameDay,
-  startOfToday,
-  addDays,
-  isSaturday,
-  isSunday,
-} from "date-fns";
+
+interface PaymentInfo {
+  cardNumber: string;
+  cardExpiry: string;
+  cardCvc: string;
+}
 import NavigationButtons from "@/components/service-detail/NavigationButtons";
+interface SelectedServicesData {
+  selections: Array<{
+    id: number;
+    quantity: number;
+  }>;
+  totalAmount: number;
+}
+
+interface SubService {
+  id: number;
+  description: string;
+  sub_service_id: number;
+  unit: string;
+  unit_price: number;
+}
+interface ServiceInfoPageProps {
+  initialService?: Service | null;
+}
 
 //stand alone payment page, need to connect to service info later
 const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
   const router = useRouter();
-  const formRef = useRef(null);
+  const formRef = useRef<PaymentFormHandle | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [service, setService] = useState<Service | null>(
     initialService || null
   );
@@ -33,9 +45,8 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
   const [discount, setDiscount] = useState<number>(0);
   const [selectedServices, setSelectedServices] =
     useState<SelectedServicesData | null>(null);
-  const [canProceed, setCanProceed] = useState<boolean>(false);
   const [locationInfo, setLocationInfo] = useState({
-    date: "",
+    date: null as Date | null,
     time: "",
     address: "",
     subDistrict: "",
@@ -44,16 +55,6 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
   });
 
   const [totalAmount, setTotalAmount] = useState<number>(0);
-  const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
-
-  const [selectedDate, setSelectedDate] = useState<Date | string | null>(null);
-  const [selectedTime, setSelectedTime] = useState("09:00");
-  const [address, setAddress] = useState<string>("");
-
-  const [timeError, setTimeError] = useState("");
-  const [dateError, setDateError] = useState<string | null>(null);
-  const [additionalDetails, setAdditionalDetails] = useState<string>("");
-
   const [cardDetails, setCardDetails] = useState({
     cardNumber: "",
     cardExpiry: "",
@@ -62,7 +63,13 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
 
   const [selectedPayment, setSelectedPayment] = useState<string>("creditcard");
 
-  const handlePaymentChange = (paymentType: string) => {
+  const [cardComplete, setCardComplete] = useState<boolean>(false);
+  const [expiryComplete, setExpiryComplete] = useState<boolean>(false);
+  const [cvcComplete, setCvcComplete] = useState<boolean>(false);
+
+  const handlePaymentChange: React.Dispatch<React.SetStateAction<string>> = (
+    paymentType
+  ) => {
     setSelectedPayment(paymentType);
   };
 
@@ -72,18 +79,6 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
       [field]: value,
     }));
   };
-
-  interface ServiceInfoPageProps {
-    initialService?: Service | null;
-  }
-
-  interface SubService {
-    id: number;
-    description: string;
-    sub_service_id: number;
-    unit: string;
-    unit_price: number;
-  }
 
   useEffect(() => {
     const sessionData = {
@@ -113,12 +108,26 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
     if (paymentData) {
       const parsedData = JSON.parse(paymentData);
       setPayment(parsedData);
-      setLocationInfo(parsedData);
+      setLocationInfo({
+        ...parsedData,
+        date: parsedData.date ? new Date(parsedData.date) : null,
+      });
     }
   }, [service]);
   // End of useEffect
 
-  const getSelectedServices = () => selectedServices?.selections || [];
+  const getSelectedServices = () => {
+    return (
+      selectedServices?.selections.map((selection) => ({
+        id: selection.id,
+        sub_service_id: selection.id, // Add appropriate sub_service_id
+        description: "", // Add appropriate description
+        unit: "", // Add appropriate unit
+        unit_price: 0, // Add appropriate unit price
+        quantity: selection.quantity,
+      })) || []
+    );
+  };
 
   const getQuantityDisplay = (subServiceId: number) => {
     const service = selectedServices?.selections.find(
@@ -164,21 +173,30 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
     const isServicesSelected =
       selectedServices && selectedServices.selections.length > 0;
 
-    const isPaymentInfoComplete = payment !== null;
-    //  &&
-    // selectedPayment === "creditcard" &&
-    // name &&
-    // cardNumberElement?.value &&
-    // cardExpiryElement?.value &&
-    // cardCvcElement?.value;
+    const isPaymentInfoComplete = payment && selectedPayment === "creditcard";
 
-    return isServicesSelected;
-    //  && isPaymentInfoComplete;
+    const isLocationInfoComplete =
+      Boolean(locationInfo.date) &&
+      Boolean(locationInfo.time) &&
+      Boolean(locationInfo.address);
+
+    return (
+      Boolean(isServicesSelected) &&
+      Boolean(isPaymentInfoComplete) &&
+      Boolean(isLocationInfoComplete)
+    );
   };
 
   const handleProceed = () => {
+    setIsLoading(true);
     if (formRef.current) {
       formRef.current.handleSubmit(new Event("submit"));
+    }
+
+    if (!cardComplete || !expiryComplete || !cvcComplete) {
+      setIsLoading(false);
+      // alert("Please ensure the card details are entered correctly.");
+      return;
     }
 
     if (!isFormComplete()) {
@@ -186,31 +204,43 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
       return;
     }
 
-    const discountedTotal = calculateTotal();
-
-    console.log("Selected Services Before Nav:", selectedServices);
-    console.log("date", locationInfo.date);
-    console.log("time", locationInfo.time);
-    console.log("address", locationInfo.address);
-    console.log("totalAmount", discountedTotal.toFixed(2));
-    router.push({
-      pathname: "/paymentsuccess",
-      query: {
-        selectedServices: JSON.stringify(selectedServices),
-        date: locationInfo.date,
-        time: locationInfo.time,
-        address: locationInfo.address,
-        subDistrict: locationInfo.subDistrict,
-        district: locationInfo.district,
-        province: locationInfo.province,
-        totalAmountAfterDiscount: discountedTotal.toFixed(2),
-      },
-    });
+    setTimeout(() => {
+      setIsLoading(false);
+      const discountedTotal = calculateTotal();
+      // console.log("Selected Services Before Nav:", selectedServices);
+      // console.log("date", locationInfo.date);
+      // console.log("time", locationInfo.time);
+      // console.log("address", locationInfo.address);
+      // console.log("totalAmount", discountedTotal.toFixed(2));
+      router.push({
+        pathname: "/paymentsuccess",
+        query: {
+          selectedServices: JSON.stringify(selectedServices),
+          date:
+            locationInfo.date instanceof Date
+              ? locationInfo.date.toISOString()
+              : null,
+          time: locationInfo.time,
+          address: locationInfo.address,
+          subDistrict: locationInfo.subDistrict,
+          district: locationInfo.district,
+          province: locationInfo.province,
+          totalAmountAfterDiscount: discountedTotal.toFixed(2),
+        },
+      });
+    }, 3000);
   };
 
   return (
     <StripeContext>
-      <div className="bg-gray-100">
+      {/* screen loading effect */}
+      {isLoading && (
+        <>
+          <div className="fixed inset-0 bg-white bg-opacity-90 z-50 flex items-center justify-center"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-white border-opacity-50"></div>
+        </>
+      )}
+      <div className={`bg-gray-100 ${isLoading ? "hidden" : ""}`}>
         <div className="flex flex-col h-min-screen">
           {/* <h1>Payment Page</h1> */}
           <Navbar />
@@ -220,38 +250,42 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
 
         <div className="mt-14 lg:flex lg:mt-28 lg:flex-row lg:justify-center lg:gap-5 lg:mr-4">
           <div className="overflow-y-auto pb-28 lg:pb-0">
+            
             <PaymentForm
+              ref={formRef}
               setDiscount={setDiscount}
               updateCardDetails={updateCardDetails}
+              cardDetails={cardDetails}
               selectedPayment={selectedPayment}
               setSelectedPayment={handlePaymentChange}
               calculateTotal={calculateTotal}
               totalAmount={totalAmount}
-              ref={formRef}
+              onCardCompleteChange={setCardComplete}
+              onExpiryCompleteChange={setExpiryComplete}
+              onCvcCompleteChange={setCvcComplete}
             />
           </div>
           <div className="lg:w-[349px] lg:h-[374px]">
             <DesktopSummary
               getSelectedServices={getSelectedServices}
               getQuantityDisplay={getQuantityDisplay}
-              disabled={!isFormComplete()}
               calculateTotal={calculateTotal}
               // canProceed={isFormComplete()}
               // canProceed={true}
-              handleProceed={handleProceed}
               locationInfo={locationInfo}
               discount={discount}
               totalAmount={totalAmount}
+              getPriceDisplay={function (id: number): number {
+                throw new Error("Function not implemented.");
+              }}
             />
           </div>
         </div>
         <div className="">
           <NavigationButtons
-            // disabled={!isFormComplete()}
-            // canProceed={isFormComplete()}
+            disabled={!isFormComplete()}
             canProceed={true}
             handleProceed={handleProceed}
-            // handleProceed={isFormComplete() ? handleProceed : undefined}
             backButtonText="ย้อนกลับ"
             proceedButtonText="ชำระเงิน"
           />

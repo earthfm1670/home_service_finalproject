@@ -1,8 +1,10 @@
 import { Navbar } from "@/components/navbar";
+import { useAuth } from "@/context/authContext";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 function PaymentSuccess() {
+  const { authState } = useAuth();
   const router = useRouter();
   const {
     selectedServices,
@@ -14,13 +16,18 @@ function PaymentSuccess() {
     province,
     totalAmountAfterDiscount,
   } = router.query;
-  const [services, setServices] = useState([]);
+  interface Service {
+    description: string;
+    quantity: number;
+  }
+
+  const [services, setServices] = useState<Service[]>([]);
 
   useEffect(() => {
     if (selectedServices) {
       try {
         const parsedServices = JSON.parse(selectedServices as string);
-        console.log("Parsed Services:", parsedServices.selections);
+        // console.log("Parsed Services:", parsedServices.selections);
         setServices(parsedServices.selections || []);
       } catch (error) {
         console.error("Failed to parse selected services:", error);
@@ -28,7 +35,7 @@ function PaymentSuccess() {
     }
   }, [selectedServices]);
 
-  console.log("Services State:", services);
+  // console.log("Services State:", services);
 
   const formatDate = (dateString: string) => {
     const dateObj = new Date(dateString);
@@ -47,6 +54,15 @@ function PaymentSuccess() {
   const formattedAddress = `${
     address || "Not available"
   }, ${subDistrict}, ${district}, ${province}`;
+
+  const proceedButton = () => {
+    sessionStorage.clear();
+    if (authState && authState.userId) {
+      router.push(`/customerservice/${authState.userId}/orderlist`);
+    } else {
+      console.error("User ID not found in auth state");
+    }
+  };
 
   return (
     <>
@@ -124,7 +140,10 @@ function PaymentSuccess() {
                 </div>
               </div>
               <div>
-                <button className="w-full h-[44px] my-8 bg-blue-600 text-white rounded-lg">
+                <button
+                  className="w-full h-[44px] my-8 bg-blue-600 text-white rounded-lg"
+                  onClick={proceedButton}
+                >
                   เช็ครายการซ่อม
                 </button>
               </div>
