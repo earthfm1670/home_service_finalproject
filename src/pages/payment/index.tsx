@@ -110,7 +110,10 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
     if (paymentData) {
       const parsedData = JSON.parse(paymentData);
       setPayment(parsedData);
-      setLocationInfo(parsedData);
+      setLocationInfo({
+        ...parsedData,
+        date: parsedData.date ? new Date(parsedData.date) : null,
+      });
     }
   }, [service]);
   // End of useEffect
@@ -215,7 +218,10 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
         pathname: "/paymentsuccess",
         query: {
           selectedServices: JSON.stringify(selectedServices),
-          date: locationInfo.date,
+          date:
+            locationInfo.date instanceof Date
+              ? locationInfo.date.toISOString()
+              : null,
           time: locationInfo.time,
           address: locationInfo.address,
           subDistrict: locationInfo.subDistrict,
