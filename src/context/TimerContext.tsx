@@ -4,7 +4,8 @@ interface TimerContextType {
   timeLeft: number;
   startTimer: () => void;
   resetTimer: () => void;
-  isTimerExpired: (value: boolean) => void;
+  isTimerExpired: boolean;
+  setIsTimerExpired: (value: boolean) => void;
 }
 
 const TimerContext = createContext<TimerContextType | undefined>(undefined);
@@ -14,11 +15,7 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [timeLeft, setTimeLeft] = useState(10 * 60); // 10 minutes in seconds
   const [isActive, setIsActive] = useState(false);
-  const [timerExpired, setTimerExpired] = useState(false);
-
-  const isTimerExpired = (value: boolean) => {
-    setTimerExpired(value);
-  };
+  const [isTimerExpired, setIsTimerExpired] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -29,6 +26,7 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({
       }, 1000);
     } else if (timeLeft === 0) {
       setIsActive(false);
+      setIsTimerExpired(true);
     }
 
     return () => clearInterval(interval);
@@ -36,16 +34,24 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const startTimer = () => {
     setIsActive(true);
+    setIsTimerExpired(false);
   };
 
   const resetTimer = () => {
     setTimeLeft(10 * 60);
     setIsActive(false);
+    setIsTimerExpired(false);
   };
 
   return (
     <TimerContext.Provider
-      value={{ timeLeft, startTimer, resetTimer, isTimerExpired }}
+      value={{
+        timeLeft,
+        startTimer,
+        resetTimer,
+        isTimerExpired,
+        setIsTimerExpired,
+      }}
     >
       {children}
     </TimerContext.Provider>
