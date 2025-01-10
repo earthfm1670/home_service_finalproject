@@ -109,9 +109,9 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
       selectedServices?.selections.map((selection) => ({
         id: selection.id,
         sub_service_id: selection.id, // Add appropriate sub_service_id
-        description: "", // Add appropriate description
-        unit: "", // Add appropriate unit
-        unit_price: 0, // Add appropriate unit price
+        description: selection?.description || "No description available", // Add appropriate description
+        unit: selection?.unit || "", // Add appropriate unit
+        unit_price: selection?.unit_price || 0, // Add appropriate unit price
         quantity: selection.quantity,
       })) || []
     );
