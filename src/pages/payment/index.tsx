@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import StripeContext from "@/components/StripeContext";
 import PaymentForm, { PaymentFormHandle } from "@/components/PaymentForm";
 import { Navbar } from "@/components/navbar";
-import Link from "next/link";
-import MobileSummary from "@/components/service-detail/MobileSummary";
 import MobileBottomBar from "@/components/service-detail/MobileBottomBar";
 import ServiceHero from "@/components/service-detail/ServiceHero";
 import { useRouter } from "next/router";

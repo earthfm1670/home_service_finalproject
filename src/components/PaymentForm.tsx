@@ -43,18 +43,11 @@ export interface PaymentFormHandle {
   handleSubmit: (event: Event) => Promise<void>;
 }
 
-const promoCodes: PromoCodes = {
-  DISCOUNT10: 0.1,
-  DISCOUNT20: 0.2,
-  FURRY: 0.99,
-};
 
 const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
   (
     {
       setDiscount,
-      updateCardDetails,
-      calculateTotal,
       totalAmount,
       onCardCompleteChange,
       onExpiryCompleteChange,
@@ -104,9 +97,6 @@ const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
     };
 
     const isPaymentFormComplete = (): boolean => {
-      const cardElement = elements?.getElement(CardNumberElement);
-      const expiryElement = elements?.getElement(CardExpiryElement);
-      const cvcElement = elements?.getElement(CardCvcElement);
 
       const isCreditCardSelected = selectedPayment === "creditcard";
       // const cardComplete = cardElement && !cardElement._empty;
@@ -320,7 +310,7 @@ const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
     };
 
     React.useImperativeHandle(ref, () => ({
-      handleSubmit: async (event) => {
+      handleSubmit: async () => {
         console.log("Submitting the payment form...");
         await handleSubmit();
       },

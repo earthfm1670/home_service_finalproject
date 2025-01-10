@@ -53,6 +53,10 @@ function PaymentSuccess() {
     address || "Not available"
   }, ${subDistrict}, ${district}, ${province}`;
 
+  const proceedButton = () => {
+    router.push("/");
+  };
+
   return (
     <>
       <div className="min-h-screen bg-[#F3F4F6]">
@@ -129,7 +133,10 @@ function PaymentSuccess() {
                 </div>
               </div>
               <div>
-                <button className="w-full h-[44px] my-8 bg-blue-600 text-white rounded-lg">
+                <button
+                  className="w-full h-[44px] my-8 bg-blue-600 text-white rounded-lg"
+                  onClick={proceedButton}
+                >
                   เช็ครายการซ่อม
                 </button>
               </div>
