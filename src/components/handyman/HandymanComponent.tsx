@@ -110,7 +110,19 @@ const HandymanComponent: React.FC = () => {
   const [bookingsData, setBookingsData] = useState<Booking[]>([]);
   const [filteredData, setFilteredData] = useState(bookingsData);
   const router = useRouter();
-  const { authState } = useAuth();
+  // const { isLoggedIn, isStaff, isAdmin, authState } = useAuth();
+
+  // console.log("AuthState:", authState.user?.user_metadata);
+  // console.log("LogIn:", isLoggedIn);
+  // console.log("Staff:", isStaff);
+  // console.log("Admin:", isAdmin);
+
+  // if (!isLoggedIn) {
+  //   return <div>กรุณาเข้าสู่ระบบ</div>;
+  // }
+  // if (!isStaff) {
+  //   return <div>คุณไม่มีสิทธิ์เข้าถึงหน้านี้</div>;
+  // }
 
   // ฟังก์ชันสำหรับดึงข้อมูลจาก API
 
