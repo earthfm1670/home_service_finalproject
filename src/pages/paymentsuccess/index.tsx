@@ -14,7 +14,12 @@ function PaymentSuccess() {
     province,
     totalAmountAfterDiscount,
   } = router.query;
-  const [services, setServices] = useState([]);
+  interface Service {
+    description: string;
+    quantity: number;
+  }
+
+  const [services, setServices] = useState<Service[]>([]);
 
   useEffect(() => {
     if (selectedServices) {
