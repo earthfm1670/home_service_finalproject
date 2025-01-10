@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { isToken } from "./middleware-stack/isToken";
-import { roleCheck } from "./middleware-stack/roleCheck";
 import customerserviceProtect from "./middleware-stack/mw-map/customerservice-protect";
 import adminserviceProtect from "./middleware-stack/mw-map/adminservice-protect";
 import handymanProtect from "./middleware-stack/mw-map/handyman-protect";
@@ -19,11 +18,11 @@ const middlewareMap: MiddlewareMap = {
 
 export async function middleware(req: NextRequest) {
   // 1. validate token
-  const pathName = req.nextUrl.pathname;
-  const url = req.url;
+  // const pathName = req.nextUrl.pathname;
+  // const url = req.url;
   await isToken(req);
   // 2. validate role
-  await roleCheck(req);
+  // await roleCheck(req);
   //--------Mapping-------------------
   for (const path in middlewareMap) {
     if (req.nextUrl.pathname.startsWith(path)) {
@@ -35,7 +34,5 @@ export async function middleware(req: NextRequest) {
   }
   //---------------------------
   // 3. api protection
-  console.log(`path name: `, pathName);
-  console.log(`url: `, url);
   return NextResponse.next();
 }
