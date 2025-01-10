@@ -65,12 +65,12 @@ export default async function handlerHandyman(
       }
 
       // จัดรูปแบบ response
-      const bookingsData = bookings.map((booking: any) => {
+      const bookingsData = bookings.map((booking: Booking) => {
         const relatedOrders = orders.filter(
-          (order: any) => order.booking_id === booking.booking_id
+          (order: Order) => order.booking_id === booking.booking_id
         );
 
-        const bookingDetail = relatedOrders.map((order: any) => ({
+        const bookingDetail = relatedOrders.map((order: Order) => ({
           service_name: order.sub_services?.services?.service_name || " ",
           sub_service_description: order.sub_services?.description || " ",
           amount: order.amount,
