@@ -56,6 +56,7 @@ function PaymentSuccess() {
   }, ${subDistrict}, ${district}, ${province}`;
 
   const proceedButton = () => {
+    sessionStorage.clear();
     if (authState && authState.userId) {
       router.push(`/customerservice/${authState.userId}/orderlist`);
     } else {
