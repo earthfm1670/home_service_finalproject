@@ -1,4 +1,3 @@
-import { supabase } from "@/utils/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
 import { adminSupabase } from "@/utils/supabase";
 
@@ -6,7 +5,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log("------------------ Start ------------------")
+  console.log("------------------ Start ------------------");
   if (req.method === "GET") {
     const { id } = req.query; // Dynamic Route จะดึง id จาก req.query
 
@@ -39,7 +38,8 @@ export default async function handler(
       }
 
       return res.status(200).json(data);
-    } catch (error: any) {
+    } catch (e) {
+      const error = e as Error;
       return res.status(500).json({ error: error.message });
     }
   }

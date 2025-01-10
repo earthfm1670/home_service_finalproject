@@ -3,17 +3,34 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { AdminserviceDetailSubservice } from "./adminserviceDetailSubservice";
 
+interface AdminserviceDetailServiceProps {
+  setInputSubservice: React.Dispatch<React.SetStateAction<Subservice[]>>; // Adjust the type for setInputSubservice if necessary
+  setInputTitle: React.Dispatch<React.SetStateAction<string>>;
+  setInputCat: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setNameTopic: React.Dispatch<React.SetStateAction<string>>;
+  inputTitle: string;
+}
+
+interface Subservice {
+  id: string;
+  name: string;
+  unit_price: number | null;
+  description: string;
+  unit: string;
+  pricePerUnit: number;
+}
+
 export const AdminserviceDetailService = ({
   setInputSubservice,
   setInputTitle,
   setInputCat,
   setNameTopic,
   inputTitle,
-}: any) => {
+}: AdminserviceDetailServiceProps) => {
   const router = useRouter();
   const { id } = router.query;
 
-  const [subservices, setSubservices] = useState<any[]>([]);
+  const [subservices, setSubservices] = useState<Subservice[]>([]);
 
   // setInputSubservice(subservices)
   useEffect(() => {
@@ -27,10 +44,7 @@ export const AdminserviceDetailService = ({
     setInputSubservice(updatedSubservices);
   }, [subservices]); // เมื่อ subservices เปลี่ยนแปลง จะทำการอัพเดท
 
-  const [dataParams, setDataParams] = useState();
-  const [serviceNameData, setServiceNameData] = useState<String>("");
-  const [serviceCategoryData, setServiceCategoryData] = useState<String>();
-  const [fetchDataCategories, setFetchDataCategories] = useState<any>([]);
+  const [serviceCategoryData, setServiceCategoryData] = useState<string>();
   const [createAt, setCreateAt] = useState<string>(new Date().toISOString());
   const [updateAt, setUpdateAt] = useState<string>(new Date().toISOString());
 
@@ -42,8 +56,6 @@ export const AdminserviceDetailService = ({
         `/api/admin/management/selectedit/${id}`
       );
       console.log("test response fetching data", response.data);
-      setDataParams(response.data);
-      setServiceNameData(response.data.service_name);
       setNameTopic(response.data.service_name);
       setServiceCategoryData(response.data.categories.category);
       setSubservices(
@@ -68,20 +80,7 @@ export const AdminserviceDetailService = ({
       setUpdateAt(response.data.updated_at);
       setInputTitle(response.data.service_name);
       setInputCat(response.data.category_id);
-      // console.log(
-      //   "check refresh page for catrgories_id",
-      //   response.data.categories_id
-      // );
       setInputSubservice(response.data.sub_services);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const fetchCategories = async () => {
-    try {
-      const response = await axios.get(`/api/admin/management/get-categories`);
-      setFetchDataCategories(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -89,7 +88,6 @@ export const AdminserviceDetailService = ({
 
   useEffect(() => {
     if (id) {
-      fetchCategories();
       fetchService();
     }
   }, [id]);

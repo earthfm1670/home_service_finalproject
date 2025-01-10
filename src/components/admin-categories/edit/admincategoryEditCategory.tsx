@@ -1,10 +1,6 @@
-import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import axios from "axios";
-import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import IconX from "@/components/ui/IconX";
 import IconCheck from "@/components/ui/IconCheck";
-import { AdminCategoryEditNavbar } from "@/components/admin-categories/edit/admincategoryEditNavbar";
 
 interface Category {
   id: number;
@@ -18,7 +14,7 @@ interface AdminCategoryEditCategory {
   handleInputCategory: (event: React.ChangeEvent<HTMLInputElement>) => void;
   showPopUpSubmit: boolean;
   setShowPopUpSubmit: React.Dispatch<React.SetStateAction<boolean>>;
-  category:Category
+  category: Category;
 }
 
 export function AdminCategoryEditCategory({
@@ -26,7 +22,7 @@ export function AdminCategoryEditCategory({
   handleInputCategory,
   showPopUpSubmit,
   setShowPopUpSubmit,
-  category
+  category,
 }: AdminCategoryEditCategory) {
   const router = useRouter();
   return (
@@ -92,8 +88,7 @@ export function AdminCategoryEditCategory({
           <div className="bg-white w-[360px] h-auto flex flex-col items-center rounded-xl p-3 gap-3 absolute">
             <div
               className="w-full flex justify-end"
-              onClick={() => setShowPopUpSubmit(false)}
-            >
+              onClick={() => setShowPopUpSubmit(false)}>
               <IconX />
             </div>
             <div className="flex justify-center relative">
@@ -108,8 +103,7 @@ export function AdminCategoryEditCategory({
             </h1>
             <button
               className="bg-defaultColor text-white w-28 py-2 rounded-lg font-medium mb-2 mt-2"
-              onClick={() => router.push("/admincategory")}
-            >
+              onClick={() => router.push("/admincategory")}>
               ยืนยัน
             </button>
           </div>

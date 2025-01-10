@@ -18,12 +18,23 @@ import {
 import { AdminDeleteImagePopUp } from "@/components/admin/admin-delete-image-popup";
 
 // ----------------------------------------------------------------------------------------
+interface SubService {
+  description: string;
+  unit: string;
+  pricePerUnit: number | null;
+}
+interface Categories {
+  id: number;
+  category: string;
+  updated_at: string;
+  created_at: string;
+}
 
 interface AdminServiceAddIndexProps {
-  setInputSubservice: (value: any) => void; // ควรระบุ type ที่ชัดเจนกว่านี้ ถ้าทราบ
+  setInputSubservice: (value: SubService[]) => void; // ควรระบุ type ที่ชัดเจนกว่านี้ ถ้าทราบ
   inputTitle: (value: string) => void;
-  setInputCat: (value: any) => void; // ควรระบุ type ที่ชัดเจนกว่านี้ ถ้าทราบ
-  SetInputimage: (value: any) => void; // ควรระบุ type ที่ชัดเจนกว่านี้ ถ้าทราบ
+  setInputCat: (value: number | undefined) => void; // ควรระบุ type ที่ชัดเจนกว่านี้ ถ้าทราบ
+  SetInputimage: (value: File | null) => void; // ควรระบุ type ที่ชัดเจนกว่านี้ ถ้าทราบ
   showPopUpDeleteImg: boolean;
   setShowPopUpDeleteImg: (value: boolean) => void;
   titleEmpty: boolean;
@@ -56,10 +67,12 @@ export const AdminserviceAddService = ({
   setSubserviceEmpty,
 }: AdminServiceAddIndexProps) => {
   // State สำหรับเก็บข้อมูล Category ที่ดึงมาจาก API
-  const [fetchDataCategories, setFetchDataCategories] = useState<any>([]);
+  const [fetchDataCategories, setFetchDataCategories] = useState<Categories[]>(
+    []
+  );
 
   // State เพื่อจัดการข้อมูล subservice
-  const [subservices, setSubservices] = useState<any[]>([
+  const [subservices, setSubservices] = useState<SubService[]>([
     { description: "", unit: "", pricePerUnit: 0 },
     { description: "", unit: "", pricePerUnit: 0 },
   ]);
@@ -244,22 +257,19 @@ export const AdminserviceAddService = ({
                     target: { value },
                   } as React.ChangeEvent<HTMLSelectElement>);
                   setIsOpenTrigger(true);
-                }}
-              >
+                }}>
                 <SelectTrigger
                   className={`w-[433px] pl-5 h-[44px] text-base font-normal ${
                     isOpenTrigger ? "text-black" : "text-gray-600"
-                  }`}
-                >
+                  }`}>
                   <SelectValue placeholder="เลือกหมวดหมู่" />
                 </SelectTrigger>
                 <SelectContent>
                   {fetchDataCategories.map(
-                    (fetchDataCategories: any, index: any) => (
+                    (fetchDataCategories: Categories) => (
                       <SelectItem
                         key={fetchDataCategories.id.toString()}
-                        value={fetchDataCategories.id.toString()}
-                      >
+                        value={fetchDataCategories.id.toString()}>
                         {fetchDataCategories.category}
                       </SelectItem>
                     )
@@ -298,8 +308,7 @@ export const AdminserviceAddService = ({
                         <div className="flex flex-row gap-2">
                           <label
                             htmlFor="file-upload"
-                            className="cursor-pointer text-blue-500 hover:text-blue-700"
-                          >
+                            className="cursor-pointer text-blue-500 hover:text-blue-700">
                             อัพโหลดภาพ
                           </label>
                           <p className="text-gray-600 text-center ">หรือ</p>
@@ -336,8 +345,7 @@ export const AdminserviceAddService = ({
                     </p>
                     <p
                       className="cursor-pointer text-blue-500 hover:text-blue-700 underline"
-                      onClick={() => setShowPopUpDeleteImg(true)}
-                    >
+                      onClick={() => setShowPopUpDeleteImg(true)}>
                       ลบรูปภาพ
                     </p>
                   </div>
@@ -390,8 +398,7 @@ export const AdminserviceAddService = ({
             <button
               type="button"
               className=" bg-white text-defaultColor text-base h-10  flex items-center justify-center gap-3 rounded-lg border border-defaultColor px-7 mt-7 active:bg-pressedColor active:text-white "
-              onClick={addSubService}
-            >
+              onClick={addSubService}>
               เพิ่มรายการ
               <span>
                 <IconPlusDefaultColor />

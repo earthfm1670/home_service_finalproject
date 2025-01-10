@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { supabase } from "@/utils/supabase";
 import { adminSupabase } from "@/utils/supabase";
 
 interface Categories {
