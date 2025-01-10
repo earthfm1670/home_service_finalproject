@@ -1,5 +1,4 @@
 import React from "react";
-import { Navbar } from "@/components/navbar";
 import homeservicelogo from "../../../public/image/homeservicelogo.svg";
 import { useRouter } from "next/router";
 import Image from "next/image";
