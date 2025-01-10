@@ -2,6 +2,34 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "@/utils/supabase";
 import moment from "moment-timezone";
 
+interface Booking {
+  booking_id: number;
+  booked_at: string;
+  completed_at?: string;
+  in_progress_at?: string;
+  status_id: number;
+  total_price: number;
+  address: string;
+  booking_status: { status_name: string };
+  user_id: number;
+  users: { name: string; phone_number: string; email: string };
+  staff_id: number;
+  staffs: { name: string };
+}
+
+interface Order {
+  booking_id: number;
+  sub_services_id: number;
+  amount: number;
+  order_price: number;
+  sub_services: {
+    description: string;
+    unit: string;
+    unit_price: number;
+    services: { service_name: string };
+  };
+}
+
 export default async function handlerHandyman(
   req: NextApiRequest,
   res: NextApiResponse
@@ -9,7 +37,7 @@ export default async function handlerHandyman(
   if (req.method === "GET") {
     try {
       // ดึงข้อมูลจากตาราง bookings ก่อน
-      let { data: bookings, error: bookingsError } = await supabase
+      const { data: bookings, error: bookingsError } = await supabase
         .from("bookings")
         .select(
           "booking_id, booked_at, completed_at, in_progress_at, status_id, total_price, address, booking_status:booking_status ( status_name ), user_id, users ( name, phone_number, email ), staff_id, staffs ( name )"
@@ -23,7 +51,7 @@ export default async function handlerHandyman(
       }
 
       // ดึงข้อมูลจากตาราง order_list โดยใช้ booking_id จาก bookings
-      let { data: orders, error: ordersError } = await supabase
+      const { data: orders, error: ordersError } = await supabase
         .from("order_list")
         .select(
           "booking_id, sub_services_id, amount, order_price, sub_services:sub_services ( description, unit, unit_price, services:services ( service_name ) )"
