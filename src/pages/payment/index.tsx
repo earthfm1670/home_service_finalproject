@@ -207,11 +207,11 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
     setTimeout(() => {
       setIsLoading(false);
       const discountedTotal = calculateTotal();
-      console.log("Selected Services Before Nav:", selectedServices);
-      console.log("date", locationInfo.date);
-      console.log("time", locationInfo.time);
-      console.log("address", locationInfo.address);
-      console.log("totalAmount", discountedTotal.toFixed(2));
+      // console.log("Selected Services Before Nav:", selectedServices);
+      // console.log("date", locationInfo.date);
+      // console.log("time", locationInfo.time);
+      // console.log("address", locationInfo.address);
+      // console.log("totalAmount", discountedTotal.toFixed(2));
       router.push({
         pathname: "/paymentsuccess",
         query: {

@@ -27,7 +27,7 @@ function PaymentSuccess() {
     if (selectedServices) {
       try {
         const parsedServices = JSON.parse(selectedServices as string);
-        console.log("Parsed Services:", parsedServices.selections);
+        // console.log("Parsed Services:", parsedServices.selections);
         setServices(parsedServices.selections || []);
       } catch (error) {
         console.error("Failed to parse selected services:", error);
@@ -35,7 +35,7 @@ function PaymentSuccess() {
     }
   }, [selectedServices]);
 
-  console.log("Services State:", services);
+  // console.log("Services State:", services);
 
   const formatDate = (dateString: string) => {
     const dateObj = new Date(dateString);

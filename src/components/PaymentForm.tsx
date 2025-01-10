@@ -239,7 +239,7 @@ const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
             amount: service.quantity,
           })
         );
-        console.log(subServices);
+        // console.log(subServices);
 
         // send payment data to api
         const apiResponse = await axios.post(
@@ -256,7 +256,7 @@ const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
 
         if (apiResponse.status === 201) {
           alert("Payment successful! Thank you for your purchase.");
-          console.log("Redirecting to /paymentsuccess...");
+          // console.log("Redirecting to /paymentsuccess...");
           setLoading(false);
           router.push("/paymentsuccess");
         } else {
@@ -299,7 +299,7 @@ const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
           setLoading(false);
         } else if (paymentIntent && paymentIntent.status === "succeeded") {
           alert("Payment successful! Thank you for your purchase.");
-          console.log("Redirecting to /paymentsuccess...");
+          // console.log("Redirecting to /paymentsuccess...");
           setLoading(false);
         }
       } catch (err) {
@@ -311,7 +311,7 @@ const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
 
     React.useImperativeHandle(ref, () => ({
       handleSubmit: async () => {
-        console.log("Submitting the payment form...");
+        // console.log("Submitting the payment form...");
         await handleSubmit();
       },
     }));
@@ -337,7 +337,7 @@ const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
 
         // parse data
         const promotion = response.data.data;
-        console.log(promotion);
+        // console.log(promotion);
 
         if (promotion.promotion_code.trim() === promoCode.trim()) {
           const discount = promotion.discount_value;
