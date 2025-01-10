@@ -8,14 +8,12 @@ export default async function getCategoryById(
   console.log("------------------ Start ------------------");
 
   if (req.method === "GET") {
-
-
     try {
       // Query ข้อมูลจาก table 'categories' ตาม id
       const { data, error } = await adminSupabase
         .from("categories")
-        .select("*")
-        // .eq("id", id) 
+        .select("*");
+      // .eq("id", id)
 
       if (error) {
         return res.status(500).json({ error: error.message });
@@ -26,7 +24,8 @@ export default async function getCategoryById(
       }
 
       return res.status(200).json(data);
-    } catch (error: any) {
+    } catch (e) {
+      const error = e as Error;
       return res.status(500).json({ error: error.message });
     }
   } else {

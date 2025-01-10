@@ -1,5 +1,5 @@
 // import libary
-import React, { useState } from "react";
+import React, { useState, FormEvent } from "react";
 import axios from "axios";
 // import component
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
@@ -17,7 +17,7 @@ interface SubService {
 export default function AdminserviceAddIndex() {
   // array of object form subservice
   const [inputSubservice, setInputSubservice] = useState<SubService[]>([]);
-  console.log("inputSubservice",inputSubservice)
+  console.log("inputSubservice", inputSubservice);
   // name service
   const [inputTitle, setInputTitle] = useState<string>("");
   // select category
@@ -38,7 +38,7 @@ export default function AdminserviceAddIndex() {
   // console.log("check subserviceEmpty for sent waring empty", subserviceEmpty);
   const [imageEmpty, setImageEmpty] = useState<boolean>(false);
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // ตั้งค่า isValid เป็น true ก่อนการตรวจสอบ
@@ -59,7 +59,7 @@ export default function AdminserviceAddIndex() {
     // ตรวจสอบ subservices
     // console.log("check value subservice", inputSubservice);
 
-    const newErrors = inputSubservice.map((value: any) => {
+    const newErrors = inputSubservice.map((value: SubService) => {
       return (
         value.description !== "" && // ตรวจสอบว่าค่าว่าง
         value.unit !== "" && // ตรวจสอบว่าค่าว่าง
@@ -103,16 +103,6 @@ export default function AdminserviceAddIndex() {
     }
     formData.append("subservices", JSON.stringify(inputSubservice));
 
-    // การแสดงข้อมูลข้างใน formdata ได้นั้นต้องใช้วิธีการ loop
-    console.log("FormData contents:");
-    let formDataObject: { [key: string]: any } = []; // สร้าง object เปล่าเพื่อเก็บข้อมูล
-
-    for (let [key, value] of formData.entries()) {
-      formDataObject[key] = value;
-    }
-    // แสดงข้อมูลทั้งหมดในรูปแบบ object
-    console.log(formDataObject);
-
     try {
       await axios.post(`/api/admin/management/create`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -137,8 +127,7 @@ export default function AdminserviceAddIndex() {
             // ป้องกันการกด Enter ยกเว้นใน <textarea>
             e.preventDefault();
           }
-        }}
-      >
+        }}>
         <div className="flex flex-row w-full">
           <div>
             {/* sidebar for show navigate */}

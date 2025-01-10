@@ -1,13 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { adminSupabase } from "@/utils/supabase";
 
-interface Categories {
-  id: number;
-  category: string;
-  created_at: string;
-  updated_at: string;
-}
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse

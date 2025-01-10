@@ -17,7 +17,8 @@ import { AdminServiceEditDate } from "./adminserviceEditDate";
 import { AdminButtonAddSubService } from "@/components/admin/admin-button-add-subservice";
 import { AdminDeleteServicePopUp } from "@/components/admin/admin-delete-service-popup";
 
-interface AdminServiceAddIndexProps {
+/**
+ * interface AdminServiceAddIndexProps {
   setInputSubservice: (value: any) => void; // ควรระบุ type ที่ชัดเจนกว่านี้ ถ้าทราบ
   inputTitle: string;
   setInputTitle: (value: string) => void;
@@ -33,7 +34,35 @@ interface AdminServiceAddIndexProps {
   setImageEmpty: (value: boolean) => void;
   setNameTopic: (value: string) => void;
   setOldImageURL: (value: string) => void;
-  
+}
+ */
+interface SubService {
+  description: string;
+  unit: string;
+  unit_price: number | null;
+}
+interface Categories {
+  id: number;
+  category: string;
+  updated_at: string;
+  created_at: string;
+}
+interface AdminServiceAddIndexProps {
+  setInputSubservice: (value: SubService[]) => void; // ควรระบุ type ที่ชัดเจนกว่านี้ ถ้าทราบ
+  inputTitle: string;
+  setInputTitle: (value: string) => void;
+  setInputCat: (value: number) => void; // ควรระบุ type ที่ชัดเจนกว่านี้ ถ้าทราบ
+  SetInputimage: (value: File | null) => void; // ควรระบุ type ที่ชัดเจนกว่านี้ ถ้าทราบ
+  showPopUpDeleteImg: boolean;
+  setShowPopUpDeleteImg: (value: boolean) => void;
+  titleEmpty: boolean;
+  imageEmpty: boolean;
+  subServiceEmpty: boolean;
+  setTitleEmpty: (value: boolean) => void;
+  setSubserviceEmpty: (value: boolean) => void;
+  setImageEmpty: (value: boolean) => void;
+  setNameTopic: (value: string) => void;
+  setOldImageURL: (value: string) => void;
 }
 
 export const AdminserviceEditService = ({
@@ -57,14 +86,16 @@ export const AdminserviceEditService = ({
   const { id } = router.query;
 
   // state for store subservice
-  const [fetchSubservices, setFetchSubservices] = useState<any[]>([]);
+  const [fetchSubservices, setFetchSubservices] = useState<SubService[]>([]);
   // console.log("fetchSubservices", fetchSubservices);
 
   // store all of data categories for show
-  const [fetchDataCategories, setFetchDataCategories] = useState<any>([]);
+  const [fetchDataCategories, setFetchDataCategories] = useState<Categories[]>(
+    []
+  );
 
   // for recive data response to show data detail before sent request
-  const [serviceCategoryData, setServiceCategoryData] = useState<String>();
+  const [serviceCategoryData, setServiceCategoryData] = useState<string>();
   const [createAt, setCreateAt] = useState<string>(new Date().toISOString());
   const [updateAt, setUpdateAt] = useState<string>(new Date().toISOString());
 
@@ -118,8 +149,7 @@ export const AdminserviceEditService = ({
         (subservice) =>
           subservice.description !== "" &&
           subservice.unit !== "" &&
-          subservice.unit_price !== 0 &&
-          subservice.unit_price !== ""
+          subservice.unit_price !== 0
       );
       // console.log("isSubserviceComplete", isSubserviceComplete);
 
@@ -139,7 +169,7 @@ export const AdminserviceEditService = ({
   useEffect(() => {
     const updatedSubservices = fetchSubservices.map((subService) => ({
       ...subService,
-      unit_price: subService.unit_price === "" ? 0 : subService.unit_price,
+      unit_price: subService.unit_price,
     }));
     // console.log("updata subservice", updatedSubservices);
     setInputSubservice(updatedSubservices);
@@ -241,7 +271,6 @@ export const AdminserviceEditService = ({
     }
   }, [id]);
 
-
   const [deleteServiceButton, setDeleteServiceButton] =
     useState<boolean>(false);
 
@@ -299,22 +328,18 @@ export const AdminserviceEditService = ({
                 handleCategorySelect({
                   target: { value },
                 } as React.ChangeEvent<HTMLSelectElement>);
-              }}
-            >
+              }}>
               <SelectTrigger className="w-[433px] pl-5 text-base font-normal h-[44px] text-black">
                 <SelectValue placeholder={serviceCategoryData} />
               </SelectTrigger>
               <SelectContent>
-                {fetchDataCategories.map(
-                  (fetchDataCategories: any, index: any) => (
-                    <SelectItem
-                      key={fetchDataCategories.id.toString()}
-                      value={fetchDataCategories.id.toString()}
-                    >
-                      {fetchDataCategories.category}
-                    </SelectItem>
-                  )
-                )}
+                {fetchDataCategories.map((fetchDataCategories: Categories) => (
+                  <SelectItem
+                    key={fetchDataCategories.id.toString()}
+                    value={fetchDataCategories.id.toString()}>
+                    {fetchDataCategories.category}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -346,8 +371,7 @@ export const AdminserviceEditService = ({
                           <div className="flex flex-row gap-2">
                             <label
                               htmlFor="file-upload"
-                              className="cursor-pointer text-blue-500 hover:text-blue-700"
-                            >
+                              className="cursor-pointer text-blue-500 hover:text-blue-700">
                               อัพโหลดภาพ
                             </label>
                             <p className="text-gray-600 text-center ">หรือ</p>
@@ -383,8 +407,7 @@ export const AdminserviceEditService = ({
                       </p>
                       <p
                         className="cursor-pointer text-blue-500 hover:text-blue-700 underline"
-                        onClick={() => setShowPopUpDeleteImg(true)}
-                      >
+                        onClick={() => setShowPopUpDeleteImg(true)}>
                         ลบรูปภาพ
                       </p>
                     </div>
@@ -434,8 +457,7 @@ export const AdminserviceEditService = ({
           <button
             className="flex flex-row items-center gap-2 font-medium underline cursor-pointer text-gray-500 active:text-red-600 group"
             type="button"
-            onClick={() => setDeleteServiceButton(true)}
-          >
+            onClick={() => setDeleteServiceButton(true)}>
             {/* IconTrash */}
             <div className="group-active:hidden">
               <IconTrash />
