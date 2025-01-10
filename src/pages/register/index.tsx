@@ -60,7 +60,7 @@ function Registration() {
   };
 
   const validateForm = () => {
-    const newErrors: any = {};
+    const newErrors: { [key: string]: string | undefined } = {};
     // Validate Name (only allow alphabetic characters, spaces, and dashes)
     if (!formData.name.match(/^[A-Za-z\s-]*$/)) {
       newErrors.name = "กรุณากรอกตัวอักษรภาษาอังกฤษ, เว้นวรรค หรือ - เท่านั้น";
@@ -111,7 +111,7 @@ function Registration() {
         console.log("Registration successful:", response.data);
         alert("ลงทะเบียนสำเร็จ!");
         router.push("/login");
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error(
           "Registration failed:",
           error.response?.data || error.message
@@ -222,6 +222,7 @@ function Registration() {
               <div className="flex flex-row items-baseline mx-2 my-5 lg:w-3/4 lg:mx-auto">
                 <input
                   type="checkbox"
+                  check={isChecked}
                   id="agreementAccepted"
                   name="agreementAccepted"
                   required
@@ -506,5 +507,3 @@ function Registration() {
 }
 
 export default Registration;
-
-

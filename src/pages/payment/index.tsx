@@ -22,13 +22,6 @@ interface SelectedServicesData {
   totalAmount: number;
 }
 
-interface SubService {
-  id: number;
-  description: string;
-  sub_service_id: number;
-  unit: string;
-  unit_price: number;
-}
 interface ServiceInfoPageProps {
   initialService?: Service | null;
 }
@@ -81,11 +74,6 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
   };
 
   useEffect(() => {
-    const sessionData = {
-      selectedServices: sessionStorage.getItem("selectedServices"),
-      paymentData: sessionStorage.getItem("paymentData"),
-    };
-
     // Load selected services from session storage
     const servicesData = sessionStorage.getItem("selectedServices");
 
@@ -140,8 +128,6 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
     const totalAmount = selectedServices?.totalAmount || 0;
     return totalAmount - totalAmount * discount;
   };
-
-  const [currentStep, setCurrentStep] = useState(3);
 
   if (!service) {
     return <div>Loading...</div>;
@@ -250,7 +236,6 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
 
         <div className="mt-14 lg:flex lg:mt-28 lg:flex-row lg:justify-center lg:gap-5 lg:mr-4">
           <div className="overflow-y-auto pb-28 lg:pb-0">
-            
             <PaymentForm
               ref={formRef}
               setDiscount={setDiscount}
@@ -275,7 +260,7 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
               locationInfo={locationInfo}
               discount={discount}
               totalAmount={totalAmount}
-              getPriceDisplay={function (id: number): number {
+              getPriceDisplay={function (): number {
                 throw new Error("Function not implemented.");
               }}
             />

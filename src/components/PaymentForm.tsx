@@ -1,5 +1,4 @@
 import {
-  CardElement,
   useStripe,
   useElements,
   CardNumberElement,
@@ -8,16 +7,7 @@ import {
 } from "@stripe/react-stripe-js";
 import axios from "axios";
 import { useRouter } from "next/router";
-import React, {
-  forwardRef,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
-
-interface PromoCodes {
-  [key: string]: number;
-}
+import React, { forwardRef, useRef, useState, useEffect } from "react";
 
 interface PaymentFormProps {
   setDiscount: (discount: number) => void;
@@ -39,10 +29,14 @@ interface PaymentFormProps {
   ref: ReturnType<typeof useRef<PaymentFormHandle | null>>;
 }
 
+interface Service {
+  id: number;
+  quantity: number;
+}
+
 export interface PaymentFormHandle {
   handleSubmit: (event: Event) => Promise<void>;
 }
-
 
 const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
   (
@@ -68,36 +62,45 @@ const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
     const [expiryComplete, setExpiryComplete] = useState<boolean>(false);
     const [cvcComplete, setCvcComplete] = useState<boolean>(false);
 
-    const handleCardNumberChange = (event: any) => {
+    const handleCardNumberChange = (event: {
+      empty: boolean;
+      complete: boolean;
+    }) => {
       const isComplete = !event.empty;
       setCardComplete(isComplete);
       onCardCompleteChange(isComplete);
     };
 
-    const handleExpiryChange = (event: any) => {
+    const handleExpiryChange = (event: {
+      empty: boolean;
+      complete: boolean;
+    }) => {
       const isComplete = !event.empty;
       setExpiryComplete(isComplete);
       onExpiryCompleteChange(isComplete);
     };
 
-    const handleCvcChange = (event: any) => {
+    const handleCvcChange = (event: { empty: boolean; complete: boolean }) => {
       const isComplete = !event.empty;
       setCvcComplete(isComplete);
       onCvcCompleteChange(isComplete);
     };
 
-    const [cardNumber, setCardNumber] = useState<number>(0);
-
     // const handleCardNumberChange = (field: string, value: string) => {
     //   updateCardDetails(field, value);
     // };
+
+    useEffect(() => {
+      if (error) {
+        console.error("Payment error:", error);
+      }
+    });
 
     const handlePaymentMethodChange = (method: string) => {
       setSelectedPayment(method);
     };
 
     const isPaymentFormComplete = (): boolean => {
-
       const isCreditCardSelected = selectedPayment === "creditcard";
       // const cardComplete = cardElement && !cardElement._empty;
       // const expiryComplete = expiryElement && !expiryElement._empty;
@@ -233,7 +236,7 @@ const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
         const paymentMethodId = selectedPayment === "creditcard" ? 2 : 1;
         // const promotionId = promoCodes[promoCode] ? 1 : 0; //MARK <<< เปลี่ยนเป็นค่าของ promotion_id ถ้าไม่มี เป็น 0
         const subServices = parsedSelectedServices.selections.map(
-          (service: any) => ({
+          (service: Service) => ({
             //MARK <<< เพิ่ม selections เพื่อเข้าถึง array
             subServiceId: service.id,
             amount: service.quantity,
