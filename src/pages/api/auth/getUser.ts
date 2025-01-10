@@ -1,20 +1,33 @@
 import { supabase } from "@/utils/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
+
+const tableAssign = async (userRole: string) => {
+  let table;
+  if (userRole === "admin") {
+    table = "admins";
+  }
+  if (userRole === "staff") {
+    table = "staffs";
+  }
+  if (userRole === "customer") {
+    table = "users";
+  }
+  console.log("table check from async: ", table);
+  return table;
+};
+
 export default async function getUser(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  try {
-    const { email, userRole } = req.body;
-    let table;
-    if (userRole === "admin") {
-      table = "admins";
-    } else if (userRole === "staff") {
-      table = "staffs";
-    } else if (userRole === "customer") {
-      table = "users";
-    }
+  const { email, userRole } = req.body;
+  console.log("check email: ", email);
+  console.log("check role:", userRole);
+  const table = await tableAssign(userRole);
 
+  console.log("Check if async work: ", table);
+  console.log("________________________");
+  try {
     const { data: userInfo, error: userInfoError } = await supabase
       .from(`${table}`)
       .select()
