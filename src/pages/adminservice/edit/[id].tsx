@@ -2,7 +2,6 @@ import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { AdminSubmitPopUp } from "@/components/admin/admin-submit-popup";
 import { AdminServiceEditNavbar } from "@/components/adminservice/edit/adminserviceEditNavbar";
 import { AdminserviceEditService } from "@/components/adminservice/edit/adminserviceEditService";
 
@@ -31,7 +30,7 @@ export default function AdminEdit() {
   // at the navbar for show name of service
   const [nameTopic, setNameTopic] = useState<string>("loading");
 
-  const [showPopUpSubmit, setShowPopUpSubmit] = useState<boolean>(false);
+  // const [showPopUpSubmit, setShowPopUpSubmit] = useState<boolean>(false);
   const [showPopUpDeleteImg, setShowPopUpDeleteImg] = useState<boolean>(false);
 
   // เพิ่ม state สำหรับเก็บข้อความแจ้งเตือน
@@ -48,7 +47,7 @@ export default function AdminEdit() {
   const router = useRouter();
   const { id } = router.query;
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     console.log("--------1--------");
@@ -68,12 +67,11 @@ export default function AdminEdit() {
     // console.log("check value subservice", inputSubservice);
     console.log("IsValid after checks:", isValid);
     console.log("--------1.2--------");
-    const newErrors = inputSubservice.map((value: any) => {
+    const newErrors = inputSubservice.map((value: SubService) => {
       return (
         value.description !== "" && // ตรวจสอบว่าค่าว่าง
         value.unit !== "" && // ตรวจสอบว่าค่าว่าง
-        value.unit_price !== 0 && // ตรวจสอบว่าราคาเป็น 0
-        value.unit_price !== "0"
+        value.unit_price !== 0 // ตรวจสอบว่าราคาเป็น 0
       );
     });
     // console.log("check newError boolean", newErrors);
@@ -128,20 +126,12 @@ export default function AdminEdit() {
     // subservice is array of object must turn to be json to sent
     formData.append("subservices", JSON.stringify(inputSubservice));
 
-    // loop in form for check data to sent
-    let formDataObject: { [key: string]: any } = {};
-    for (let [key, value] of formData.entries()) {
-      formDataObject[key] = value;
-    }
-    console.log("FormData contents: ", formDataObject);
-
     // Commented out API call
     try {
       await axios.put(`/api/admin/management/edit/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       // console.log("fromdata2", formData);
-      setShowPopUpSubmit(true);
     } catch (error) {
       console.log(error);
     }
@@ -156,8 +146,7 @@ export default function AdminEdit() {
           if (e.key === "Enter" && target.tagName !== "TEXTAREA") {
             e.preventDefault(); // ป้องกันการกด Enter ยกเว้นใน <textarea>
           }
-        }}
-      >
+        }}>
         <div className="flex flex-row w-full">
           {/* admin sidebar */}
           <div>
@@ -189,8 +178,6 @@ export default function AdminEdit() {
           </div>
         </div>
       </form>
-
-
     </>
   );
 }
