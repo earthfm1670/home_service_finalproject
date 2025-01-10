@@ -262,6 +262,7 @@ export default function AdminPromotionCodeAddIndex() {
                         </div>
                       </div>
                     </div>
+
                     {/* limit of usesage */}
                     <div className="flex items-center justify-between w-[662px] text-gray-500 font-medium relative">
                       <label htmlFor="โควต้าการใช้">โควต้าการใช้</label>
