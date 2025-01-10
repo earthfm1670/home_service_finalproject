@@ -63,6 +63,10 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
 
   const [selectedPayment, setSelectedPayment] = useState<string>("creditcard");
 
+  const [cardComplete, setCardComplete] = useState<boolean>(false);
+  const [expiryComplete, setExpiryComplete] = useState<boolean>(false);
+  const [cvcComplete, setCvcComplete] = useState<boolean>(false);
+
   const handlePaymentChange = (paymentType: string) => {
     setSelectedPayment(paymentType);
   };
@@ -165,22 +169,26 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
     const isServicesSelected =
       selectedServices && selectedServices.selections.length > 0;
 
-    const isPaymentInfoComplete = payment !== null;
-    //  &&
-    // selectedPayment === "creditcard" &&
-    // name &&
-    // cardNumberElement?.value &&
-    // cardExpiryElement?.value &&
-    // cardCvcElement?.value;
+    const isPaymentInfoComplete = payment && selectedPayment === "creditcard";
 
-    return isServicesSelected;
-    //  && isPaymentInfoComplete;
+    const isLocationInfoComplete =
+      locationInfo.date && locationInfo.time && locationInfo.address;
+
+    return (
+      isServicesSelected && isPaymentInfoComplete && isLocationInfoComplete
+    );
   };
 
   const handleProceed = () => {
     setIsLoading(true);
     if (formRef.current) {
       formRef.current.handleSubmit(new Event("submit"));
+    }
+
+    if (!cardComplete || !expiryComplete || !cvcComplete) {
+      setIsLoading(false);
+      // alert("Please ensure the card details are entered correctly.");
+      return;
     }
 
     if (!isFormComplete()) {
@@ -234,11 +242,15 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
             <PaymentForm
               setDiscount={setDiscount}
               updateCardDetails={updateCardDetails}
+              cardDetails={cardDetails}
               selectedPayment={selectedPayment}
               setSelectedPayment={handlePaymentChange}
               calculateTotal={calculateTotal}
               totalAmount={totalAmount}
               ref={formRef}
+              onCardCompleteChange={setCardComplete}
+              onExpiryCompleteChange={setExpiryComplete}
+              onCvcCompleteChange={setCvcComplete}
             />
           </div>
           <div className="lg:w-[349px] lg:h-[374px]">
