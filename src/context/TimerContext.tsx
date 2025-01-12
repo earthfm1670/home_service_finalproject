@@ -13,7 +13,7 @@ const TimerContext = createContext<TimerContextType | undefined>(undefined);
 export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [timeLeft, setTimeLeft] = useState(1 * 60); // 10 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(10 * 60); // 10 minutes in seconds
   const [isActive, setIsActive] = useState(false);
   const [isTimerExpired, setIsTimerExpired] = useState(false);
 
@@ -38,7 +38,7 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const resetTimer = () => {
-    setTimeLeft(1 * 60);
+    setTimeLeft(10 * 60);
     setIsActive(false);
     setIsTimerExpired(false);
   };
