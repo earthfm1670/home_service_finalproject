@@ -80,7 +80,7 @@ export const MobileSummary = ({
 
         if (countdown === 0) {
           clearInterval(countdownInterval);
-          router.back();
+          router.push("/servicelist");
         }
       }, 1000);
 

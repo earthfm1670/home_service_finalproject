@@ -24,7 +24,7 @@ const ServicesListRendering: React.FC = () => {
   };
 
   const redirectToServiceDetail = useCallback((): void => {
-    router.push(`servicedetail/${serviceID}`);
+    router.push(`/${serviceID}`);
   }, [router, serviceID]);
 
   useEffect(() => {

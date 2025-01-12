@@ -79,7 +79,7 @@ export const DesktopSummary: React.FC<DesktopSummaryProps> = ({
 
         if (countdown === 0) {
           clearInterval(countdownInterval);
-          router.back();
+          router.push("/servicelist");
         }
       }, 1000);
 
