@@ -2,7 +2,6 @@ import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { format } from "date-fns";
 import { AdminPromotionDetailNavbar } from "@/components/admin-promotion/detail/adminPromotionDetailNavbar";
 
 export default function AdminPromotionCodeAddIndex() {
@@ -20,13 +19,7 @@ export default function AdminPromotionCodeAddIndex() {
   console.log("inputLimitCode", inputLimitCode);
 
   // select expiration date
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
-  //   console.log("selectedEndDate", selectedEndDate);
-
-  // select expiration time
-  const [selectedTime, setSelectedTime] = useState<string>(""); // กำหนดเป็น string แทน null
-  //   console.log("selectedTime", selectedTime);
 
   // nameTopic for navbar
   const [nameTopic, setNameTopic] = useState<string>("loading");
@@ -41,16 +34,6 @@ export default function AdminPromotionCodeAddIndex() {
   const [ussagePool, setUsagePool] = useState<string>();
 
   const router = useRouter();
-
-  // before sent data to .post must change decimal of number
-  let NumberTodecimal = null;
-  if (
-    inputPercentDiscount != null &&
-    typeof inputPercentDiscount === "number"
-  ) {
-    NumberTodecimal = inputPercentDiscount / 100;
-  }
-  // console.log("numberTodecimal", NumberTodecimal);
 
   const { id } = router.query;
 
@@ -72,8 +55,8 @@ export default function AdminPromotionCodeAddIndex() {
       setSelectedEndDate(endDate);
 
       // ใช้ date-fns เพื่อแปลงเป็น HH:mm (24 ชั่วโมง)
-      const formattedTime = format(endDate, "HH:mm"); // เช่น "15:30"
-      setSelectedTime(formattedTime);
+      // const formattedTime = format(endDate, "HH:mm"); // เช่น "15:30"
+      // setSelectedTime(formattedTime);
 
       // fetch date created and last updated
       setCreatedAtDatePromotion(response.data.data.created_at);
@@ -101,7 +84,7 @@ export default function AdminPromotionCodeAddIndex() {
           </div>
           <div className="w-full flex flex-col">
             {/* navbar for admin page */}
-            <AdminPromotionDetailNavbar nameTopic={nameTopic} id={id}/>
+            <AdminPromotionDetailNavbar nameTopic={nameTopic} id={id} />
 
             {/* AdminPromotionCodeAddPromotionCode */}
 
