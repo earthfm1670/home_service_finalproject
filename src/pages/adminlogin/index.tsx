@@ -1,5 +1,4 @@
 import React from "react";
-import { Navbar } from "@/components/navbar";
 import homeservicelogo from "../../../public/image/homeservicelogo.svg";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -81,7 +80,6 @@ export default function Login() {
   return (
     <>
       <div className="bg-gray-100 min-h-screen">
-        
         {/* div login form */}
         <div className="flex flex-col items-center justify-center w-full">
           <div className="w-[35%] mt-16">
