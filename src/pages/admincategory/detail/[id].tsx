@@ -4,52 +4,13 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { IconArrowBack } from "@/components/ui/IconArrowBack";
 
-interface Categories {
-  id: number;
-  category: string;
-  created_at: string;
-  updated_at: string;
-}
-
 export default function AdminNavbar() {
-  const [inputCategory, setInputCategory] = useState<string>();
-  console.log("input category for check", inputCategory);
-  // setInputCategory(inputCategory)
-
   const router = useRouter();
 
   const [fetchNameCatagory, setFetchDataCategories] = useState<string>("");
   const [createAt, setCreateAt] = useState<string>(new Date().toISOString());
   const [updateAt, setUpdateAt] = useState<string>(new Date().toISOString());
-
   const [nameTopic, setNameTopic] = useState<string>("loading");
-
-
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-
-    try {
-      const updatedCategoryData = {
-        category: inputCategory, // ข้อมูลหมวดหมู่ที่ต้องการอัพเดต
-      };
-      console.log("new input data for update check", updatedCategoryData);
-
-      // ใช้ axios.put เพื่ออัพเดตข้อมูล category ตาม id
-      await axios.put(`/api/admincategorise/edit/${id}`, updatedCategoryData, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      // ถ้าอัพเดตสำเร็จ
-      router.push("/admincategory");
-      console.log("Updated category data", updatedCategoryData);
-
-      // ถ้าคุณต้องการให้ redirect ไปที่หน้าอื่น
-      // router.push("/adminservice");
-    } catch (error) {
-      console.log("Error updating category:", error);
-    }
-  };
-
 
   const { id } = router.query;
   console.log("Router ID:", id); // ตรวจสอบค่าที่ได้รับ
@@ -68,7 +29,7 @@ export default function AdminNavbar() {
 
       setCreateAt(response.data.data.created_at);
       setUpdateAt(response.data.data.updated_at);
-      setNameTopic(response.data.data.category)
+      setNameTopic(response.data.data.category);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -85,14 +46,12 @@ export default function AdminNavbar() {
   return (
     <>
       <form
-        onSubmit={handleSubmit}
         onKeyDown={(e) => {
           const target = e.target as HTMLElement; // Cast ให้เป็น HTMLElement
           if (e.key === "Enter" && target.tagName !== "TEXTAREA") {
             e.preventDefault(); // ป้องกันการกด Enter ยกเว้นใน <textarea>
           }
-        }}
-      >
+        }}>
         <div className="flex flex-row w-full">
           <div>
             <AdminSidebar />
@@ -101,21 +60,19 @@ export default function AdminNavbar() {
             {/* navbar for admin page */}
             <div className="flex flex-row items-center justify-between bg-white sticky top-0 h-20 px-10 py-5 min-w-[1200px] border-b  border-gray-300 z-10">
               {/* <div className="text-xl">เพิ่มหมวดหมู่</div> */}
-                    <div
-                      className="flex flex-row items-center cursor-pointer"
-                      onClick={() => router.push("/admincategory")}
-                    >
-                      <IconArrowBack />
-                      <div className="flex flex-col">
-                        <div className="text-xs">บริการ</div>
-                        <div className="text-xl font-medium">{nameTopic}</div>
-                      </div>
-                    </div>
+              <div
+                className="flex flex-row items-center cursor-pointer"
+                onClick={() => router.push("/admincategory")}>
+                <IconArrowBack />
+                <div className="flex flex-col">
+                  <div className="text-xs">บริการ</div>
+                  <div className="text-xl font-medium">{nameTopic}</div>
+                </div>
+              </div>
               <div className="h-full flex flex-row items-center gap-6 relative">
                 <button
                   className=" bg-defaultColor text-white text-base h-full px-7 flex items-center gap-3 rounded-lg w-32 text-center justify-center "
-                  onClick={() => router.push(`/admincategory/edit/${id}`)}
-                >
+                  onClick={() => router.push(`/admincategory/edit/${id}`)}>
                   แก้ไข
                 </button>
               </div>

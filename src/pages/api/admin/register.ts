@@ -114,20 +114,19 @@ export default async function adminRegister(
     // Insert user data into users table
     //FIXME change to supabase query && change user_type to role_id = 2
     if (roleId === 2) {
-      const { data: insertedAdmin, error: insertedAdminError } =
-        await adminSupabase
-          .from(`${roleTable}`)
-          .insert([
-            {
-              admin_id: data.user.id,
-              name,
-              email,
-              phone_number: phoneNumber,
-              address: null,
-              role_id: roleId,
-            },
-          ])
-          .select();
+      const { error: insertedAdminError } = await adminSupabase
+        .from(`${roleTable}`)
+        .insert([
+          {
+            admin_id: data.user.id,
+            name,
+            email,
+            phone_number: phoneNumber,
+            address: null,
+            role_id: roleId,
+          },
+        ])
+        .select();
 
       if (insertedAdminError) {
         await adminSupabase.auth.admin.deleteUser(data.user.id);
@@ -137,20 +136,19 @@ export default async function adminRegister(
       }
     }
     if (roleId === 3) {
-      const { data: insertedAdmin, error: insertedAdminError } =
-        await adminSupabase
-          .from(`${roleTable}`)
-          .insert([
-            {
-              staff_id: data.user.id,
-              name,
-              email,
-              phone_number: phoneNumber,
-              address: null,
-              role_id: roleId,
-            },
-          ])
-          .select();
+      const { error: insertedAdminError } = await adminSupabase
+        .from(`${roleTable}`)
+        .insert([
+          {
+            staff_id: data.user.id,
+            name,
+            email,
+            phone_number: phoneNumber,
+            address: null,
+            role_id: roleId,
+          },
+        ])
+        .select();
 
       if (insertedAdminError) {
         await adminSupabase.auth.admin.deleteUser(data.user.id);
