@@ -129,7 +129,13 @@ export default async function handler(
             maxPrice,
             total_usage: serviceUsageMap[service.service_id] || 0,
             promotionsAndOffers: promotionsMap[service.service_id] || false,
-            sub_services: service.sub_services,
+            sub_services: service.sub_services.map((subService, index) => ({
+              sub_service_id: index + 1,
+              id: index + 1,
+              description: `Sub-service ${index + 1}`,
+              unit: "unit",
+              unit_price: subService.unit_price,
+            })),
             id: service.service_id,
             title: service.service_name,
           };
