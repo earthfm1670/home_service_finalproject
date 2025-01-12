@@ -12,7 +12,7 @@ export interface Service {
   category: string;
   service_picture_url: string;
   service_pricing: string;
-  sub_services: SubService[];
+  sub_services: { unit_price: number }[];
   minPrice: number;
   maxPrice: number;
   total_usage: number;
