@@ -1,6 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { adminSupabase } from "@/utils/supabase";
 
+interface UpdatedData {
+  promotion_code?: string;
+  discount_value?: number;
+  usage_limit?: number;
+  usage_pool?: number;
+  end_at?: string;
+  lastupdated_at?: string;
+}
 export default async function updatePromotion(
   req: NextApiRequest,
   res: NextApiResponse
@@ -23,7 +31,7 @@ export default async function updatePromotion(
     return res.status(400).json({ error: "Missing required field: id" });
   }
 
-  const updates: Record<string, any> = {};
+  const updates: UpdatedData = {};
   if (promotion_code) updates.promotion_code = promotion_code;
   if (discount_value) updates.discount_value = discount_value;
   if (usage_limit) {
