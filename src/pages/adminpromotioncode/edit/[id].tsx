@@ -1,5 +1,5 @@
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { IconBath } from "@/components/ui/IconBath";
@@ -74,7 +74,7 @@ export default function AdminPromotionCodeAddIndex() {
   // console.log("numberTodecimal", NumberTodecimal);
 
   // function handle submit button for .post code
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
@@ -143,10 +143,6 @@ export default function AdminPromotionCodeAddIndex() {
 
       // ตั้งค่าชั่วโมงและนาที
       updatedDate.setHours(hours, minutes);
-
-      // แปลงเวลาให้เป็น UTC ก่อนส่งเข้าไป
-      const utcDate = new Date(updatedDate.toISOString());
-
       // ตั้งค่าวันที่และเวลาใหม่
       setSelectedEndDate(updatedDate);
     }
@@ -194,9 +190,7 @@ export default function AdminPromotionCodeAddIndex() {
 
   const handleDelete = async () => {
     try {
-      const response = await axios.delete(
-        `/api/admin/promotions/delete/${id}`
-      );
+      const response = await axios.delete(`/api/admin/promotions/delete/${id}`);
       console.log("Promotion deleted", response.data);
       // fetchUser();
       router.push("/adminpromotioncode");
@@ -220,8 +214,7 @@ export default function AdminPromotionCodeAddIndex() {
           if (e.key === "Enter" && target.tagName !== "TEXTAREA") {
             e.preventDefault(); // ป้องกันการกด Enter ยกเว้นใน <textarea>
           }
-        }}
-      >
+        }}>
         <div className="flex flex-row w-full">
           <div>
             <AdminSidebar />
@@ -257,8 +250,7 @@ export default function AdminPromotionCodeAddIndex() {
                       <div className="hidden items-center justify-between relative">
                         <label
                           className="flex flex-row cursor-pointer"
-                          onClick={handleYesClick}
-                        >
+                          onClick={handleYesClick}>
                           {/* button for fix */}
                           <button
                             onClick={handleYesClick}
@@ -266,8 +258,7 @@ export default function AdminPromotionCodeAddIndex() {
                               isYesSelected === true
                                 ? "bg-blue-500"
                                 : "border-gray-200"
-                            } w-5 h-5 rounded-full flex items-center justify-center border border-blue-400`}
-                          >
+                            } w-5 h-5 rounded-full flex items-center justify-center border border-blue-400`}>
                             <div
                               className={`${
                                 isYesSelected === true
@@ -281,8 +272,7 @@ export default function AdminPromotionCodeAddIndex() {
                               isYesSelected === true
                                 ? "text-black"
                                 : "text-gray-400"
-                            }`}
-                          >
+                            }`}>
                             Fixed
                           </h1>
                         </label>
@@ -303,8 +293,7 @@ export default function AdminPromotionCodeAddIndex() {
                       <div className="flex items-center justify-between relative">
                         <label
                           className="flex flex-row cursor-pointer"
-                          onClick={handleNoClick}
-                        >
+                          onClick={handleNoClick}>
                           <button
                             onClick={handleNoClick}
                             type="button"
@@ -312,8 +301,7 @@ export default function AdminPromotionCodeAddIndex() {
                               isYesSelected === false
                                 ? "bg-blue-500"
                                 : "border-gray-200"
-                            } w-5 h-5 rounded-full flex items-center justify-center border border-blue-400`}
-                          >
+                            } w-5 h-5 rounded-full flex items-center justify-center border border-blue-400`}>
                             <div
                               className={`${
                                 isYesSelected === false
@@ -327,8 +315,7 @@ export default function AdminPromotionCodeAddIndex() {
                               isYesSelected === false
                                 ? "text-black"
                                 : "text-gray-400"
-                            }`}
-                          >
+                            }`}>
                             Percent
                           </h1>
                         </label>
@@ -376,14 +363,12 @@ export default function AdminPromotionCodeAddIndex() {
                       <div className="w-[205px]">
                         <Popover
                           open={isCalendarOpen}
-                          onOpenChange={setIsCalendarOpen}
-                        >
+                          onOpenChange={setIsCalendarOpen}>
                           <PopoverTrigger asChild>
                             <Button
                               variant="outline"
                               className="w-full justify-between px-3 py-2 h-10 text-sm "
-                              onClick={() => setIsCalendarOpen(true)}
-                            >
+                              onClick={() => setIsCalendarOpen(true)}>
                               <span className="truncate mr-2">
                                 {selectedEndDate
                                   ? format(selectedEndDate, "d MMMM yyyy", {
@@ -412,8 +397,7 @@ export default function AdminPromotionCodeAddIndex() {
                       {/* popup for select time */}
                       <button
                         className="w-[205px] absolute right-[428px]"
-                        type="button"
-                      >
+                        type="button">
                         <TimeSelectorAdminPromotionCode
                           value={selectedTime} // ส่งค่าเวลา
                           onChange={handleTimeChange} // ส่งฟังก์ชันจัดการการเปลี่ยนแปลงเวลา
@@ -483,8 +467,7 @@ export default function AdminPromotionCodeAddIndex() {
                   onClickCapture={() => {
                     // setPromotionToDelete(promotionCode);
                     setShowPopupDelete(true);
-                  }}
-                >
+                  }}>
                   {/* IconTrash */}
                   <div className="group-active:hidden">
                     <IconTrash />
@@ -519,8 +502,7 @@ export default function AdminPromotionCodeAddIndex() {
                 onClick={() => {
                   setShowPopupDelete(false);
                   // setPromotionToDelete(null);
-                }}
-              >
+                }}>
                 <IconX />
               </button>
               <div className="flex justify-center">
@@ -529,7 +511,7 @@ export default function AdminPromotionCodeAddIndex() {
             </div>
             <h1 className="font-medium text-xl ">ยืนยันการลบรายการ ?</h1>
             <h1 className="text-center text-gray-500">
-              คุณต้องการลบรายการ '{nameTopic}' <br />
+              คุณต้องการลบรายการ &apos;{nameTopic}&apos; <br />
               ใช่หรือไม่
             </h1>
             <div className="flex flex-row gap-3">
@@ -539,8 +521,7 @@ export default function AdminPromotionCodeAddIndex() {
                   handleDelete();
                   setShowPopupDelete(false);
                   // setPromotionToDelete(null);
-                }}
-              >
+                }}>
                 ลบรายการ
               </button>
               <button
@@ -548,8 +529,7 @@ export default function AdminPromotionCodeAddIndex() {
                 onClick={() => {
                   setShowPopupDelete(false);
                   // setPromotionToDelete(null);
-                }}
-              >
+                }}>
                 ยกเลิก
               </button>
             </div>
