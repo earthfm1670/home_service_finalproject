@@ -118,14 +118,26 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
                     {Array.isArray(promotionCodeList) &&
                     promotionCodeList.length > 0 ? (
                       promotionCodeList
-                        .sort((a: Promotion, b: Promotion) => a.promotion_id - b.promotion_id) // เรียงลำดับตาม id
+                        .sort(
+                          (a: Promotion, b: Promotion) =>
+                            a.promotion_id - b.promotion_id
+                        ) // เรียงลำดับตาม id
                         .map((promotionCode: Promotion, index: number) => (
                           <tr
                             key={promotionCode.promotion_id}
                             className="border-t bg-white h-20 text-black"
                           >
                             <td className="px-auto text-start pl-6">
-                              {promotionCode.promotion_code}
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  router.push(
+                                    `/adminpromotioncode/detail/${promotionCode.promotion_id}`
+                                  )
+                                }
+                              >
+                                {promotionCode.promotion_code}
+                              </button>
                             </td>
                             <td className="px-auto text-start pl-6">
                               {promotionCode.usage_pool === 0 ||
@@ -180,7 +192,7 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
                             </td>
                             <td className="flex flex-row items-center justify-center gap-7 py-7">
                               <button
-                                className="flex flex-row items-center gap-2 font-medium underline cursor-pointer text-gray-500 active:text-red-600 group"
+                                className="flex flex-row items-center gap-2 font-medium underline cursor-pointer text-gray-500 group"
                                 type="button"
                                 onClickCapture={() => {
                                   setPromotionToDelete(promotionCode);
@@ -196,7 +208,7 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
                               </button>
 
                               <button
-                                className="flex flex-row items-center gap-2 font-medium underline cursor-pointer text-gray-500 active:text-red-600 group"
+                                className="flex flex-row items-center gap-2 font-medium underline cursor-pointer text-gray-500 group"
                                 type="button"
                                 onClick={() =>
                                   router.push(

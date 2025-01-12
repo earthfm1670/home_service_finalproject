@@ -27,31 +27,35 @@ export function AdminSidebar() {
           </div>
           {/* button list */}
           <div className="">
-            <div className={`w-full ${getButtonClass("/admincategory")} cursor-pointer hover:bg-[#022B87]`}
-            onClick={() => router.push("/admincategory")}>
-              <button
-                className="flex flex-row gap-4 px-6 py-4"
-                
-              >
+            <div
+              className={`w-full ${getButtonClass(
+                "/admincategory"
+              )} cursor-pointer hover:bg-[#022B87]`}
+              onClick={() => router.push("/admincategory")}
+            >
+              <button className="flex flex-row gap-4 px-6 py-4" type="button">
                 <Icon1 />
                 หมวดหมู่
               </button>
             </div>
-            <div className={`w-full ${getButtonClass("/adminservice")} cursor-pointer hover:bg-[#022B87]`}
-            onClick={() => router.push("/adminservice")}>
-              <button
-                className="flex flex-row gap-4 px-6 py-4"
-                
-              >
+            <div
+              className={`w-full ${getButtonClass(
+                "/adminservice"
+              )} cursor-pointer hover:bg-[#022B87]`}
+              onClick={() => router.push("/adminservice")}
+            >
+              <button className="flex flex-row gap-4 px-6 py-4" type="button">
                 <Icon2 />
                 บริการ
               </button>
             </div>
             <div
-              className={`w-full ${getButtonClass("/adminpromotioncode")} cursor-pointer hover:bg-[#022B87]`}
+              className={`w-full ${getButtonClass(
+                "/adminpromotioncode"
+              )} cursor-pointer hover:bg-[#022B87]`}
               onClick={() => router.push("/adminpromotioncode")}
             >
-              <button className="flex flex-row gap-4 px-6 py-4">
+              <button className="flex flex-row gap-4 px-6 py-4" type="button">
                 <Icon3 />
                 Promotion Code
               </button>

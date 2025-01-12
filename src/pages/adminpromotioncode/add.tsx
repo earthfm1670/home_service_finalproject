@@ -283,7 +283,7 @@ export default function AdminPromotionCodeAddIndex() {
                               isYesSelected === false
                                 ? "bg-white"
                                 : "bg-gray-300"
-                            } w-[140px] h-[42px] ml-4 pl-5 pr-10 border border-gray-300 rounded-md  appearance-none`}
+                            } w-[140px] h-[42px] ml-4 pl-5 pr-10 border border-gray-300 rounded-md  appearance-none text-black font-normal`}
                             disabled={isYesSelected === null} // ถ้าเลือก "เอา" จะไม่สามารถพิมพ์ได้
                             onChange={handleInputPercentChange}
                             value={
@@ -340,7 +340,7 @@ export default function AdminPromotionCodeAddIndex() {
                                 <CalendarIcon className="h-4 w-4 flex-shrink-0" />
                               </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="bg-white  rounded-lg shadow-lg">
+                            <PopoverContent className="bg-white  rounded-lg shadow-lg border border-gray-100">
                               <Calendar
                                 mode="single"
                                 selected={selectedEndDate || undefined}
