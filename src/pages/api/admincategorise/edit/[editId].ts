@@ -77,7 +77,10 @@ export default async function handler(
       // อัปเดตข้อมูลในฐานข้อมูล โดยการเปลี่ยนแปลงค่า category ที่มี id ตรงกับ idNumber
       const { data, error } = await adminSupabase
         .from("categories")
-        .update({ category })  // อัปเดตข้อมูลในฐานข้อมูล
+        .update({
+          category,  // อัปเดตค่า category
+          updated_at: new Date().toISOString()  // อัปเดตค่า updated_at เป็นเวลาปัจจุบัน
+        })
         .eq("id", idNumber)    // ค้นหาตาม id
         .select();  // เลือกข้อมูลที่ถูกอัปเดต
 
