@@ -1,7 +1,5 @@
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
-import { supabase } from "@/utils/supabase";
 import { useEffect, useState } from "react";
-import { useServices } from "@/components/ServicesContext";
 import axios from "axios";
 import { useRouter } from "next/router";
 import IconWarning from "@/components/ui/Iconwarning";
@@ -17,8 +15,6 @@ export default function AdminNavbar() {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
   };
-
-  const router = useRouter();
 
   return (
     <>
@@ -122,11 +118,10 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
                           (a: Promotion, b: Promotion) =>
                             a.promotion_id - b.promotion_id
                         ) // เรียงลำดับตาม id
-                        .map((promotionCode: Promotion, index: number) => (
+                        .map((promotionCode: Promotion) => (
                           <tr
                             key={promotionCode.promotion_id}
-                            className="border-t bg-white h-20 text-black"
-                          >
+                            className="border-t bg-white h-20 text-black">
                             <td className="px-auto text-start pl-6">
                               <button
                                 type="button"
@@ -134,8 +129,7 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
                                   router.push(
                                     `/adminpromotioncode/detail/${promotionCode.promotion_id}`
                                   )
-                                }
-                              >
+                                }>
                                 {promotionCode.promotion_code}
                               </button>
                             </td>
@@ -197,8 +191,7 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
                                 onClickCapture={() => {
                                   setPromotionToDelete(promotionCode);
                                   setShowPopup(true);
-                                }}
-                              >
+                                }}>
                                 <div className="group-active:hidden">
                                   <IconTrash />
                                 </div>
@@ -214,8 +207,7 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
                                   router.push(
                                     `/adminpromotioncode/edit/${promotionCode.promotion_id}`
                                   )
-                                }
-                              >
+                                }>
                                 <div className="group-active:hidden">
                                   <IconEditBlue />
                                 </div>
@@ -253,8 +245,7 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
                 onClick={() => {
                   setShowPopup(false);
                   setPromotionToDelete(null);
-                }}
-              >
+                }}>
                 <IconX />
               </button>
               <div className="flex justify-center">
@@ -263,7 +254,8 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
             </div>
             <h1 className="font-medium text-xl ">ยืนยันการลบรายการ ?</h1>
             <h1 className="text-center text-gray-500">
-              คุณต้องการลบรายการ '{promotionToDelete.promotion_code}' <br />
+              คุณต้องการลบรายการ &apos;{promotionToDelete.promotion_code}&apos;{" "}
+              <br />
               ใช่หรือไม่
             </h1>
             <div className="flex flex-row gap-3">
@@ -273,8 +265,7 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
                   handleDelete(promotionToDelete.promotion_id);
                   setShowPopup(false);
                   setPromotionToDelete(null);
-                }}
-              >
+                }}>
                 ลบรายการ
               </button>
               <button
@@ -282,8 +273,7 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
                 onClick={() => {
                   setShowPopup(false);
                   setPromotionToDelete(null);
-                }}
-              >
+                }}>
                 ยกเลิก
               </button>
             </div>
