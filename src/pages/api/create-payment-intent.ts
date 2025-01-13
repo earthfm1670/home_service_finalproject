@@ -40,8 +40,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
       res.status(200).json({ clientSecret: paymentIntent.client_secret });
     } catch (error: unknown) {
-      console.error("Error creating payment intent:", error.message);
-      res.status(500).json({ error: error.message });
+      if (error instanceof Error) {
+        console.error("Error creating payment intent:", error.message);
+        res.status(500).json({ error: error.message });
+      } else {
+        console.error("Error creating payment intent:", error);
+        res.status(500).json({ error: "An unknown error occurred." });
+      }
     }
   } else {
     res.setHeader("Allow", "POST");
