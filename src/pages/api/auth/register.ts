@@ -15,6 +15,56 @@ interface UserRegistrationRequestBody {
   agreementAccepted: boolean;
 }
 
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     description: Registers a new user with the provided details
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - phoneNumber
+ *               - email
+ *               - password
+ *               - agreementAccepted
+ *             properties:
+ *               name:
+ *                 type: string
+ *               phoneNumber:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               agreementAccepted:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *       400:
+ *         description: Bad request (validation error or user already exists)
+ *       405:
+ *         description: Method not allowed
+ *       500:
+ *         description: Internal server error
+ */
+
 export default async function userRegister(
   req: NextApiRequest,
   res: NextApiResponse

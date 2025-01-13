@@ -1,6 +1,45 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "@/utils/supabase";
 
+/**
+ * @swagger
+ * /api/customer/getmedia/{userId}:
+ *   get:
+ *     summary: Get user profile pictures
+ *     description: Retrieves a list of profile pictures for a specific user
+ *     tags: [Customer]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The user ID
+ *     responses:
+ *       200:
+ *         description: Successful response with image list
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 images:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                       id:
+ *                         type: string
+ *       403:
+ *         description: Method not allowed
+ *       500:
+ *         description: Internal server error
+ */
+
 export default async function getMedai(
   req: NextApiRequest,
   res: NextApiResponse

@@ -27,6 +27,56 @@ type BookingData = {
   }> | null;
 };
 
+/**
+ * @swagger
+ * /api/handyman:
+ *   get:
+ *     summary: Get all bookings
+ *     description: Retrieves all bookings with related information
+ *     tags: [Handyman]
+ *     responses:
+ *       200:
+ *         description: Successful response with bookings data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/BookingData'
+ *       500:
+ *         description: Internal server error
+ *   patch:
+ *     summary: Update booking status
+ *     description: Updates the status of a booking
+ *     tags: [Handyman]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - booking_id
+ *               - status_id
+ *             properties:
+ *               booking_id:
+ *                 type: string
+ *               status_id:
+ *                 type: number
+ *               completed_at:
+ *                 type: string
+ *               inProgress_at:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Booking status updated successfully
+ *       500:
+ *         description: Internal server error
+ */
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse

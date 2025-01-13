@@ -1,6 +1,68 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { adminSupabase } from "@/utils/supabase";
 
+/**
+ * @swagger
+ * /api/admin/management/get-categories:
+ *   get:
+ *     summary: Get all categories
+ *     description: Retrieves all categories from the database.
+ *     tags: [Admin]
+ *     responses:
+ *       200:
+ *         description: Successful response with categories data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     description: The category ID
+ *                   name:
+ *                     type: string
+ *                     description: The category name
+ *                   created_at:
+ *                     type: string
+ *                     format: date-time
+ *                     description: The creation timestamp
+ *                   updated_at:
+ *                     type: string
+ *                     format: date-time
+ *                     description: The last update timestamp
+ *       404:
+ *         description: No categories found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Category not found
+ *       405:
+ *         description: Method not allowed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Method Not Allowed
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error message
+ */
 export default async function getCategoryById(
   req: NextApiRequest,
   res: NextApiResponse

@@ -1,6 +1,80 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { adminSupabase } from "@/utils/supabase";
 
+/**
+ * @swagger
+ * /api/admin/promotions/create:
+ *   post:
+ *     summary: Create a new promotion code
+ *     description: Creates a new promotion code with the provided details
+ *     tags: [Admin, Promotions]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - promotion_code
+ *               - discount_value
+ *               - usage_limit
+ *               - end_at
+ *             properties:
+ *               promotion_code:
+ *                 type: string
+ *                 description: The code for the promotion
+ *               discount_value:
+ *                 type: number
+ *                 format: float
+ *                 description: The discount value (e.g., 0.12 for 12%)
+ *               usage_limit:
+ *                 type: integer
+ *                 description: The number of times this promotion can be used
+ *               end_at:
+ *                 type: string
+ *                 format: date-time
+ *                 description: The expiration date and time of the promotion
+ *     responses:
+ *       200:
+ *         description: Promotion code created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Bad request (missing fields or creation error)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 error:
+ *                   type: string
+ *       503:
+ *         description: Method not allowed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+
 // sending {promotionCode: string, discountValue: flot2 (0.12) }
 export default async function createPromotion(
   req: NextApiRequest,

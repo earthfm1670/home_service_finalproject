@@ -46,8 +46,10 @@
     "react-dom": "^18.2.0",
     "react-range": "^1.10.0",
     "stripe": "^17.5.0",
+    "swagger-jsdoc": "^6.2.8",
     "swagger-ui-dist": "^5.18.2",
     "swagger-ui-express": "^5.0.1",
+    "swagger-ui-react": "^5.18.2",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^11.0.3"

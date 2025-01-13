@@ -16,6 +16,69 @@ const tableAssign = async (userRole: string) => {
   return table;
 };
 
+/**
+ * @swagger
+ * /api/auth/getUser:
+ *   post:
+ *     summary: Get user information
+ *     description: Retrieves user information based on email and user role
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - userRole
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               userRole:
+ *                 type: string
+ *                 enum: [admin, staff, customer]
+ *     responses:
+ *       200:
+ *         description: User information retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Get user successful
+ *                 userInfo:
+ *                   type: object
+ *                   description: User information (structure depends on the user role)
+ *       400:
+ *         description: Failed to get user information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Get user fail
+ *                 error:
+ *                   type: string
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ *                 error:
+ *                   type: string
+ */
+
 export default async function getUser(
   req: NextApiRequest,
   res: NextApiResponse

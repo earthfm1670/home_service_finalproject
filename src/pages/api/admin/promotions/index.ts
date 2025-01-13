@@ -4,6 +4,66 @@ import { supabase } from "@/utils/supabase";
 // นำเข้า Types ของ Next.js สำหรับ Request และ Response
 import { NextApiRequest, NextApiResponse } from "next";
 
+/**
+ * @swagger
+ * /api/admin/promotions:
+ *   get:
+ *     summary: Get all promotion codes
+ *     description: Retrieves all promotion codes, with optional search functionality
+ *     tags: [Admin, Promotions]
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Optional search term to filter promotion codes
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: fetch promotion successfully
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       promotion_id:
+ *                         type: integer
+ *                       promotion_code:
+ *                         type: string
+ *                       discount_value:
+ *                         type: number
+ *                         format: float
+ *       404:
+ *         description: Promotion not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: promotion not found.
+ *                 error:
+ *                   type: string
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error.
+ */
+
 // ฟังก์ชันหลักที่เป็น API Endpoint สำหรับดึงข้อมูล promotion code
 export default async function getAllPromotionCode(
   req: NextApiRequest, // ออบเจ็กต์ Request จาก Next.js

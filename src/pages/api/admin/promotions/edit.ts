@@ -9,6 +9,81 @@ interface UpdatedData {
   end_at?: string;
   lastupdated_at?: string;
 }
+
+/**
+ * @swagger
+ * /api/admin/promotions/edit:
+ *   put:
+ *     summary: Update an existing promotion code
+ *     description: Updates an existing promotion code with the provided details
+ *     tags: [Admin, Promotions]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - promotion_id
+ *             properties:
+ *               promotion_id:
+ *                 type: integer
+ *                 description: The ID of the promotion to update
+ *               promotion_code:
+ *                 type: string
+ *                 description: The updated code for the promotion
+ *               discount_value:
+ *                 type: number
+ *                 format: float
+ *                 description: The updated discount value (e.g., 0.12 for 12%)
+ *               usage_limit:
+ *                 type: integer
+ *                 description: The updated number of times this promotion can be used
+ *               end_at:
+ *                 type: string
+ *                 format: date-time
+ *                 description: The updated expiration date and time of the promotion
+ *     responses:
+ *       200:
+ *         description: Promotion code updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Bad request (missing fields or update error)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 error:
+ *                   type: string
+ *       503:
+ *         description: Method not allowed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+
 export default async function updatePromotion(
   req: NextApiRequest,
   res: NextApiResponse
