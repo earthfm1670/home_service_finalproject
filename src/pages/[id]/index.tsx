@@ -9,7 +9,7 @@ import MobileBottomBar from "@/components/service-detail/MobileBottomBar";
 import NavigationButtons from "@/components/service-detail/NavigationButtons";
 import type { Service } from "@/types/service";
 import { ServiceHeroSkeleton } from "@/components/service-detail/ServiceHeroSkeleton";
-// import { useAuth } from "@/context/authContext";
+import { CartSkeleton } from "@/components/service-detail/CartSkeleton";
 
 async function getService(
   id: string
@@ -43,10 +43,23 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
   );
   const [canProceed, setCanProceed] = useState(false);
   const [isLoading, setIsLoading] = useState(!initialService);
-  // const { authState, } = useAuth();
-
+  const [finalLoading, setFinalLoading] = useState(false);
+  // deifnde path protechtion
+  const pathProtect = () => {
+    const user = localStorage.getItem("user");
+    console.log("pass path protech: ");
+    if (!user) {
+      console.log("no user");
+      router.push("/login");
+    } else {
+      console.log("have user");
+      console.log(user);
+      setFinalLoading(true);
+    }
+  };
   // Load service and quantities from storage
   useEffect(() => {
+    pathProtect();
     if (!id) return;
 
     const loadData = async () => {
@@ -58,7 +71,6 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
         if (result.data) {
           setService(result.data);
         }
-        setIsLoading(false);
       }
 
       // Load quantities from localStorage
@@ -126,19 +138,19 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
     }, 0);
   };
 
-const getSelectedServices = () => {
-  return service.sub_services
-    .filter((subService) => (quantities[subService.id]?.quantity || 0) > 0)
-    .map((subService) => ({
-      ...subService,
-      quantity: quantities[subService.id]?.quantity || 0,
-      discount: 0,
-      totalAmount:
-        (quantities[subService.id]?.quantity || 0) * subService.unit_price,
-      canProceed: true, 
-      handleProceed: handleProceed, 
-    }));
-};
+  const getSelectedServices = () => {
+    return service.sub_services
+      .filter((subService) => (quantities[subService.id]?.quantity || 0) > 0)
+      .map((subService) => ({
+        ...subService,
+        quantity: quantities[subService.id]?.quantity || 0,
+        discount: 0,
+        totalAmount:
+          (quantities[subService.id]?.quantity || 0) * subService.unit_price,
+        canProceed: true,
+        handleProceed: handleProceed,
+      }));
+  };
 
   const getQuantityDisplay = (subServiceId: number) => {
     return quantities[subServiceId]?.quantity || 0;
@@ -179,34 +191,37 @@ const getSelectedServices = () => {
       router.push(`/serviceinfo`);
     }
   };
-  
 
   return (
     <div className="min-h-screen bg-gray-100 pb-32">
       <Navbar />
+
       <ServiceHero service={service} />
+      {finalLoading ? (
+        <div className="container mx-auto px-4 lg:px-20 mt-14 lg:mt-28">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-9">
+            <div className="lg:col-span-2">
+              <ServiceList
+                service={service}
+                handleQuantityChange={handleQuantityChange}
+                getQuantityDisplay={getQuantityDisplay}
+              />
+            </div>
 
-      <div className="container mx-auto px-4 lg:px-20 mt-14 lg:mt-28">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-9">
-          <div className="lg:col-span-2">
-            <ServiceList
-              service={service}
-              handleQuantityChange={handleQuantityChange}
-              getQuantityDisplay={getQuantityDisplay}
-            />
-          </div>
-
-          <div className="lg:col-span-1">
-            <DesktopSummary
-              getSelectedServices={getSelectedServices}
-              getQuantityDisplay={getQuantityDisplay}
-              calculateTotal={calculateTotal}
-              getPriceDisplay={getPriceDisplay}
-              totalAmount={calculateTotal()}
-            />
+            <div className="lg:col-span-1">
+              <DesktopSummary
+                getSelectedServices={getSelectedServices}
+                getQuantityDisplay={getQuantityDisplay}
+                calculateTotal={calculateTotal}
+                getPriceDisplay={getPriceDisplay}
+                totalAmount={calculateTotal()}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <CartSkeleton />
+      )}
 
       <MobileBottomBar
         canProceed={canProceed}
