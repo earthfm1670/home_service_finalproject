@@ -11,12 +11,20 @@ import {
 import axios from "axios";
 import { useRouter } from "next/router";
 
+interface NewErrorType {
+  name: string;
+  phoneNumber: string;
+  email: string;
+  password: string;
+  agreementAccepted: string;
+}
+
 function Registration() {
   const router = useRouter();
 
   const [isTermsOpen, setIsTermsOpen] = useState<boolean>(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState<boolean>(false);
-  const [isChecked, setIsChecked] = useState<boolean>(false);
+  // const [isChecked, setIsChecked] = useState<boolean>(false);
 
   const handleTermsClose = (): void => {
     setIsTermsOpen(false);
@@ -32,7 +40,7 @@ function Registration() {
       ...prevData,
       agreementAccepted: checked,
     }));
-    setIsChecked(checked);
+    // setIsChecked(checked);
   };
 
   const [formData, setFormData] = useState({
@@ -60,7 +68,13 @@ function Registration() {
   };
 
   const validateForm = () => {
-    const newErrors: { [key: string]: string | undefined } = {};
+    const newErrors: NewErrorType = {
+      name: "",
+      phoneNumber: "",
+      email: "",
+      password: "",
+      agreementAccepted: "",
+    };
     // Validate Name (only allow alphabetic characters, spaces, and dashes)
     if (!formData.name.match(/^[A-Za-z\s-]*$/)) {
       newErrors.name = "กรุณากรอกตัวอักษรภาษาอังกฤษ, เว้นวรรค หรือ - เท่านั้น";
@@ -97,29 +111,22 @@ function Registration() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validateForm()) {
-      try {
-        const response = await axios.post(
-          "http://localhost:3000/api/auth/register",
-          formData,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        console.log("Registration successful:", response.data);
-        alert("ลงทะเบียนสำเร็จ!");
-        router.push("/login");
-      } catch (error: any) {
-        console.error(
-          "Registration failed:",
-          error.response?.data || error.message
-        );
-        alert("เกิดข้อผิดพลาดในการลงทะเบียน กรุณาลองอีกครั้ง");
-      }
-    } else {
-      console.log("Form has errors");
+    validateForm();
+    try {
+      const response = await axios.post("/api/auth/register", formData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Registration successful:", response.data);
+      alert("ลงทะเบียนสำเร็จ!");
+      router.push("/login");
+    } catch (error: any) {
+      console.error(
+        "Registration failed:",
+        error.response?.data || error.message
+      );
+      alert("เกิดข้อผิดพลาดในการลงทะเบียน กรุณาลองอีกครั้ง");
     }
   };
 
@@ -222,7 +229,7 @@ function Registration() {
               <div className="flex flex-row items-baseline mx-2 my-5 lg:w-3/4 lg:mx-auto">
                 <input
                   type="checkbox"
-                  check={isChecked}
+                  // check={isChecked}
                   id="agreementAccepted"
                   name="agreementAccepted"
                   required
@@ -234,8 +241,7 @@ function Registration() {
                 />
                 <label
                   htmlFor="agreementAccepted"
-                  className="ml-4 text-[16px] text-gray-600 w-5/6"
-                >
+                  className="ml-4 text-[16px] text-gray-600 w-5/6">
                   ยอมรับ{" "}
                   <a
                     href="#"
@@ -243,8 +249,7 @@ function Registration() {
                     onClick={(e) => {
                       e.preventDefault();
                       setIsTermsOpen(true);
-                    }}
-                  >
+                    }}>
                     ข้อตกลงและเงื่อนไข
                   </a>{" "}
                   และ{" "}
@@ -254,8 +259,7 @@ function Registration() {
                     onClick={(e) => {
                       e.preventDefault();
                       setIsPrivacyOpen(true);
-                    }}
-                  >
+                    }}>
                     นโยบายความเป็นส่วนตัว
                   </a>
                   .
@@ -269,8 +273,7 @@ function Registration() {
               <div className="mx-3 lg:w-3/4 lg:mx-auto">
                 <button
                   type="submit"
-                  className="w-full py-3 px-6 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-500 focus:bg-blue-800"
-                >
+                  className="w-full py-3 px-6 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-500 focus:bg-blue-800">
                   ลงทะเบียน
                 </button>
               </div>
@@ -284,8 +287,7 @@ function Registration() {
               <div className="mx-3 lg:w-3/4 lg:mx-auto">
                 <button
                   type="submit"
-                  className="w-full flex gap-4 justify-center py-3 px-6 text-blue-600 border border-blue-600 font-semibold rounded-md hover:bg-blue-500 focus:bg-blue-800"
-                >
+                  className="w-full flex gap-4 justify-center py-3 px-6 text-blue-600 border border-blue-600 font-semibold rounded-md hover:bg-blue-500 focus:bg-blue-800">
                   <img src="/image/facebooklogo.svg"></img>
                   เข้าสู่ระบบด้วย Facebook
                 </button>
@@ -294,8 +296,7 @@ function Registration() {
                 className="my-5 text-center"
                 onClick={() => {
                   router.push("/login");
-                }}
-              >
+                }}>
                 <a className="text-blue-600 underline">กลับไปหน้าเข้าสู่ระบบ</a>
               </div>
             </form>
@@ -383,14 +384,12 @@ function Registration() {
           <div className="flex justify-end space-x-4 mt-4">
             <button
               className="py-2 px-4 bg-gray-200 rounded-md"
-              onClick={handleTermsClose}
-            >
+              onClick={handleTermsClose}>
               ปิด
             </button>
             <button
               className="py-2 px-4 bg-blue-600 text-white rounded-md"
-              onClick={handleTermsClose}
-            >
+              onClick={handleTermsClose}>
               ยอมรับ
             </button>
           </div>
@@ -489,14 +488,12 @@ function Registration() {
           <div className="flex justify-end space-x-4 mt-4">
             <button
               className="py-2 px-4 bg-gray-200 rounded-md"
-              onClick={handlePrivacyClose}
-            >
+              onClick={handlePrivacyClose}>
               ปิด
             </button>
             <button
               className="py-2 px-4 bg-blue-600 text-white rounded-md"
-              onClick={handlePrivacyClose}
-            >
+              onClick={handlePrivacyClose}>
               ยอมรับ
             </button>
           </div>
