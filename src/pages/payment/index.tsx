@@ -140,7 +140,9 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
     id: string
   ): Promise<{ data: Service | null; error?: string }> {
     try {
-      const res = await fetch(`http://localhost:3000/api/services/${id}`);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/services/${id}`
+      );
       if (!res.ok) {
         throw new Error("Failed to fetch service");
       }
