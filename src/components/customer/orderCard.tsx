@@ -88,15 +88,15 @@ export default function OrderCard({
               </div>
             </div>
           </div>
-          <button
+          {/* <button
             className="detail-button text-white text-base font-medium 
         py-2 px-6 w-36 h-10 rounded-lg bg-blue-600 lg:hidden">
             ดูรายละเอียด
-          </button>
+          </button> */}
         </div>
 
         <div className="large hidden lg:flex lg:flex-col lg:w-48 lg:justify-between">
-          <div className="status-and-price flex flex-col gap-3 ">
+          <div className="status-and-price flex flex-col gap-40 ">
             <div className="status-box text-gray-700 flex items-center justify-between">
               สถานะ:{" "}
               <span
@@ -110,18 +110,18 @@ export default function OrderCard({
                 {status}
               </span>
             </div>
-            <div className="totla-price text-gray-700 font-normal items-center text-sm flex justify-between">
+            <div className="totla-price text-gray-700 font-normal items-center text-lg flex justify-between">
               ราคารวม:{" "}
               <span className="price font-normal text-lg text-gray-950 ">
                 {totalPrice} ฿
               </span>
             </div>
           </div>
-          <button
+          {/* <button
             className="detail-button text-white text-base font-medium 
         py-2 px-6 w-36 h-11 rounded-lg bg-blue-600">
             ดูรายละเอียด
-          </button>
+          </button> */}
         </div>
       </div>
     </>
