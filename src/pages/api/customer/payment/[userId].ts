@@ -66,6 +66,7 @@ export default async function getOrderList(
     promotionId,
     scheduledDate,
     subServices,
+    userFullLocation,
   } = req.body;
   try {
     const { error } = await supabase.rpc("insert_payment_and_related_data", {
@@ -77,6 +78,7 @@ export default async function getOrderList(
       p_scheduled_date: scheduledDate,
       p_booking_status_id: bookingStatus,
       p_sub_services: subServices,
+      p_location: userFullLocation,
     });
     if (error) {
       console.log("Fail to insert data________________________________");

@@ -242,7 +242,12 @@ const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
             amount: service.quantity,
           })
         );
-        // console.log(subServices);
+        const address = parsedServiceInfo.address;
+        const province = parsedServiceInfo.province;
+        const district = parsedServiceInfo.district;
+        const subDistrict = parsedServiceInfo.subDistrict;
+        const additionalDetails = parsedServiceInfo.additionalDetails;
+        const userFullLocation = `${address}, ตำบล ${subDistrict}, อำเภอ ${district}, จังหวัด ${province}, ${additionalDetails}`;
 
         // send payment data to api
         const apiResponse = await axios.post(
@@ -254,6 +259,7 @@ const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
             paymentDate,
             promotionId,
             subServices,
+            userFullLocation,
           }
         );
 
@@ -401,14 +407,12 @@ const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
             className={`w-[147px] h-[95px] lg:w-[331px] lg:h-[86px] border rounded-sm flex flex-col justify-center items-center cursor-pointer ${
               selectedPayment === "qrcode" ? "bg-blue-100 border-blue-600" : ""
             }`}
-            onClick={() => handlePaymentMethodChange("qrcode")}
-          >
+            onClick={() => handlePaymentMethodChange("qrcode")}>
             {selectedPayment === "qrcode" ? (
               <>
                 <img
                   src="/image/qrclicked.svg"
-                  className="w-[35px] h-[35px]"
-                ></img>
+                  className="w-[35px] h-[35px]"></img>
                 <p className="text-[16px] text-blue-600 font-semibold">
                   พร้อมเพย์
                 </p>
@@ -417,8 +421,7 @@ const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
               <>
                 <img
                   src="/image/qricon.svg"
-                  className="w-[35px] h-[35px]"
-                ></img>
+                  className="w-[35px] h-[35px]"></img>
                 <p className="text-[16px] text-gray-800 font-semibold">
                   พร้อมเพย์
                 </p>
@@ -432,14 +435,12 @@ const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
                 ? "bg-blue-100 border-blue-600"
                 : ""
             }`}
-            onClick={() => handlePaymentMethodChange("creditcard")}
-          >
+            onClick={() => handlePaymentMethodChange("creditcard")}>
             {selectedPayment === "creditcard" ? (
               <>
                 <img
                   src="/image/creditcardclicked.svg"
-                  className="w-[35px] h-[35px]"
-                ></img>
+                  className="w-[35px] h-[35px]"></img>
                 <p className="text-[16px] text-blue-600 font-semibold">
                   บัตรเครดิต
                 </p>
@@ -448,8 +449,7 @@ const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
               <>
                 <img
                   src="/image/creditcard.svg"
-                  className="w-[35px] h-[35px]"
-                ></img>
+                  className="w-[35px] h-[35px]"></img>
                 <p className="text-[16px] text-gray-800 font-semibold">
                   บัตรเครดิต
                 </p>
@@ -479,8 +479,7 @@ const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="block w-full h-[44px] border border-gray-300 rounded-md py-1 px-3 placeholder:text-gray-500 placeholder:text-[16px] placeholder:font-normal"
-                    placeholder="กรุณากรอกชื่อบนบัตร"
-                  ></input>
+                    placeholder="กรุณากรอกชื่อบนบัตร"></input>
                 </label>
               </div>
               <div>
@@ -518,13 +517,11 @@ const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
                       value={promoCode}
                       onChange={(e) => setPromoCode(e.target.value)}
                       className="block min-w-[205px] h-[64px] text-[16px] border border-gray-300 rounded-md py-3 px-2 placeholder:text-[16px] lg:h-[44px]"
-                      placeholder="กรุณากรอกโค้ดส่วนลด(ถ้ามี)"
-                    ></input>
+                      placeholder="กรุณากรอกโค้ดส่วนลด(ถ้ามี)"></input>
                     <button
                       type="button"
                       onClick={applyPromoCode}
-                      className="min-w-[90px] h-[44px] bg-blue-600 rounded-md text-white font-medium text-[16px]"
-                    >
+                      className="min-w-[90px] h-[44px] bg-blue-600 rounded-md text-white font-medium text-[16px]">
                       ใช้โค้ด
                     </button>
                   </div>
@@ -533,8 +530,7 @@ const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
               <button
                 className="mx-3 mb-6 py-2 px-6 rounded-md bg-blue-600 text-white font-medium text-[16px] hidden lg:hidden"
                 type="submit"
-                disabled={loading}
-              >
+                disabled={loading}>
                 {loading ? "Processing..." : "Purchase Now"}
               </button>
             </form>
@@ -549,13 +545,11 @@ const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
                   value={promoCode}
                   onChange={(e) => setPromoCode(e.target.value)}
                   className="block min-w-[205px] h-[64px] lg:h-[44px] text-[16px] border border-gray-300 rounded-md py-3 px-2 placeholder:text-[16px]"
-                  placeholder="กรุณากรอกโค้ดส่วนลด(ถ้ามี)"
-                ></input>
+                  placeholder="กรุณากรอกโค้ดส่วนลด(ถ้ามี)"></input>
                 <button
                   type="button"
                   onClick={applyPromoCode}
-                  className="min-w-[90px] h-[44px] bg-blue-600 rounded-md text-white font-medium text-[16px]"
-                >
+                  className="min-w-[90px] h-[44px] bg-blue-600 rounded-md text-white font-medium text-[16px]">
                   ใช้โค้ด
                 </button>
               </div>
