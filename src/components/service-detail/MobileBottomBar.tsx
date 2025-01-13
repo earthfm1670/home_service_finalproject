@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/router";
 import MobileSummary from "@/components/service-detail/MobileSummary";
-import type { Service } from "@/types/service";
+import type { SubService } from "@/types/service";
 
 interface LocationInfo {
   date: Date | string | null;
@@ -18,7 +18,7 @@ interface MobileBottomBarProps {
   canProceed: boolean;
   disabled: boolean;
   calculateTotal: () => number;
-  getSelectedServices: () => Service["sub_services"];
+  getSelectedServices: () => SubService[]; 
   getQuantityDisplay: (subServiceId: number) => number;
   handleProceed: () => void;
   locationInfo?: LocationInfo;

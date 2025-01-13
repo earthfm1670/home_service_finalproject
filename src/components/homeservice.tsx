@@ -13,7 +13,7 @@ export default function HomeService() {
   const { servicesData } = useServices();
 
   const redirectToServiceDetail = (service_id: number): void => {
-    router.push(`/servicedetail/${service_id}`);
+    router.push(`/${service_id}`);
   };
 
   const redirectToServiceList = (): void => {

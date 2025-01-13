@@ -7,7 +7,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import type { Service } from "@/types/service";
+import type { SubService } from "@/types/service";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
 interface LocationInfo {
@@ -31,7 +31,7 @@ interface PaymentInfo {
 }
 
 interface MobileSummaryProps {
-  getSelectedServices: () => Service["sub_services"];
+  getSelectedServices: () => SubService[];
   getQuantityDisplay: (subServiceId: number) => number;
   calculateTotal: () => number;
   locationInfo?: LocationInfo;
@@ -80,7 +80,7 @@ export const MobileSummary = ({
 
         if (countdown === 0) {
           clearInterval(countdownInterval);
-          router.back();
+          router.push("/servicelist");
         }
       }, 1000);
 
@@ -113,7 +113,7 @@ export const MobileSummary = ({
           <div className="px-4 py-3 bg-white border-t">
             {getSelectedServices().length > 0 ? (
               <div className="flex flex-col gap-2">
-                {getSelectedServices().map((subService) => (
+                {getSelectedServices().map((subService: SubService) => (
                   <div
                     key={subService.id}
                     className="flex justify-between text-sm mb-2"
