@@ -1,12 +1,30 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "@/utils/supabase";
-import type { Service, ServicesResponse } from "@/types/service";
+import type { ServicesResponse } from "@/types/service";
 
 const formatPrice = (price: number): string => {
   return price.toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
+};
+
+type Service = {
+  service_id: number;
+  service_name: string;
+  category: string;
+  service_picture_url: string;
+  service_pricing: string;
+  minPrice: number;
+  maxPrice: number;
+  is_recommended: boolean;
+  is_popular: boolean;
+  popularity_score: number;
+  sub_services?: { unit_price: number }[];
+  total_usage?: number;
+  promotionsAndOffers?: string[];
+  id?: string;
+  title?: string;
 };
 
 export default async function handler(
