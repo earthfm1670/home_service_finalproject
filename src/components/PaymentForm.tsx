@@ -242,12 +242,12 @@ const PaymentForm = forwardRef<PaymentFormHandle, PaymentFormProps>(
             amount: service.quantity,
           })
         );
-        const address = parsedServiceInfo.address;
-        const province = parsedServiceInfo.province;
-        const district = parsedServiceInfo.district;
-        const subDistrict = parsedServiceInfo.subDistrict;
-        const additionalDetails = parsedServiceInfo.additionalDetails;
-        const userFullLocation = `${address}, ตำบล ${subDistrict}, อำเภอ ${district}, จังหวัด ${province}, ${additionalDetails}`;
+        // const address = parsedServiceInfo.address;
+        // const province = parsedServiceInfo.province;
+        // const district = parsedServiceInfo.district;
+        // const subDistrict = parsedServiceInfo.subDistrict;
+        // const additionalDetails = parsedServiceInfo.additionalDetails;a
+        const userFullLocation = `${parsedServiceInfo.address}, ตำบล ${parsedServiceInfo.subDistrict}, อำเภอ ${parsedServiceInfo.district}, จังหวัด ${parsedServiceInfo.province}, ${parsedServiceInfo.additionalDetails}`;
 
         // send payment data to api
         const apiResponse = await axios.post(
