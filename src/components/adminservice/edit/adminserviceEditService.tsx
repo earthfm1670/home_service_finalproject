@@ -16,7 +16,6 @@ import { AdminDeleteImagePopUp } from "@/components/admin/admin-delete-image-pop
 import { AdminServiceEditDate } from "./adminserviceEditDate";
 import { AdminButtonAddSubService } from "@/components/admin/admin-button-add-subservice";
 import { AdminDeleteServicePopUp } from "@/components/admin/admin-delete-service-popup";
-import { AdminSubmitPopUp } from "@/components/admin/admin-submit-popup";
 
 /**
  * interface AdminServiceAddIndexProps {
@@ -40,7 +39,7 @@ import { AdminSubmitPopUp } from "@/components/admin/admin-submit-popup";
 interface SubService {
   description: string;
   unit: string;
-  unit_price: number
+  unit_price: number;
 }
 interface Categories {
   id: number;
@@ -152,8 +151,7 @@ export const AdminserviceEditService = ({
         (subservice) =>
           subservice.description !== "" &&
           subservice.unit !== "" &&
-          subservice.unit_price !== 0 
-
+          subservice.unit_price !== 0
       );
       // console.log("isSubserviceComplete", isSubserviceComplete);
 
@@ -332,8 +330,7 @@ export const AdminserviceEditService = ({
                 handleCategorySelect({
                   target: { value },
                 } as React.ChangeEvent<HTMLSelectElement>);
-              }}
-            >
+              }}>
               <SelectTrigger className="w-[433px] pl-5 text-base font-normal h-[44px] text-black">
                 <SelectValue placeholder={serviceCategoryData} />
               </SelectTrigger>
@@ -341,8 +338,7 @@ export const AdminserviceEditService = ({
                 {fetchDataCategories.map((fetchDataCategories: Categories) => (
                   <SelectItem
                     key={fetchDataCategories.id.toString()}
-                    value={fetchDataCategories.id.toString()}
-                  >
+                    value={fetchDataCategories.id.toString()}>
                     {fetchDataCategories.category}
                   </SelectItem>
                 ))}
@@ -377,8 +373,7 @@ export const AdminserviceEditService = ({
                           <div className="flex flex-row gap-2">
                             <label
                               htmlFor="file-upload"
-                              className="cursor-pointer text-blue-500 hover:text-blue-700"
-                            >
+                              className="cursor-pointer text-blue-500 hover:text-blue-700">
                               อัพโหลดภาพ
                             </label>
                             <p className="text-gray-600 text-center ">หรือ</p>
@@ -414,8 +409,7 @@ export const AdminserviceEditService = ({
                       </p>
                       <p
                         className="cursor-pointer text-blue-500 hover:text-blue-700 underline"
-                        onClick={() => setShowPopUpDeleteImg(true)}
-                      >
+                        onClick={() => setShowPopUpDeleteImg(true)}>
                         ลบรูปภาพ
                       </p>
                     </div>
@@ -465,8 +459,7 @@ export const AdminserviceEditService = ({
           <button
             className="flex flex-row items-center gap-2 font-medium underline cursor-pointer text-gray-500 active:text-red-600 group"
             type="button"
-            onClick={() => setDeleteServiceButton(true)}
-          >
+            onClick={() => setDeleteServiceButton(true)}>
             {/* IconTrash */}
             <div className="group-active:hidden">
               <IconTrash />
