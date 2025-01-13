@@ -29,7 +29,7 @@ const debounce = (func: (range: [number, number]) => void, delay: number) => {
 
 const ServicesListFilteredData: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [priceRange, setPriceRange] = useState<[number, number]>([200, 9900]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   const [placeholder, setPlaceholder] = useState<string>("ตามตัวอัก...");
   const [selecttedCategory, setSelecttedCategory] =
     useState<string>("บริการทั้งหมด");
