@@ -5,7 +5,7 @@ import IconDrag from "@/components/ui/IconDragAddAdmin";
 interface SubService {
   description: string;
   unit: string;
-  unit_price: number;
+  unit_price: number 
 }
 interface AddSubServiceProps {
   index: number;
@@ -69,7 +69,7 @@ export function AdminserviceEditSubService({
           <input
             type="number"
             id={`subservicePrice-${index}`}
-            value={subservice.unit_price}
+            value={subservice.unit_price != 0 ? subservice.unit_price : ""}
             onChange={(e) => {
               updateSubservice(index, "unit_price", e.target.value);
             }}

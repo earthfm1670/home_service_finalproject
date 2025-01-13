@@ -4,6 +4,8 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { AdminServiceEditNavbar } from "@/components/adminservice/edit/adminserviceEditNavbar";
 import { AdminserviceEditService } from "@/components/adminservice/edit/adminserviceEditService";
+import { AdminSubmitPopUp } from "@/components/admin/admin-submit-popup";
+import React from "react";
 
 interface SubService {
   description: string;
@@ -32,6 +34,9 @@ export default function AdminEdit() {
 
   // const [showPopUpSubmit, setShowPopUpSubmit] = useState<boolean>(false);
   const [showPopUpDeleteImg, setShowPopUpDeleteImg] = useState<boolean>(false);
+
+  // popup alert for submit
+  const [showPopUpSubmit, setShowPopUpSubmit] = React.useState(false);
 
   // เพิ่ม state สำหรับเก็บข้อความแจ้งเตือน
   const [titleEmpty, setTitleEmpty] = useState<boolean>(false);
@@ -131,6 +136,7 @@ export default function AdminEdit() {
       await axios.put(`/api/admin/management/edit/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      setShowPopUpSubmit(true);
       // console.log("fromdata2", formData);
     } catch (error) {
       console.log(error);
@@ -146,7 +152,8 @@ export default function AdminEdit() {
           if (e.key === "Enter" && target.tagName !== "TEXTAREA") {
             e.preventDefault(); // ป้องกันการกด Enter ยกเว้นใน <textarea>
           }
-        }}>
+        }}
+      >
         <div className="flex flex-row w-full">
           {/* admin sidebar */}
           <div>
@@ -178,6 +185,15 @@ export default function AdminEdit() {
           </div>
         </div>
       </form>
+      {/* Show popup when the submit button is clicked */}
+      <AdminSubmitPopUp
+        setShowPopUpSubmit={setShowPopUpSubmit}
+        showPopUpSubmit={showPopUpSubmit}
+        message="สร้างรายการสำเร็จ"
+        subMessage="กรุณากดยืนยันเพื่อกลับสู่หน้าหลัก ?"
+        confirmationText="ยืนยัน"
+        redirectPath="/adminservice"
+      />
     </>
   );
 }
