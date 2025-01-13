@@ -1,14 +1,25 @@
+import { useAuth } from "@/context/authContext";
 import homeservicelogo from "../../../public/image/homeservicelogo.svg";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
 export function AdminSidebar() {
   const router = useRouter();
+  const { logout } = useAuth();
 
   const getButtonClass = (path: string) => {
     return router.pathname.includes(path)
       ? "bg-[#022B87]" // สีพื้นหลังของปุ่มที่เลือก
       : ""; // สีพื้นหลังปกติเมื่อไม่ได้เลือก
+  };
+
+  // ฟังก์ชันสำหรับ logout
+  const handleLogout = () => {
+    // ลบ token ออกจาก localStorage หรือ sessionStorage
+    logout()
+
+    // เปลี่ยนเส้นทางกลับไปยังหน้า login
+    router.push("/");
   };
 
   return (
@@ -64,7 +75,10 @@ export function AdminSidebar() {
           {/* button for div tail */}
         </div>
         <div className="hover:bg-[#022B87] w-full my-16">
-          <button className="flex flex-row gap-4 px-6 py-4">
+          <button
+            className="flex flex-row gap-4 px-6 py-4"
+            onClick={handleLogout}
+          >
             <Icon4 />
             ออกจากระบบ
           </button>

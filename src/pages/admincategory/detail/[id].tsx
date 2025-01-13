@@ -72,7 +72,8 @@ export default function AdminNavbar() {
               <div className="h-full flex flex-row items-center gap-6 relative">
                 <button
                   className=" bg-defaultColor text-white text-base h-full px-7 flex items-center gap-3 rounded-lg w-32 text-center justify-center "
-                  onClick={() => router.push(`/admincategory/edit/${id}`)}>
+                  onClick={() => router.push(`/admincategory/edit/${id}`)}
+                  type="button">
                   แก้ไข
                 </button>
               </div>
