@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "extends": [
     "next",
     "next/core-web-vitals",
@@ -6,6 +7,9 @@
     "plugin:@typescript-eslint/recommended"
   ],
   "plugins": ["@typescript-eslint"],
+=======
+  "extends": ["next/core-web-vitals", "next/typescript"],
+>>>>>>> 7493865768195829d80b1fc8a993a72b96258ef8
   "rules": {
     "@typescript-eslint/no-explicit-any": "off"
   }

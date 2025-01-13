@@ -111,7 +111,7 @@ function Registration() {
         console.log("Registration successful:", response.data);
         alert("ลงทะเบียนสำเร็จ!");
         router.push("/login");
-      } catch (error: unknown) {
+      } catch (error: any) {
         console.error(
           "Registration failed:",
           error.response?.data || error.message
