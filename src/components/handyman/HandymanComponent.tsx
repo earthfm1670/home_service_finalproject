@@ -113,8 +113,7 @@ const ButtonComponent: React.FC<ButtonComponentProps> = ({
           : status === "กำลังดำเนินการ"
           ? "bg-green-500 hover:bg-green-600 active:bg-green-700"
           : ""
-      } rounded-md shadow-md disabled:bg-gray-400 transition duration-150 ease-in-out`}
-    >
+      } rounded-md shadow-md disabled:bg-gray-400 transition duration-150 ease-in-out`}>
       {" "}
       {status === "รอดำเนินการ"
         ? "ตกลง ดำเนินการ"
@@ -209,7 +208,11 @@ const HandymanComponent: React.FC = () => {
       <aside className="hidden lg:flex flex-col bg-[#001C59] min-w-60 h-screen sticky top-0 justify-between text-white transition-all duration-700 ease-in-out">
         <div className="w-full">
           <div className="px-6">
-            <button className="my-10 bg-blue-100 w-full h-11 flex justify-center items-center rounded-lg hover:bg-hoverColor active:bg-pressedColor">
+            <button
+              onClick={() => {
+                router.push("/");
+              }}
+              className="my-10 bg-blue-100 w-full h-11 flex justify-center items-center rounded-lg hover:bg-hoverColor active:bg-pressedColor">
               <Image src={homeservicelogo} alt="Homeservice Logo" />
             </button>
           </div>
@@ -217,12 +220,10 @@ const HandymanComponent: React.FC = () => {
             <div
               className={`${
                 list ? "bg-[#022B87]" : "hover:bg-blue-900"
-              } w-full transition duration-500`}
-            >
+              } w-full transition duration-500`}>
               <button
                 className="flex flex-row gap-4 px-6 py-4 w-full"
-                onClick={() => handleSelectList(true)}
-              >
+                onClick={() => handleSelectList(true)}>
                 <List />
                 รายการ
               </button>
@@ -230,12 +231,10 @@ const HandymanComponent: React.FC = () => {
             <div
               className={`${
                 !list ? "bg-[#022B87]" : "hover:bg-blue-900"
-              } w-full transition duration-500`}
-            >
+              } w-full transition duration-500`}>
               <button
                 className="flex flex-row gap-4 px-6 py-4 w-full"
-                onClick={() => handleSelectList(false)}
-              >
+                onClick={() => handleSelectList(false)}>
                 <ListCheck />
                 ประวัติรายการ
               </button>
@@ -247,8 +246,7 @@ const HandymanComponent: React.FC = () => {
             className="flex flex-row gap-4 px-6 py-4"
             onClick={() => {
               router.push("/");
-            }}
-          >
+            }}>
             <LogOut />
             ออกจากระบบ
           </button>
@@ -288,8 +286,7 @@ const HandymanComponent: React.FC = () => {
                     <SelectGroup>
                       <SelectItem
                         value="logout"
-                        className="!bg-[#022B87] !text-white p-2"
-                      >
+                        className="!bg-[#022B87] !text-white p-2">
                         <h1 className="flex items-center gap-2 cursor-pointer">
                           <LogOut /> ออกจากระบบ
                         </h1>
@@ -306,12 +303,10 @@ const HandymanComponent: React.FC = () => {
             <div
               className={`${
                 list ? "bg-[#022B87]" : "hover:bg-blue-900"
-              } flex items-center w-full transition duration-500`}
-            >
+              } flex items-center w-full transition duration-500`}>
               <button
                 className="flex flex-row justify-center px-6 py-4 w-full gap-2"
-                onClick={() => handleSelectList(true)}
-              >
+                onClick={() => handleSelectList(true)}>
                 <List />
                 รายการ
               </button>
@@ -319,12 +314,10 @@ const HandymanComponent: React.FC = () => {
             <div
               className={`${
                 !list ? "bg-[#022B87]" : "hover:bg-blue-900"
-              } flex items-center w-full transition duration-500`}
-            >
+              } flex items-center w-full transition duration-500`}>
               <button
                 className="flex flex-row justify-center px-6 py-4 w-full gap-2"
-                onClick={() => handleSelectList(false)}
-              >
+                onClick={() => handleSelectList(false)}>
                 <ListCheck />
                 ประวัติรายการ
               </button>
@@ -336,8 +329,7 @@ const HandymanComponent: React.FC = () => {
             {filteredData.map((booking) => (
               <AccordionItem
                 key={booking.booking_id}
-                value={booking.booking_id}
-              >
+                value={booking.booking_id}>
                 <AccordionTrigger className="justify-around lg:text-xl md:text-lg transition-all duration-700 ease-in-out font-normal h-20 px-10 py-5 hover:no-underline focus:no-underline hover:bg-blue-50">
                   <h1>{booking.booking_id}</h1>
                   <h1 className="tracking-widest">
@@ -353,8 +345,7 @@ const HandymanComponent: React.FC = () => {
                           "กำลังดำเนินการ"
                         ? "text-orange-400"
                         : ""
-                    }
-                  >
+                    }>
                     {" "}
                     {booking.booking_status.status_name}
                   </h1>
@@ -407,8 +398,7 @@ const HandymanComponent: React.FC = () => {
                       {booking.order_list.map((detail, index) => (
                         <div
                           key={index}
-                          className="flex flex-col space-y-4 sm:px-2 md:px-4 lg:px-8 xl:px-20 2xl:px-32 text-gray-800 transition-all duration-700 ease-in-out"
-                        >
+                          className="flex flex-col space-y-4 sm:px-2 md:px-4 lg:px-8 xl:px-20 2xl:px-32 text-gray-800 transition-all duration-700 ease-in-out">
                           <h1 className="pt-4 ">
                             บริการ : {detail.sub_services.services.service_name}
                           </h1>
