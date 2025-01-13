@@ -29,6 +29,77 @@ type BookingData = {
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     BookingData:
+ *       type: object
+ *       properties:
+ *         booking_id:
+ *           type: string
+ *         booked_at:
+ *           type: string
+ *         scheduled_date:
+ *           type: string
+ *         completed_at:
+ *           type: string
+ *           nullable: true
+ *         total_price:
+ *           type: number
+ *         address:
+ *           type: string
+ *         in_progress_at:
+ *           type: string
+ *           nullable: true
+ *         users:
+ *           type: object
+ *           nullable: true
+ *           properties:
+ *             name:
+ *               type: string
+ *             phone_number:
+ *               type: string
+ *             email:
+ *               type: string
+ *         staffs:
+ *           type: object
+ *           nullable: true
+ *           properties:
+ *             name:
+ *               type: string
+ *         booking_status:
+ *           type: object
+ *           nullable: true
+ *           properties:
+ *             status_name:
+ *               type: string
+ *         order_list:
+ *           type: array
+ *           nullable: true
+ *           items:
+ *             type: object
+ *             properties:
+ *               sub_services_id:
+ *                 type: string
+ *               amount:
+ *                 type: number
+ *               order_price:
+ *                 type: number
+ *               sub_services:
+ *                 type: object
+ *                 nullable: true
+ *                 properties:
+ *                   description:
+ *                     type: string
+ *                   unit:
+ *                     type: string
+ *                   unit_price:
+ *                     type: number
+ *                   services:
+ *                     type: object
+ *                     properties:
+ *                       service_name:
+ *                         type: string
+ * 
  * /api/handyman:
  *   get:
  *     summary: Get all bookings
@@ -73,6 +144,8 @@ type BookingData = {
  *     responses:
  *       200:
  *         description: Booking status updated successfully
+ *       400:
+ *         description: Bad request
  *       500:
  *         description: Internal server error
  */

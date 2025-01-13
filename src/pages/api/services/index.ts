@@ -11,6 +11,79 @@ const formatPrice = (price: number): string => {
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     Service:
+ *       type: object
+ *       properties:
+ *         service_id:
+ *           type: integer
+ *         service_name:
+ *           type: string
+ *         category:
+ *           type: string
+ *         service_picture_url:
+ *           type: string
+ *         service_pricing:
+ *           type: string
+ *         minPrice:
+ *           type: number
+ *         maxPrice:
+ *           type: number
+ *         total_usage:
+ *           type: integer
+ *         promotionsAndOffers:
+ *           type: boolean
+ *         sub_services:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               sub_service_id:
+ *                 type: integer
+ *               id:
+ *                 type: integer
+ *               description:
+ *                 type: string
+ *               unit:
+ *                 type: string
+ *               unit_price:
+ *                 type: number
+ *         id:
+ *           type: integer
+ *         title:
+ *           type: string
+ *     ServicesResponse:
+ *       type: object
+ *       properties:
+ *         data:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Service'
+ *         allServiceNames:
+ *           type: array
+ *           items:
+ *             type: string
+ *         totalCount:
+ *           type: integer
+ *         currentPage:
+ *           type: integer
+ *         totalPages:
+ *           type: integer
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         data:
+ *           type: null
+ *         totalCount:
+ *           type: integer
+ *         currentPage:
+ *           type: integer
+ *         totalPages:
+ *           type: integer
+ *         error:
+ *           type: string
+ *
  * /api/services:
  *   get:
  *     summary: Get services with filtering and pagination
