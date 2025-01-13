@@ -53,7 +53,7 @@ export const AuthNavbar: React.FC<AuthNavbarProps> = ({ media }) => {
             Admin Dashboard
           </DropdownMenuItem>
         ) : isStaff ? (
-          <DropdownMenuItem onClick={() => router.push("/")}>
+          <DropdownMenuItem onClick={() => router.push("/handyman")}>
             Staff Dashboard
           </DropdownMenuItem>
         ) : (
