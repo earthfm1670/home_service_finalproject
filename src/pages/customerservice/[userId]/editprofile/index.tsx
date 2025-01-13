@@ -225,7 +225,6 @@ export default function CustomerProfile() {
                     type="button"
                     onClick={() => {
                       handleSetFullAddress();
-                      console.log("Hittig Save button");
                       setSubmitPopup(true);
                     }}
                     className="submit-button text-white text-base font-medium py-2 px-6 w-36 h-10 rounded-lg bg-blue-600 mb-7 ">
