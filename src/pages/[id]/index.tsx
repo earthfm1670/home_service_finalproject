@@ -9,6 +9,7 @@ import MobileBottomBar from "@/components/service-detail/MobileBottomBar";
 import NavigationButtons from "@/components/service-detail/NavigationButtons";
 import type { Service } from "@/types/service";
 import { ServiceHeroSkeleton } from "@/components/service-detail/ServiceHeroSkeleton";
+// import { useAuth } from "@/context/authContext";
 
 async function getService(
   id: string
@@ -42,6 +43,7 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
   );
   const [canProceed, setCanProceed] = useState(false);
   const [isLoading, setIsLoading] = useState(!initialService);
+  // const { authState, } = useAuth();
 
   // Load service and quantities from storage
   useEffect(() => {
@@ -150,6 +152,11 @@ const getSelectedServices = () => {
 
   const handleProceed = () => {
     if (canProceed) {
+      // if (!authState.user) {
+      //   // ถ้าผู้ใช้ยังไม่ได้ล็อกอิน ให้ redirect ไปหน้า login
+      //   router.push("/login");
+      //   return;
+      // }
       const selectedServicesData = {
         serviceId: id,
         serviceName: service.service_name,
@@ -169,7 +176,7 @@ const getSelectedServices = () => {
         JSON.stringify(selectedServicesData)
       );
       saveQuantities(quantities);
-      router.push(`/servicedetail/${id}/info`);
+      router.push(`/serviceinfo`);
     }
   };
   

@@ -84,13 +84,12 @@ export default async function handler(
         return map;
       }, {} as Record<number, boolean>);
 
-      // Process and filter services
       let processedServices: Service[] = (services || []).map(
         (service: {
           service_id: number;
           service_name: string;
           category_id: number;
-          categories: { category: string } | { category: string }[]; // รองรับ object หรือ array
+          categories: { category: string } | { category: string }[];
           service_picture_url: string;
           sub_services: { unit_price: number }[];
         }) => {
@@ -113,8 +112,6 @@ export default async function handler(
             pricing = "ราคายังไม่ระบุ";
           }
 
-          // ตรวจสอบว่า categories เป็น array หรือ object เดี่ยว
-
           const category =
             Array.isArray(service.categories) && service.categories.length > 0
               ? service.categories[0].category
@@ -132,6 +129,15 @@ export default async function handler(
             maxPrice,
             total_usage: serviceUsageMap[service.service_id] || 0,
             promotionsAndOffers: promotionsMap[service.service_id] || false,
+            sub_services: service.sub_services.map((subService, index) => ({
+              sub_service_id: index + 1,
+              id: index + 1,
+              description: `Sub-service ${index + 1}`,
+              unit: "unit",
+              unit_price: subService.unit_price,
+            })),
+            id: service.service_id,
+            title: service.service_name,
           };
         }
       );

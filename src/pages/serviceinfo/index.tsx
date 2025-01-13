@@ -352,10 +352,12 @@ const ServiceInfoPage = ({ initialService }: ServiceInfoPageProps) => {
 
           if (province) {
             const amphure = province.amphure.find(
-              (a: {name_th: string}) => a.name_th === parsedPaymentData.district
+              (a: { name_th: string }) =>
+                a.name_th === parsedPaymentData.district
             );
             const tambon = amphure?.tambon.find(
-              (t: {name_th: string}) => t.name_th === parsedPaymentData.subDistrict
+              (t: { name_th: string }) =>
+                t.name_th === parsedPaymentData.subDistrict
             );
 
             setSelected({

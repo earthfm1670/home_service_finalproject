@@ -18,6 +18,9 @@ interface SelectedServicesData {
   selections: Array<{
     id: number;
     quantity: number;
+    description?: string;
+    unit?: string;
+    unit_price?: number;
   }>;
   totalAmount: number;
 }
@@ -108,10 +111,10 @@ const PaymentPage: React.FC = ({ initialService }: ServiceInfoPageProps) => {
     return (
       selectedServices?.selections.map((selection) => ({
         id: selection.id,
-        sub_service_id: selection.id, // Add appropriate sub_service_id
-        description: selection?.description || "No description available", // Add appropriate description
-        unit: selection?.unit || "", // Add appropriate unit
-        unit_price: selection?.unit_price || 0, // Add appropriate unit price
+        sub_service_id: selection.id,
+        description: selection.description || "No description available",
+        unit: selection.unit || "",
+        unit_price: selection.unit_price || 0,
         quantity: selection.quantity,
       })) || []
     );
