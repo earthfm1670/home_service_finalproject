@@ -24,7 +24,7 @@ function Registration() {
 
   const [isTermsOpen, setIsTermsOpen] = useState<boolean>(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState<boolean>(false);
-  const [isChecked, setIsChecked] = useState<boolean>(false);
+  // const [isChecked, setIsChecked] = useState<boolean>(false);
 
   const handleTermsClose = (): void => {
     setIsTermsOpen(false);
@@ -40,7 +40,7 @@ function Registration() {
       ...prevData,
       agreementAccepted: checked,
     }));
-    setIsChecked(checked);
+    // setIsChecked(checked);
   };
 
   const [formData, setFormData] = useState({
@@ -111,29 +111,22 @@ function Registration() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validateForm()) {
-      try {
-        const response = await axios.post(
-          "http://localhost:3000/api/auth/register",
-          formData,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        console.log("Registration successful:", response.data);
-        alert("ลงทะเบียนสำเร็จ!");
-        router.push("/login");
-      } catch (error: any) {
-        console.error(
-          "Registration failed:",
-          error.response?.data || error.message
-        );
-        alert("เกิดข้อผิดพลาดในการลงทะเบียน กรุณาลองอีกครั้ง");
-      }
-    } else {
-      console.log("Form has errors");
+    validateForm();
+    try {
+      const response = await axios.post("/api/auth/register", formData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Registration successful:", response.data);
+      alert("ลงทะเบียนสำเร็จ!");
+      router.push("/login");
+    } catch (error: any) {
+      console.error(
+        "Registration failed:",
+        error.response?.data || error.message
+      );
+      alert("เกิดข้อผิดพลาดในการลงทะเบียน กรุณาลองอีกครั้ง");
     }
   };
 
@@ -236,7 +229,7 @@ function Registration() {
               <div className="flex flex-row items-baseline mx-2 my-5 lg:w-3/4 lg:mx-auto">
                 <input
                   type="checkbox"
-                  check={isChecked}
+                  // check={isChecked}
                   id="agreementAccepted"
                   name="agreementAccepted"
                   required
