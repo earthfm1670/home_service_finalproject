@@ -48,13 +48,9 @@ const ServiceDetailPage = ({ initialService }: ServiceDetailPageProps) => {
   // deifnde path protechtion
   const pathProtect = () => {
     const user = localStorage.getItem("user");
-    console.log("pass path protech: ");
     if (!user) {
-      console.log("no user");
       router.push("/login");
     } else {
-      console.log("have user");
-      console.log(user);
       setFinalLoading(true);
     }
   };
