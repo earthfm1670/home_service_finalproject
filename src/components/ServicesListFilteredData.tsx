@@ -29,7 +29,7 @@ const debounce = (func: (range: [number, number]) => void, delay: number) => {
 
 const ServicesListFilteredData: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [priceRange, setPriceRange] = useState<[number, number]>([200, 9900]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   const [placeholder, setPlaceholder] = useState<string>("ตามตัวอัก...");
   const [selecttedCategory, setSelecttedCategory] =
     useState<string>("บริการทั้งหมด");
@@ -120,7 +120,6 @@ const ServicesListFilteredData: React.FC = () => {
     setIsOpen(!isOpen);
   };
 
-
   const handleSliderChange = (value: number[]) => {
     if (value.length === 2) {
       setPriceRange([value[0], value[1]]);
@@ -128,7 +127,6 @@ const ServicesListFilteredData: React.FC = () => {
     //เรียกใช้ debouncedFetchDataRef เพื่อกำหนด delay ในการส่ง parameter ไปยัง fetchPriceRangeData เพื่อ get data from api
     debouncedFetchDataRef.current([value[0], value[1]]);
   };
-
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setsearchText(event.target.value);
@@ -242,7 +240,7 @@ const ServicesListFilteredData: React.FC = () => {
       </div>
       <section className="sticky top-0 z-10 bg-white min-w-[375px] h-[134px] w-full py-2 flex flex-col justify-around items-center gap-4 mx-auto border-b border-gray-300 lg:max-w-[1440px] lg:flex-row lg:justify-start lg:h-[84px]">
         <div className="relative flex justify-center items-center gap-4 h-11 w-full max-w-md lg:justify-start lg:pl-[159px]">
-          <span className="relative w-[241px] lg:w-[350px] flex justify-center items-center gap-4 ">
+          <span className="relative w-[241px] lg:w-[350px] flex justify-center items-center gap-4">
             <Search
               size={20}
               className="absolute left-5 cursor-pointer text-[#b3afa8] lg:left-5 z-10"
@@ -258,16 +256,20 @@ const ServicesListFilteredData: React.FC = () => {
                 onKeyDown={handelKeyDown}
               />
               {suggestions.length > 0 && (
-                <ul className="absolute top-11 w-full bg-white border- border-gray-300 rounded-lg mt-1 z-10 max-h-52 overflow-y-auto">
+                <ul className="absolute top-11 w-full bg-white border-gray-300 rounded-lg mt-1 z-10 max-h-52 overflow-y-auto">
                   {suggestions.map((suggestion: string, index: number) => (
                     <li
                       key={index}
-                      ref={(el) => (suggestionRefs.current[index] = el)}
+                      ref={(el) => {
+                        suggestionRefs.current[index] = el;
+                      }}
                       className={`p-2 cursor-pointer hover:bg-blue-700 hover:font-medium hover:text-slate-50 hover:rounded-lg ${
                         index === activeSuggestion
                           ? "bg-blue-700 font-medium text-slate-50 rounded-lg"
                           : ""
                       }`}
+                      onMouseEnter={() => setActiveSuggestion(index)}
+                      onMouseLeave={() => setActiveSuggestion(-1)}
                       onClick={() => handleSuggestionClick(suggestion)}
                     >
                       {suggestion}
@@ -284,6 +286,7 @@ const ServicesListFilteredData: React.FC = () => {
             ค้นหา
           </button>
         </div>
+
         <div className="w-full h-11 flex justify-center gap-1 items-center lg:justify-start lg:max-w-[583px] xl:gap-8">
           <div className="w-auto pr-1 lg:h-[42px] xl:pl-36 lg:pr-0 lg:flex flex-col lg:justify-between">
             <p className=" text-xs font-normal  text-gray-700 lg:w-[120px]">
