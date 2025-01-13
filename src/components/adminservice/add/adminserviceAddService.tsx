@@ -21,7 +21,7 @@ import { AdminDeleteImagePopUp } from "@/components/admin/admin-delete-image-pop
 interface SubService {
   description: string;
   unit: string;
-  pricePerUnit: number | null;
+  pricePerUnit: number
 }
 interface Categories {
   id: number;

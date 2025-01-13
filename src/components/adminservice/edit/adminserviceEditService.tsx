@@ -16,6 +16,7 @@ import { AdminDeleteImagePopUp } from "@/components/admin/admin-delete-image-pop
 import { AdminServiceEditDate } from "./adminserviceEditDate";
 import { AdminButtonAddSubService } from "@/components/admin/admin-button-add-subservice";
 import { AdminDeleteServicePopUp } from "@/components/admin/admin-delete-service-popup";
+import { AdminSubmitPopUp } from "@/components/admin/admin-submit-popup";
 
 /**
  * interface AdminServiceAddIndexProps {
@@ -39,7 +40,7 @@ import { AdminDeleteServicePopUp } from "@/components/admin/admin-delete-service
 interface SubService {
   description: string;
   unit: string;
-  unit_price: number | null;
+  unit_price: number
 }
 interface Categories {
   id: number;
@@ -52,7 +53,7 @@ interface AdminServiceAddIndexProps {
   inputTitle: string;
   setInputTitle: (value: string) => void;
   setInputCat: (value: number) => void; // ควรระบุ type ที่ชัดเจนกว่านี้ ถ้าทราบ
-  SetInputimage: (value: File | null) => void; // ควรระบุ type ที่ชัดเจนกว่านี้ ถ้าทราบ
+  SetInputimage: (value: File | undefined) => void; // ควรระบุ type ที่ชัดเจนกว่านี้ ถ้าทราบ
   showPopUpDeleteImg: boolean;
   setShowPopUpDeleteImg: (value: boolean) => void;
   titleEmpty: boolean;
@@ -87,7 +88,7 @@ export const AdminserviceEditService = ({
 
   // state for store subservice
   const [fetchSubservices, setFetchSubservices] = useState<SubService[]>([]);
-  // console.log("fetchSubservices", fetchSubservices);
+  console.log("fetchSubservices", fetchSubservices);
 
   // store all of data categories for show
   const [fetchDataCategories, setFetchDataCategories] = useState<Categories[]>(
@@ -103,7 +104,7 @@ export const AdminserviceEditService = ({
   const addSubService = () => {
     setFetchSubservices((prevSubservices) => [
       ...prevSubservices,
-      { description: "", unit: "", unit_price: null },
+      { description: "", unit: "", unit_price: 0 },
     ]);
   };
 
@@ -125,12 +126,14 @@ export const AdminserviceEditService = ({
     // ถ้าฟิลด์คือ "pricePerUnit"
     if (field === "unit_price") {
       if (value === "" || value === "0") {
-        value = ""; // แปลง "" หรือ "0" ให้เป็น ""
+        value = 0; // แปลง "" หรือ "0" ให้เป็น ""
       } else if (typeof value === "number" && value < 0) {
-        value = ""; // ป้องกันค่าที่ต่ำกว่า 0
+        value = 0; // ป้องกันค่าที่ต่ำกว่า 0
       } else if (typeof value === "string") {
         const numberValue = parseFloat(value); // แปลง string เป็น number
         value = numberValue < 0 ? "" : numberValue; // ถ้าค่าน้อยกว่า 0 ให้ตั้งเป็น ""
+      } else if (value === 0) {
+        value = 0;
       }
     }
 
@@ -149,7 +152,8 @@ export const AdminserviceEditService = ({
         (subservice) =>
           subservice.description !== "" &&
           subservice.unit !== "" &&
-          subservice.unit_price !== 0
+          subservice.unit_price !== 0 
+
       );
       // console.log("isSubserviceComplete", isSubserviceComplete);
 
@@ -207,7 +211,7 @@ export const AdminserviceEditService = ({
     setShowPopUpDeleteImg(false);
 
     // เนื่องจากสถานะคงค้างข้างใน file ของ input image ทำให้ต้องมีการ set null อีกครั้ง
-    SetInputimage(null);
+    SetInputimage(undefined);
     setImageEmpty(false);
   };
 
@@ -328,7 +332,8 @@ export const AdminserviceEditService = ({
                 handleCategorySelect({
                   target: { value },
                 } as React.ChangeEvent<HTMLSelectElement>);
-              }}>
+              }}
+            >
               <SelectTrigger className="w-[433px] pl-5 text-base font-normal h-[44px] text-black">
                 <SelectValue placeholder={serviceCategoryData} />
               </SelectTrigger>
@@ -336,7 +341,8 @@ export const AdminserviceEditService = ({
                 {fetchDataCategories.map((fetchDataCategories: Categories) => (
                   <SelectItem
                     key={fetchDataCategories.id.toString()}
-                    value={fetchDataCategories.id.toString()}>
+                    value={fetchDataCategories.id.toString()}
+                  >
                     {fetchDataCategories.category}
                   </SelectItem>
                 ))}
@@ -371,7 +377,8 @@ export const AdminserviceEditService = ({
                           <div className="flex flex-row gap-2">
                             <label
                               htmlFor="file-upload"
-                              className="cursor-pointer text-blue-500 hover:text-blue-700">
+                              className="cursor-pointer text-blue-500 hover:text-blue-700"
+                            >
                               อัพโหลดภาพ
                             </label>
                             <p className="text-gray-600 text-center ">หรือ</p>
@@ -407,7 +414,8 @@ export const AdminserviceEditService = ({
                       </p>
                       <p
                         className="cursor-pointer text-blue-500 hover:text-blue-700 underline"
-                        onClick={() => setShowPopUpDeleteImg(true)}>
+                        onClick={() => setShowPopUpDeleteImg(true)}
+                      >
                         ลบรูปภาพ
                       </p>
                     </div>
@@ -457,7 +465,8 @@ export const AdminserviceEditService = ({
           <button
             className="flex flex-row items-center gap-2 font-medium underline cursor-pointer text-gray-500 active:text-red-600 group"
             type="button"
-            onClick={() => setDeleteServiceButton(true)}>
+            onClick={() => setDeleteServiceButton(true)}
+          >
             {/* IconTrash */}
             <div className="group-active:hidden">
               <IconTrash />

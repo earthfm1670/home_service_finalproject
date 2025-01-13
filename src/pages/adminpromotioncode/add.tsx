@@ -1,6 +1,5 @@
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { useState } from "react";
-import { useRouter } from "next/router";
 import axios from "axios";
 import { IconBath } from "@/components/ui/IconBath";
 import { IconPercent } from "@/components/ui/IconPercent";
@@ -46,8 +45,6 @@ export default function AdminPromotionCodeAddIndex() {
   // popup for create code successfuly
   const [showPopUpSubmit, setShowPopUpSubmit] = useState<boolean>(false);
 
-  const router = useRouter();
-
   // before sent data to .post must change decimal of number
   let NumberTodecimal = null;
   if (
@@ -59,7 +56,7 @@ export default function AdminPromotionCodeAddIndex() {
   // console.log("numberTodecimal", NumberTodecimal);
 
   // function handle submit button for .post code
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     //  // ตรวจสอบว่า selectedDate มีค่าแล้ว
@@ -135,7 +132,7 @@ export default function AdminPromotionCodeAddIndex() {
       updatedDate.setHours(hours, minutes);
 
       // แปลงเวลาให้เป็น UTC ก่อนส่งเข้าไป
-      const utcDate = new Date(updatedDate.toISOString());
+      // const utcDate = new Date(updatedDate.toISOString());
 
       // ตั้งค่าวันที่และเวลาใหม่
       setSelectedEndDate(updatedDate);
@@ -163,8 +160,7 @@ export default function AdminPromotionCodeAddIndex() {
           if (e.key === "Enter" && target.tagName !== "TEXTAREA") {
             e.preventDefault(); // ป้องกันการกด Enter ยกเว้นใน <textarea>
           }
-        }}
-      >
+        }}>
         <div className="flex flex-row w-full">
           <div>
             <AdminSidebar />
@@ -199,8 +195,7 @@ export default function AdminPromotionCodeAddIndex() {
                         <div className="hidden items-center justify-between relative">
                           <label
                             className="flex flex-row cursor-pointer"
-                            onClick={handleYesClick}
-                          >
+                            onClick={handleYesClick}>
                             {/* button for fix */}
                             <button
                               onClick={handleYesClick}
@@ -208,8 +203,7 @@ export default function AdminPromotionCodeAddIndex() {
                                 isYesSelected === true
                                   ? "bg-blue-500"
                                   : "border-gray-200"
-                              } w-5 h-5 rounded-full flex items-center justify-center border border-blue-400`}
-                            >
+                              } w-5 h-5 rounded-full flex items-center justify-center border border-blue-400`}>
                               <div
                                 className={`${
                                   isYesSelected === true
@@ -223,8 +217,7 @@ export default function AdminPromotionCodeAddIndex() {
                                 isYesSelected === true
                                   ? "text-black"
                                   : "text-gray-400"
-                              }`}
-                            >
+                              }`}>
                               Fixed
                             </h1>
                           </label>
@@ -247,8 +240,7 @@ export default function AdminPromotionCodeAddIndex() {
                         <div className="flex items-center justify-between relative">
                           <label
                             className="flex flex-row cursor-pointer"
-                            onClick={handleNoClick}
-                          >
+                            onClick={handleNoClick}>
                             <button
                               onClick={handleNoClick}
                               type="button"
@@ -256,8 +248,7 @@ export default function AdminPromotionCodeAddIndex() {
                                 isYesSelected === false
                                   ? "bg-blue-500"
                                   : "border-gray-200"
-                              } w-5 h-5 rounded-full flex items-center justify-center border border-blue-400`}
-                            >
+                              } w-5 h-5 rounded-full flex items-center justify-center border border-blue-400`}>
                               <div
                                 className={`${
                                   isYesSelected === false
@@ -271,8 +262,7 @@ export default function AdminPromotionCodeAddIndex() {
                                 isYesSelected === false
                                   ? "text-black"
                                   : "text-gray-400"
-                              }`}
-                            >
+                              }`}>
                               Percent
                             </h1>
                           </label>
@@ -283,7 +273,7 @@ export default function AdminPromotionCodeAddIndex() {
                               isYesSelected === false
                                 ? "bg-white"
                                 : "bg-gray-300"
-                            } w-[140px] h-[42px] ml-4 pl-5 pr-10 border border-gray-300 rounded-md  appearance-none`}
+                            } w-[140px] h-[42px] ml-4 pl-5 pr-10 border border-gray-300 rounded-md  appearance-none text-black font-normal`}
                             disabled={isYesSelected === null} // ถ้าเลือก "เอา" จะไม่สามารถพิมพ์ได้
                             onChange={handleInputPercentChange}
                             value={
@@ -322,14 +312,12 @@ export default function AdminPromotionCodeAddIndex() {
                         <div className="w-[205px]">
                           <Popover
                             open={isCalendarOpen}
-                            onOpenChange={setIsCalendarOpen}
-                          >
+                            onOpenChange={setIsCalendarOpen}>
                             <PopoverTrigger asChild>
                               <Button
                                 variant="outline"
                                 className="w-full justify-between px-3 py-2 h-10 text-sm"
-                                onClick={() => setIsCalendarOpen(true)}
-                              >
+                                onClick={() => setIsCalendarOpen(true)}>
                                 <span className="truncate mr-2">
                                   {selectedEndDate
                                     ? format(selectedEndDate, "d MMMM yyyy", {
@@ -340,7 +328,7 @@ export default function AdminPromotionCodeAddIndex() {
                                 <CalendarIcon className="h-4 w-4 flex-shrink-0" />
                               </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="bg-white  rounded-lg shadow-lg">
+                            <PopoverContent className="bg-white  rounded-lg shadow-lg border border-gray-100">
                               <Calendar
                                 mode="single"
                                 selected={selectedEndDate || undefined}
@@ -358,8 +346,7 @@ export default function AdminPromotionCodeAddIndex() {
                         {/* popup for select time */}
                         <button
                           className="w-[205px] absolute right-[428px]"
-                          type="button"
-                        >
+                          type="button">
                           <TimeSelectorAdminPromotionCode
                             value={selectedTime} // ส่งค่าเวลา
                             onChange={handleTimeChange} // ส่งฟังก์ชันจัดการการเปลี่ยนแปลงเวลา
