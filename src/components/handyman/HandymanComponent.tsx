@@ -267,7 +267,7 @@ const HandymanComponent: React.FC = () => {
             </div>
             <div className="flex h-20 py-5 gap-2">
               <h3 className=" text-gray-700 font-medium text-sm lg:text-base h-full px-2 lg:px-4 flex items-center rounded-lg transition-all duration-700 ease-in-out">
-                คุณ สมควร คงควรคอย
+                John Lennon
               </h3>
               <Image
                 src="https://frqdeijtcguxcozmpucc.supabase.co/storage/v1/object/public/profile_pictures/UserProfile-handyman.png?t=2024-12-26T09%3A46%3A42.414Z"
