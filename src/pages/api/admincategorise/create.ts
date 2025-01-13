@@ -62,7 +62,7 @@ interface Category {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: Database Error: [error message] OR Internal Server Error: [error message]
+ *                   example: "Database Error: [error message]"
  *       405:
  *         description: Method not allowed
  *         content:

@@ -75,7 +75,7 @@ import { adminSupabase } from "@/utils/supabase";
  *               properties:
  *                 error:
  *                   type: string
- *                   example: Internal Server Error: Error message
+ *                   example: "Internal Server Error: Error message"
  */
 
 export default async function handler(
