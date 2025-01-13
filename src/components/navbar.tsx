@@ -10,7 +10,7 @@ export function Navbar() {
   const router = useRouter();
   const { authState, isLoggedIn } = useAuth();
   const [media, setMedia] = useState<string>("");
-  const user = authState.user;
+  const [userName, setUserName] = useState<string>("");
   const email = authState.userEmail;
   const userRole = authState.userRole;
 
@@ -20,6 +20,10 @@ export function Navbar() {
         email,
         userRole,
       });
+      const userName = res.data.userInfo.name;
+      if (userName) {
+        setUserName(userName);
+      }
       const profileImage = res.data.userInfo.profile_picture_url;
       if (profileImage) {
         setMedia(profileImage);
@@ -76,7 +80,7 @@ export function Navbar() {
         ) : isLoggedIn ? (
           <div className="flex gap-2 items-center lg:mr-20">
             <p className="hidden lg:block lg:text-[14px] text-gray-700">
-              {user?.user_metadata.name || "Guest"}
+              {userName || "Guest"}
             </p>
             <div className="w-[32px] h-[32px] lg:w-[40px] lg:h-[40px]">
               <AuthNavbar media={media} />
