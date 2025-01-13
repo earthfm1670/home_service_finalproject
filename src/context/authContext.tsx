@@ -96,15 +96,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   //function to validate role
   const roleValidation = (userRole: string): void => {
     if (userRole === "customer") {
-      console.log("welcom customer");
+      //console.log("welcom customer");
       setIsAdmin(false);
       setIsStaff(false);
     } else if (userRole === "admin") {
-      console.log("welcom admin");
+      //console.log("welcom admin");
       setIsAdmin(true);
       setIsStaff(false);
     } else if (userRole === "staff") {
-      console.log("welcom staff");
+      //console.log("welcom staff");
       setIsStaff(true);
       setIsAdmin(false);
     }

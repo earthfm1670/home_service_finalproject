@@ -47,11 +47,8 @@ export function Navbar() {
   };
 
   useEffect(() => {
-    console.log("Navbar loading");
     if (email) {
       getMedia();
-      console.log("check auth state");
-      console.log(authState);
     }
     setIsLoading(false);
   }, [email]);
