@@ -14,8 +14,9 @@ import { CartSkeleton } from "@/components/service-detail/CartSkeleton";
 async function getService(
   id: string
 ): Promise<{ data: Service | null; error?: string }> {
+  const domainName = process.env.NEXT_PUBLIC_API_URL;
   try {
-    const res = await fetch(`http://localhost:3000/api/services/${id}`);
+    const res = await fetch(`${domainName}/api/services/${id}`);
     if (!res.ok) {
       throw new Error("Failed to fetch service");
     }
