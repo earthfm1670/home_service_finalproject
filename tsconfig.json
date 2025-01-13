@@ -15,8 +15,15 @@
     "incremental": true,
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    // เพิ่มบรรทัดนี้เข้าไป เพื่อให้การใช้งาน fomidable ทำงานได้
+    "typeRoots": ["./node_modules/@types", "./src/types"]  
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "public/image/facebooklogo.jsx"
+  ],
   "exclude": ["node_modules"]
 }
