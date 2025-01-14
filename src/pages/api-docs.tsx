@@ -11,7 +11,6 @@ type SwaggerSpec = {
     description: string;
   };
   paths: Record<string, any>;
-  // Add more properties as needed
 };
 
 type ApiDocsProps = {
@@ -19,7 +18,10 @@ type ApiDocsProps = {
 };
 
 const SwaggerUI = dynamic<ApiDocsProps>(
-  () => import("swagger-ui-react") as Promise<{ default: React.ComponentType<ApiDocsProps> }>,
+  () =>
+    import("swagger-ui-react") as Promise<{
+      default: React.ComponentType<ApiDocsProps>;
+    }>,
   { ssr: false }
 );
 
@@ -33,25 +35,27 @@ export const getStaticProps: GetStaticProps<ApiDocsProps> = async () => {
     const res = await fetch(`${apiUrl}/api/docs`);
 
     if (!res.ok) {
-      throw new Error(`Failed to fetch API docs: ${res.status} ${res.statusText}`);
+      throw new Error(
+        `Failed to fetch API docs: ${res.status} ${res.statusText}`
+      );
     }
 
     const spec: SwaggerSpec = await res.json();
-    return { props: { spec } };
+    return { props: { spec }, revalidate: 3600 };
   } catch (error) {
     console.error("Error fetching API docs:", error);
-    return { 
-      props: { 
+    return {
+      props: {
         spec: {
           openapi: "3.0.0",
           info: {
             title: "API Documentation Unavailable",
             version: "1.0.0",
-            description: "There was an error loading the API documentation."
+            description: "There was an error loading the API documentation.",
           },
-          paths: {}
-        } 
-      } 
+          paths: {},
+        },
+      },
     };
   }
 };

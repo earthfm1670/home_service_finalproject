@@ -21,19 +21,19 @@ Note: Ensure you have the necessary permissions before accessing admin-only endp
 If you encounter any issues or have questions, please contact our support team at support@homeservice.com.
       `,
     },
-    // servers: [
-    //   {
-    //     description: "Production server",
-    //     url: "https://home-service-finalproject.vercel.app/",
-    //   },
-    //   {
-    //     description: "Local development server",
-    //     url: "http://localhost:3000",
-    //   },
-    // ],
+    servers: [
+      {
+        description: "Production server",
+        url: "https://home-service-finalproject.vercel.app/",
+      },
+      {
+        description: "Local development server",
+        url: "http://localhost:3000",
+      },
+    ],
   },
 
-  apis: ["./src/pages/api/**/*.ts"],
+  apis: ["./pages/api/**/*.ts", "./src/pages/api/**/*.ts"],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
