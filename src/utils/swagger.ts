@@ -33,7 +33,12 @@ If you encounter any issues or have questions, please contact our support team a
     ],
   },
 
-  apis: ["./pages/api/**/*.ts", "./src/pages/api/**/*.ts"],
+  apis: [
+    "./src/pages/api/**/*.ts",
+    "./pages/api/**/*.ts",
+    "./src/pages/api/**/*.js", 
+    "./pages/api/**/*.js",
+  ],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
