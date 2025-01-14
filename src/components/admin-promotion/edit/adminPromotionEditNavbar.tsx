@@ -20,7 +20,7 @@ export function AdminPromotionEditNavbar({
         >
           <IconArrowBack />
           <nav className="flex flex-col">
-            <div className="text-xs">บริการ</div>
+            <div className="text-xs">Promotion Code</div>
             <div className="text-xl font-medium">{nameTopic}</div>
           </nav>
         </div>
