@@ -1,6 +1,11 @@
 import { useRouter } from "next/router";
 import IconX from "@/components/ui/IconX";
 import IconCheck from "@/components/ui/IconCheck";
+import IconTrash from "@/components/ui/IconTrash";
+import IconTrashRed from "@/components/ui/IconTrashRed";
+import { useState } from "react";
+import IconWarning from "@/components/ui/Iconwarning";
+import axios from "axios";
 
 interface Category {
   id: number;
@@ -25,9 +30,22 @@ export function AdminCategoryEditCategory({
   category,
 }: AdminCategoryEditCategory) {
   const router = useRouter();
+  const { id } = router.query;
+  const [showPopupDelete, setShowPopupDelete] = useState<boolean>(false);
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`/api/admincategorise/deletecategory/${id}`);
+      router.push("/admincategory");
+      console.log();
+    } catch (error) {
+      console.log("Error deleting the service:", error);
+    }
+  };
+
   return (
     <>
-      <div className="min-h-screen w-full flex justify-center items-start py-12 min-w-[1200px] bg-gray-100 gap-5">
+      <div className="min-h-screen w-full flex flex-col justify-start items-center py-12 min-w-[1200px] bg-gray-100 gap-5">
         <div className="flex flex-col w-[1120px] py-10 border bg-white border-gray-300 rounded-lg overflow-x-auto gap-10 justify-center px-7">
           <div className="w-full bg-white">
             <div className="flex items-center justify-between w-[662px] text-gray-500 font-medium">
@@ -81,6 +99,28 @@ export function AdminCategoryEditCategory({
             </div>
           </div>
         </div>
+        {/* button delete service */}
+        <div className="w-[1120px] flex flex-row justify-end">
+          <button
+            className="flex flex-row items-center gap-2 font-medium underline cursor-pointer text-gray-500 active:text-red-600 group"
+            type="button"
+            // onClick={() => setDeleteServiceButton(true)}
+            onClickCapture={() => {
+              // setPromotionToDelete(promotionCode);
+              setShowPopupDelete(true);
+            }}
+          >
+            {/* IconTrash */}
+            <div className="group-active:hidden">
+              <IconTrash />
+            </div>
+            {/* IconTrashRed */}
+            <div className="hidden group-active:inline">
+              <IconTrashRed />
+            </div>
+            ลบบริการ
+          </button>
+        </div>
       </div>
       {/* show popup */}
       {showPopUpSubmit && (
@@ -88,7 +128,8 @@ export function AdminCategoryEditCategory({
           <div className="bg-white w-[360px] h-auto flex flex-col items-center rounded-xl p-3 gap-3 absolute">
             <div
               className="w-full flex justify-end"
-              onClick={() => setShowPopUpSubmit(false)}>
+              onClick={() => setShowPopUpSubmit(false)}
+            >
               <IconX />
             </div>
             <div className="flex justify-center relative">
@@ -103,9 +144,55 @@ export function AdminCategoryEditCategory({
             </h1>
             <button
               className="bg-defaultColor text-white w-28 py-2 rounded-lg font-medium mb-2 mt-2"
-              onClick={() => router.push("/admincategory")}>
+              onClick={() => router.push("/admincategory")}
+            >
               ยืนยัน
             </button>
+          </div>
+        </div>
+      )}
+      {showPopupDelete && (
+        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white w-[360px] h-auto flex flex-col items-center rounded-xl p-4 gap-3">
+            <div className="w-full">
+              <button
+                type="button"
+                className="ml-auto flex justify-end items-end"
+                onClick={() => {
+                  setShowPopupDelete(false);
+                  // setPromotionToDelete(null);
+                }}
+              >
+                <IconX />
+              </button>
+              <div className="flex justify-center">
+                <IconWarning />
+              </div>
+            </div>
+            <h1 className="font-medium text-xl ">ยืนยันการลบรายการ ?</h1>
+            <h1 className="text-center text-gray-500">
+              คุณต้องการลบรายการ &apos;{category.category}&apos; <br />
+              ใช่หรือไม่
+            </h1>
+            <div className="flex flex-row gap-3">
+              <button
+                className="bg-defaultColor text-white w-28 py-2 rounded-lg font-medium"
+                onClick={() => {
+                  handleDelete();
+                  setShowPopupDelete(false);
+                }}
+              >
+                ลบรายการ
+              </button>
+              <button
+                className="bg-white text-defaultColor border-[1px] border-defaultColor w-28 py-2 rounded-lg font-medium"
+                onClick={() => {
+                  setShowPopupDelete(false);
+                }}
+              >
+                ยกเลิก
+              </button>
+            </div>
           </div>
         </div>
       )}
