@@ -2,6 +2,38 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { connectionPool } from "@/utils/db";
 import { adminSupabase } from "@/utils/supabase";
 
+/**
+ * @swagger
+ * /api/delete-image:
+ *   delete:
+ *     summary: Delete image associated with a service
+ *     description: Deletes the image from Supabase storage and removes the image URL from the service record in the database.
+ *     tags: [Services]
+ *     parameters:
+ *       - in: query
+ *         name: serviceId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the service whose image should be deleted
+ *     responses:
+ *       200:
+ *         description: Image deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Invalid service ID
+ *       404:
+ *         description: Service or image not found
+ *       500:
+ *         description: Internal server error
+ */
+
 export default async function deleteImageOnly(
   req: NextApiRequest,
   res: NextApiResponse

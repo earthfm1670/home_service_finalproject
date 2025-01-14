@@ -9,6 +9,138 @@ const formatPrice = (price: number): string => {
   });
 };
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Service:
+ *       type: object
+ *       properties:
+ *         service_id:
+ *           type: integer
+ *         service_name:
+ *           type: string
+ *         category:
+ *           type: string
+ *         service_picture_url:
+ *           type: string
+ *         service_pricing:
+ *           type: string
+ *         minPrice:
+ *           type: number
+ *         maxPrice:
+ *           type: number
+ *         total_usage:
+ *           type: integer
+ *         promotionsAndOffers:
+ *           type: boolean
+ *         sub_services:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               sub_service_id:
+ *                 type: integer
+ *               id:
+ *                 type: integer
+ *               description:
+ *                 type: string
+ *               unit:
+ *                 type: string
+ *               unit_price:
+ *                 type: number
+ *         id:
+ *           type: integer
+ *         title:
+ *           type: string
+ *     ServicesResponse:
+ *       type: object
+ *       properties:
+ *         data:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Service'
+ *         allServiceNames:
+ *           type: array
+ *           items:
+ *             type: string
+ *         totalCount:
+ *           type: integer
+ *         currentPage:
+ *           type: integer
+ *         totalPages:
+ *           type: integer
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         data:
+ *           type: null
+ *         totalCount:
+ *           type: integer
+ *         currentPage:
+ *           type: integer
+ *         totalPages:
+ *           type: integer
+ *         error:
+ *           type: string
+ *
+ * /api/services:
+ *   get:
+ *     summary: Get services with filtering and pagination
+ *     description: Retrieves services based on various filters and pagination parameters
+ *     tags: [Services]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of items per page
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term for filtering services
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         description: Category filter
+ *       - in: query
+ *         name: min_price
+ *         schema:
+ *           type: number
+ *         description: Minimum price filter
+ *       - in: query
+ *         name: max_price
+ *         schema:
+ *           type: number
+ *         description: Maximum price filter
+ *       - in: query
+ *         name: sort_by
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc, popular, recommended]
+ *         description: Sorting option
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ServicesResponse'
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse

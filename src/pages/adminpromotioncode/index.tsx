@@ -52,10 +52,15 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
     null
   );
 
+  const [isLoadingIndex, setIsLoadingIndex] = useState<boolean>(false);
+
   const fetchUser = async () => {
+    setIsLoadingIndex(true);
     try {
       const response = await axios.get(`/api/admin/promotions?search=${input}`);
-      setPromotionCodeList(response.data.data);
+      const data = response.data.data;
+      setPromotionCodeList(data ? data : []); // ตรวจสอบถ้ามีข้อมูลให้ตั้งค่าหรือใช้ array ว่าง
+      setIsLoadingIndex(false);
     } catch (error) {
       console.log(error);
     }
@@ -111,8 +116,16 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {Array.isArray(promotionCodeList) &&
-                    promotionCodeList.length > 0 ? (
+                    {isLoadingIndex ? (
+                      <tr>
+                        <td colSpan={7} className="text-center py-4">
+                          <div className="w-full py-10 flex justify-center items-center text-3xl gap-3">
+                            <div>Loading</div>
+                            <div className="animate-spin rounded-full h-10 w-10 border-4 border-t-transparent border-gray-800"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : promotionCodeList.length > 0 ? (
                       promotionCodeList
                         .sort(
                           (a: Promotion, b: Promotion) =>
@@ -121,7 +134,8 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
                         .map((promotionCode: Promotion) => (
                           <tr
                             key={promotionCode.promotion_id}
-                            className="border-t bg-white h-20 text-black">
+                            className="border-t bg-white h-20 text-black"
+                          >
                             <td className="px-auto text-start pl-6">
                               <button
                                 type="button"
@@ -129,7 +143,8 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
                                   router.push(
                                     `/adminpromotioncode/detail/${promotionCode.promotion_id}`
                                   )
-                                }>
+                                }
+                              >
                                 {promotionCode.promotion_code}
                               </button>
                             </td>
@@ -191,7 +206,8 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
                                 onClickCapture={() => {
                                   setPromotionToDelete(promotionCode);
                                   setShowPopup(true);
-                                }}>
+                                }}
+                              >
                                 <div className="group-active:hidden">
                                   <IconTrash />
                                 </div>
@@ -207,7 +223,8 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
                                   router.push(
                                     `/adminpromotioncode/edit/${promotionCode.promotion_id}`
                                   )
-                                }>
+                                }
+                              >
                                 <div className="group-active:hidden">
                                   <IconEditBlue />
                                 </div>
@@ -221,10 +238,7 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
                     ) : (
                       <tr>
                         <td colSpan={7} className="text-center py-4">
-                          <div className="w-full py-10 flex justify-center items-center text-3xl gap-3">
-                            <div>Loading</div>
-                            <div className="animate-spin rounded-full h-10 w-10 border-4 border-t-transparent border-gray-800"></div>
-                          </div>
+                          <div>ไม่มีข้อมูลที่ตรงกับการค้นหา</div>
                         </td>
                       </tr>
                     )}
@@ -245,7 +259,8 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
                 onClick={() => {
                   setShowPopup(false);
                   setPromotionToDelete(null);
-                }}>
+                }}
+              >
                 <IconX />
               </button>
               <div className="flex justify-center">
@@ -265,7 +280,8 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
                   handleDelete(promotionToDelete.promotion_id);
                   setShowPopup(false);
                   setPromotionToDelete(null);
-                }}>
+                }}
+              >
                 ลบรายการ
               </button>
               <button
@@ -273,7 +289,8 @@ export const AdminPromotionIndex = ({ input }: { input: string | null }) => {
                 onClick={() => {
                   setShowPopup(false);
                   setPromotionToDelete(null);
-                }}>
+                }}
+              >
                 ยกเลิก
               </button>
             </div>

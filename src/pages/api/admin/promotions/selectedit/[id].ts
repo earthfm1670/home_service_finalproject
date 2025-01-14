@@ -2,6 +2,72 @@
 import { supabase } from "@/utils/supabase";
 import { NextApiRequest, NextApiResponse } from "next";
 
+/**
+ * @swagger
+ * /api/admin/promotions/selectedit/{id}:
+ *   get:
+ *     summary: Get promotion code(s)
+ *     description: Retrieves either a specific promotion code by ID or all promotion codes
+ *     tags: [Admin, Promotions]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: The ID of the promotion code to retrieve. If not provided, all promotion codes will be returned.
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   oneOf:
+ *                     - type: object
+ *                       description: Single promotion code object
+ *                     - type: array
+ *                       items:
+ *                         type: object
+ *                       description: Array of promotion code objects
+ *       400:
+ *         description: Error fetching promotion(s)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 error:
+ *                   type: string
+ *       404:
+ *         description: Promotion not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: null
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+
+
 // API Endpoint รองรับการ GET ทั้งหมดหรือ by ID
 export default async function handlePromotionCode(
   req: NextApiRequest,

@@ -4,6 +4,61 @@ import { NextApiRequest, NextApiResponse } from "next";
 // นำเข้า adminSupabase ซึ่งเป็นอินสแตนซ์ของ Supabase client ที่ใช้งานในด้านการเข้าถึงฐานข้อมูล
 import { adminSupabase } from "@/utils/supabase";
 
+/**
+ * @swagger
+ * /api/admincategorise/edit/{editId}:
+ *   put:
+ *     summary: Edit a category
+ *     description: Updates an existing category in the database
+ *     tags: [Admin, Categories]
+ *     parameters:
+ *       - in: path
+ *         name: editId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the category to edit
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               category:
+ *                 type: string
+ *                 description: The new name for the category
+ *     responses:
+ *       200:
+ *         description: Category updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Edit successfully
+ *                 updatedCategory:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     category:
+ *                       type: string
+ *                     updated_at:
+ *                       type: string
+ *                       format: date-time
+ *       400:
+ *         description: Bad request (Invalid ID or missing category)
+ *       404:
+ *         description: Category not found
+ *       405:
+ *         description: Method not allowed
+ *       500:
+ *         description: Internal server error
+ */
+
 // ฟังก์ชัน handler เป็น async function ที่รับคำขอและคำตอบเพื่อจัดการกับ API
 export default async function handler(
   req: NextApiRequest,  // คำขอ (Request) ที่มาจากผู้ใช้งาน

@@ -2,6 +2,63 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { connectionPool } from "@/utils/db";
 import { adminSupabase } from "@/utils/supabase";
 
+/**
+ * @swagger
+ * /api/admin/management/deleteServices/{deleteId}:
+ *   delete:
+ *     summary: Delete a service
+ *     description: Deletes a service and its associated image from the database and storage.
+ *     tags: [Admin]
+ *     parameters:
+ *       - in: path
+ *         name: deleteId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the service to delete
+ *     responses:
+ *       201:
+ *         description: Service deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Service deleted successfully.
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Service id is missing
+ *       404:
+ *         description: Service not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Service not found.
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error.
+ */
+
 export default async function adminDelete(
   req: NextApiRequest,
   res: NextApiResponse
@@ -39,7 +96,7 @@ export default async function adminDelete(
 
     // Step 2: ลบไฟล์จาก Supabase Storage
     if (imageUrl) {
-      const filePath = imageUrl.split('/').pop(); // ดึงชื่อไฟล์จาก URL
+      const filePath = imageUrl.split("/").pop(); // ดึงชื่อไฟล์จาก URL
       console.log("File path to delete:", filePath); // Log ตรวจสอบชื่อไฟล์
 
       if (!filePath) {
@@ -47,16 +104,19 @@ export default async function adminDelete(
         return res.status(500).json({ error: "File path is invalid." });
       }
 
-      const { data: removeResponse, error: storageError } = await adminSupabase
-        .storage
-        .from('service_pictures')
-        .remove([filePath]); // ลบไฟล์
+      const { data: removeResponse, error: storageError } =
+        await adminSupabase.storage.from("service_pictures").remove([filePath]); // ลบไฟล์
 
       console.log("Remove response from storage:", removeResponse); // Log การตอบกลับจาก Supabase
 
       if (storageError) {
-        console.error('Error deleting file from Supabase Storage:', storageError.message);
-        return res.status(500).json({ error: "Error deleting file from storage." });
+        console.error(
+          "Error deleting file from Supabase Storage:",
+          storageError.message
+        );
+        return res
+          .status(500)
+          .json({ error: "Error deleting file from storage." });
       }
     }
 

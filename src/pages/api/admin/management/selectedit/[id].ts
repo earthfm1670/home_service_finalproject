@@ -1,6 +1,71 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { adminSupabase } from "@/utils/supabase";
 
+/**
+ * @swagger
+ * /api/admin/management/selectedit/{id}:
+ *   get:
+ *     summary: Get service details by ID
+ *     description: Retrieves details of a service, including associated sub-services and categories.
+ *     tags: [Admin]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the service to retrieve
+ *     responses:
+ *       200:
+ *         description: Service details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 service_id:
+ *                   type: integer
+ *                 service_name:
+ *                   type: string
+ *                 service_picture_url:
+ *                   type: string
+ *                 sub_services:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 categories:
+ *                   type: object
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid or missing ID
+ *       404:
+ *         description: Service not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse

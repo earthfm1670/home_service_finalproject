@@ -8,6 +8,69 @@ interface Categories {
   updated_at: string;
 }
 
+/**
+ * @swagger
+ * /api/admincategorise/get-categories:
+ *   get:
+ *     summary: Get categories
+ *     description: Retrieves a list of categories, optionally filtered by a search term
+ *     tags: [Admin, Categories]
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Optional search term to filter categories
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       category:
+ *                         type: string
+ *                       created_at:
+ *                         type: string
+ *                         format: date-time
+ *                       updated_at:
+ *                         type: string
+ *                         format: date-time
+ *                 totalCount:
+ *                   type: integer
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: null
+ *                 totalCount:
+ *                   type: integer
+ *                   example: 0
+ *                 error:
+ *                   type: string
+ *       405:
+ *         description: Method Not Allowed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse

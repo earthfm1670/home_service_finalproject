@@ -19,6 +19,85 @@ interface AdminRegistrationRequestBody {
   agreementAccepted: boolean;
 }
 
+/**
+ * @swagger
+ * /api/admin/register:
+ *   post:
+ *     summary: Register a new admin or staff
+ *     description: Register a new admin or staff user with the provided details
+ *     tags: [Admin]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - phoneNumber
+ *               - email
+ *               - password
+ *               - roleId
+ *               - agreementAccepted
+ *             properties:
+ *               name:
+ *                 type: string
+ *               phoneNumber:
+ *                 type: string
+ *                 pattern: '^0[0-9]{9}$'
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 minLength: 12
+ *               roleId:
+ *                 type: integer
+ *                 enum: [2, 3]
+ *               agreementAccepted:
+ *                 type: boolean
+ *     responses:
+ *       201:
+ *         description: Successfully registered
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Register successfully
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       405:
+ *         description: Method not allowed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Method not allowed
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: An unexpected error occurred
+ */
+
 export default async function adminRegister(
   req: NextApiRequest,
   res: NextApiResponse

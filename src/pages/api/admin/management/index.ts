@@ -27,6 +27,127 @@ type Service = {
   title?: string;
 };
 
+/**
+ * @swagger
+ * /api/admin/management:
+ *   get:
+ *     summary: Get services with filtering and pagination
+ *     description: Retrieves a list of services with various filtering options and pagination
+ *     tags: [Admin]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 13
+ *         description: Number of items per page
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term for service name
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         description: Filter by category
+ *       - in: query
+ *         name: min_price
+ *         schema:
+ *           type: number
+ *         description: Minimum price filter
+ *       - in: query
+ *         name: max_price
+ *         schema:
+ *           type: number
+ *         description: Maximum price filter
+ *       - in: query
+ *         name: is_recommended
+ *         schema:
+ *           type: boolean
+ *         description: Filter for recommended services
+ *       - in: query
+ *         name: is_popular
+ *         schema:
+ *           type: boolean
+ *         description: Filter for popular services
+ *       - in: query
+ *         name: sort_by
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *         description: Sort order for service names
+ *     responses:
+ *       200:
+ *         description: Successful response with paginated services data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Service'
+ *                 totalCount:
+ *                   type: integer
+ *                 currentPage:
+ *                   type: integer
+ *                 totalPages:
+ *                   type: integer
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ * 
+ * components:
+ *   schemas:
+ *     Service:
+ *       type: object
+ *       properties:
+ *         service_id:
+ *           type: integer
+ *         service_name:
+ *           type: string
+ *         category:
+ *           type: string
+ *         service_picture_url:
+ *           type: string
+ *         service_pricing:
+ *           type: string
+ *         minPrice:
+ *           type: number
+ *         maxPrice:
+ *           type: number
+ *         is_recommended:
+ *           type: boolean
+ *         is_popular:
+ *           type: boolean
+ *         popularity_score:
+ *           type: number
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         data:
+ *           type: null
+ *         totalCount:
+ *           type: integer
+ *         currentPage:
+ *           type: integer
+ *         totalPages:
+ *           type: integer
+ *         error:
+ *           type: string
+ */
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse

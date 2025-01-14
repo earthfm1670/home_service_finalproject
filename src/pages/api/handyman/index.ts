@@ -27,6 +27,129 @@ type BookingData = {
   }> | null;
 };
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     BookingData:
+ *       type: object
+ *       properties:
+ *         booking_id:
+ *           type: string
+ *         booked_at:
+ *           type: string
+ *         scheduled_date:
+ *           type: string
+ *         completed_at:
+ *           type: string
+ *           nullable: true
+ *         total_price:
+ *           type: number
+ *         address:
+ *           type: string
+ *         in_progress_at:
+ *           type: string
+ *           nullable: true
+ *         users:
+ *           type: object
+ *           nullable: true
+ *           properties:
+ *             name:
+ *               type: string
+ *             phone_number:
+ *               type: string
+ *             email:
+ *               type: string
+ *         staffs:
+ *           type: object
+ *           nullable: true
+ *           properties:
+ *             name:
+ *               type: string
+ *         booking_status:
+ *           type: object
+ *           nullable: true
+ *           properties:
+ *             status_name:
+ *               type: string
+ *         order_list:
+ *           type: array
+ *           nullable: true
+ *           items:
+ *             type: object
+ *             properties:
+ *               sub_services_id:
+ *                 type: string
+ *               amount:
+ *                 type: number
+ *               order_price:
+ *                 type: number
+ *               sub_services:
+ *                 type: object
+ *                 nullable: true
+ *                 properties:
+ *                   description:
+ *                     type: string
+ *                   unit:
+ *                     type: string
+ *                   unit_price:
+ *                     type: number
+ *                   services:
+ *                     type: object
+ *                     properties:
+ *                       service_name:
+ *                         type: string
+ * 
+ * /api/handyman:
+ *   get:
+ *     summary: Get all bookings
+ *     description: Retrieves all bookings with related information
+ *     tags: [Handyman]
+ *     responses:
+ *       200:
+ *         description: Successful response with bookings data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/BookingData'
+ *       500:
+ *         description: Internal server error
+ *   patch:
+ *     summary: Update booking status
+ *     description: Updates the status of a booking
+ *     tags: [Handyman]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - booking_id
+ *               - status_id
+ *             properties:
+ *               booking_id:
+ *                 type: string
+ *               status_id:
+ *                 type: number
+ *               completed_at:
+ *                 type: string
+ *               inProgress_at:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Booking status updated successfully
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Internal server error
+ */
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse

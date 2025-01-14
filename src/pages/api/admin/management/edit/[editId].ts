@@ -35,6 +35,75 @@ interface PutRequestBody {
   image: formidable.File | undefined;
 }
 
+/**
+ * @swagger
+ * /api/admin/management/update:
+ *   put:
+ *     summary: Update a service and its sub-services
+ *     description: Updates an existing service, including its details, image, and sub-services
+ *     tags: [Admin]
+ *     consumes:
+ *       - multipart/form-data
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: formData
+ *         name: service_id
+ *         required: true
+ *         type: integer
+ *         description: ID of the service to update
+ *       - in: formData
+ *         name: title
+ *         required: true
+ *         type: string
+ *         description: New title of the service
+ *       - in: formData
+ *         name: category_id
+ *         required: true
+ *         type: integer
+ *         description: ID of the category for the service
+ *       - in: formData
+ *         name: subservices
+ *         required: true
+ *         type: string
+ *         description: JSON string of sub-services array
+ *       - in: formData
+ *         name: image
+ *         type: file
+ *         description: New image file for the service
+ *     responses:
+ *       200:
+ *         description: Service updated successfully
+ *         schema:
+ *           type: object
+ *           properties:
+ *             message:
+ *               type: string
+ *               example: Service updated successfully
+ *       400:
+ *         description: Bad request
+ *         schema:
+ *           type: object
+ *           properties:
+ *             error:
+ *               type: string
+ *       405:
+ *         description: Method not allowed
+ *         schema:
+ *           type: object
+ *           properties:
+ *             error:
+ *               type: string
+ *               example: Method not allowed
+ *       500:
+ *         description: Internal server error
+ *         schema:
+ *           type: object
+ *           properties:
+ *             message:
+ *               type: string
+ *               example: Unexpected error occurred
+ */
 // ฟังก์ชันหลักที่ใช้จัดการคำขอ PUT สำหรับการอัปเดตบริการ
 export default async function adminUpdate(
   req: NextApiRequest,
@@ -154,15 +223,18 @@ export default async function adminUpdate(
         console.log("----------5----------");
 
         // ดึงข้อมูล URL ของภาพเดิม
-        const { data: currentImageData, error: fetchError } = await adminSupabase
-          .from("services")
-          .select("service_picture_url")
-          .eq("service_id", updateService.service_id)
-          .single();
+        const { data: currentImageData, error: fetchError } =
+          await adminSupabase
+            .from("services")
+            .select("service_picture_url")
+            .eq("service_id", updateService.service_id)
+            .single();
 
         if (fetchError) {
           console.log("Error fetching current image URL:", fetchError);
-          return res.status(500).json({ error: "Failed to fetch current image URL" });
+          return res
+            .status(500)
+            .json({ error: "Failed to fetch current image URL" });
         }
 
         const currentImageUrl = currentImageData?.service_picture_url;
