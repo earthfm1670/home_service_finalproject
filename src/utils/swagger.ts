@@ -24,7 +24,7 @@ If you encounter any issues or have questions, please contact our support team a
     servers: [
       {
         description: "Production server",
-        url: "https://home-service-finalproject.vercel.app/",
+        url: "https://home-service-finalproject.vercel.app",
       },
       {
         description: "Local development server",
