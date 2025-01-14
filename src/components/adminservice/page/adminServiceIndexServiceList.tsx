@@ -43,13 +43,17 @@ export const AdminserviceIndexServiceList = ({
   const [serviceList, setServicesList] = useState<Service[]>([]);
   // console.log("check data form database for show service && category",serviceList);
 
+    const [isLoadingIndex, setIsLoadingIndex] = useState<boolean>(false);
+
   // asynchronous function for get data
   const fetchUser = async () => {
+    setIsLoadingIndex(true);
     try {
       const response = await axios.get(
         `/api/admin/getdataAdmin?search=${search}`
       );
       setServicesList(response.data.data);
+      setIsLoadingIndex(false);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -102,7 +106,17 @@ export const AdminserviceIndexServiceList = ({
               {/* for content rendering list form data */}
               {/* .sort((a, b) => a.service_id - b.service_id) */}
               <tbody>
-                {Array.isArray(serviceList) && serviceList.length > 0 ? (
+              {isLoadingIndex ? (
+                      <tr>
+                        <td colSpan={7} className="text-center py-4">
+                          <div className="w-full py-10 flex justify-center items-center text-3xl gap-3">
+                            <div>Loading</div>
+                            <div className="animate-spin rounded-full h-10 w-10 border-4 border-t-transparent border-gray-800"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    ) :
+                    serviceList.length > 0 ? (
                   serviceList.map((service: Service, index) => (
                     <tr
                       key={service.service_id}
@@ -184,10 +198,7 @@ export const AdminserviceIndexServiceList = ({
                 ) : (
                   <tr>
                     <td colSpan={7} className="text-center py-4">
-                      <div className="w-full py-10 flex justify-center items-center text-3xl gap-3">
-                        <div>Loading</div>
-                        <div className="animate-spin rounded-full h-10 w-10 border-4 border-t-transparent border-gray-800"></div>
-                      </div>
+                    <div>ไม่มีข้อมูลที่ตรงกับการค้นหา</div>
                     </td>
                   </tr>
                 )}
