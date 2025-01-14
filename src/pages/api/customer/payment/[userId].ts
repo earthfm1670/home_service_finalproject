@@ -50,6 +50,67 @@ import { supabase } from "@/utils/supabase";
 }
  * @returns 
  */
+
+/**
+ * @swagger
+ * /api/customer/payment/{userId}:
+ *   post:
+ *     summary: Process payment and create booking
+ *     description: Handles payment processing and creates a new booking for the user
+ *     tags: [Customer]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The user ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - totalPrice
+ *               - paymentDate
+ *               - paymentMethod
+ *               - scheduledDate
+ *               - subServices
+ *             properties:
+ *               totalPrice:
+ *                 type: number
+ *               paymentDate:
+ *                 type: string
+ *                 format: date-time
+ *               paymentMethod:
+ *                 type: integer
+ *                 enum: [1, 2, 3, 4]
+ *                 description: 1:cash, 2:visa, 3:mastercard, 4:paypal
+ *               promotionId:
+ *                 type: integer
+ *                 default: 0
+ *               scheduledDate:
+ *                 type: string
+ *                 format: date-time
+ *               subServices:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     subServiceId:
+ *                       type: integer
+ *                     amount:
+ *                       type: integer
+ *     responses:
+ *       201:
+ *         description: Booking created successfully
+ *       400:
+ *         description: Bad request or failed to insert data
+ *       500:
+ *         description: Internal server error
+ */
+
 export default async function getOrderList(
   req: NextApiRequest,
   res: NextApiResponse

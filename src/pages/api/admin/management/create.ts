@@ -32,6 +32,82 @@ interface PostRequestBody {
   updated_at: string;
 }
 
+/**
+ * @swagger
+ * /api/admin/management/create:
+ *   post:
+ *     summary: Create a new service
+ *     description: Creates a new service with associated sub-services and image upload.
+ *     tags: [Admin]
+ *     consumes:
+ *       - multipart/form-data
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: The title of the service
+ *               category_id:
+ *                 type: integer
+ *                 description: The ID of the category for the service
+ *               subservices:
+ *                 type: string
+ *                 format: json
+ *                 description: JSON string of sub-services array
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Image file for the service
+ *     responses:
+ *       201:
+ *         description: Service created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Service created successfully
+ *                 serviceId:
+ *                   type: integer
+ *                   example: 123
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Title is required.
+ *       403:
+ *         description: Method not allowed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Method not allowed.
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Failed to insert service
+ */
+
 // เป็นฟังก์ชันที่ถูกกำหนดให้เป็น API route สำหรับจัดการคำขอ (request) และตอบกลับ (response) บนฝั่งเซิร์ฟเวอร์ใน Next.js
 export default async function adminCreate(
   // paramether of typeScript type req,res

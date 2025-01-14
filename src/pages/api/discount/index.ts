@@ -1,6 +1,56 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "@/utils/supabase";
 
+/**
+ * @swagger
+ * /api/discount:
+ *   post:
+ *     summary: Use a discount code
+ *     description: Validates and applies a discount code
+ *     tags: [Discount]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - promotionCode
+ *             properties:
+ *               promotionCode:
+ *                 type: string
+ *               useCount:
+ *                 type: integer
+ *                 default: 1
+ *     responses:
+ *       201:
+ *         description: Discount code applied successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     promotion_id:
+ *                       type: integer
+ *                     promotion_code:
+ *                       type: string
+ *                     discount_value:
+ *                       type: number
+ *                     promotion_status:
+ *                       type: string
+ *       400:
+ *         description: Bad request or promotion code unavailable
+ *       404:
+ *         description: Promotion code not found
+ *       500:
+ *         description: Internal server error
+ */
+
 export default async function useDiscountCode(
   req: NextApiRequest,
   res: NextApiResponse

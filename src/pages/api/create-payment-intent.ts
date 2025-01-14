@@ -10,6 +10,49 @@ const promoCodes: { [key: string]: number } = {
   DISCOUNT20: 0.2,
   FURRY: 0.99,
 };
+/**
+ * @swagger
+ * /api/create-payment-intent:
+ *   post:
+ *     summary: Create a payment intent
+ *     description: Creates a Stripe payment intent with optional promo code discount
+ *     tags: [Payment]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - amount
+ *               - paymentMethodId
+ *             properties:
+ *               amount:
+ *                 type: number
+ *                 description: The payment amount in THB
+ *               promoCode:
+ *                 type: string
+ *                 description: Optional promo code for discount
+ *               paymentMethodId:
+ *                 type: string
+ *                 description: Stripe payment method ID
+ *     responses:
+ *       200:
+ *         description: Successful response with client secret
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 clientSecret:
+ *                   type: string
+ *       400:
+ *         description: Bad request
+ *       405:
+ *         description: Method not allowed
+ *       500:
+ *         description: Internal server error
+ */
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {

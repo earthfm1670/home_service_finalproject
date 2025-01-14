@@ -32,6 +32,73 @@ type ServiceResponse = {
   error?: string;
 };
 
+/**
+ * @swagger
+ * /api/services/{id}:
+ *   get:
+ *     summary: Get a service by ID
+ *     description: Retrieves a specific service and its sub-services by ID
+ *     tags: [Services]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The service ID
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ServiceResponse'
+ *       400:
+ *         description: Invalid service ID
+ *       404:
+ *         description: Service not found
+ *       405:
+ *         description: Method not allowed
+ *       500:
+ *         description: Internal server error
+ * 
+ * components:
+ *   schemas:
+ *     ServiceResponse:
+ *       type: object
+ *       properties:
+ *         data:
+ *           $ref: '#/components/schemas/Service'
+ *         error:
+ *           type: string
+ *     Service:
+ *       type: object
+ *       properties:
+ *         service_id:
+ *           type: number
+ *         service_name:
+ *           type: string
+ *         service_picture_url:
+ *           type: string
+ *         sub_services:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/SubService'
+ *     SubService:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: number
+ *         service_id:
+ *           type: number
+ *         description:
+ *           type: string
+ *         unit:
+ *           type: string
+ *         unit_price:
+ *           type: number
+ */
+
 export default async function getServiceById(
   req: NextApiRequest,
   res: NextApiResponse<ServiceResponse>

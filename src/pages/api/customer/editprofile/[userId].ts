@@ -11,6 +11,47 @@ export const config = {
   },
 };
 
+/**
+ * @swagger
+ * /api/customer/editprofile/{userId}:
+ *   put:
+ *     summary: Edit user profile
+ *     description: Update user profile information including name, phone number, address, and profile picture
+ *     tags: [Customer]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The user ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userName:
+ *                 type: string
+ *               phoneNumber:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Profile updated successfully
+ *       400:
+ *         description: Bad request
+ *       405:
+ *         description: Method not allowed
+ *       500:
+ *         description: Internal server error
+ */
+
 export default async function editUserProfile(
   req: NextApiRequest,
   res: NextApiResponse

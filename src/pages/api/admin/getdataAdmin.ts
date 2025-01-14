@@ -10,6 +10,72 @@ import { supabase } from "@/utils/supabase";
 //   updated_at: string;
 // }
 
+/**
+ * @swagger
+ * /api/admin/getdataAdmin:
+ *   get:
+ *     summary: Get services data for admin
+ *     description: Retrieves a list of services with optional search functionality
+ *     tags: [Admin]
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term for service name
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       service_id:
+ *                         type: integer
+ *                       service_name:
+ *                         type: string
+ *                       category:
+ *                         type: string
+ *                       service_picture_url:
+ *                         type: string
+ *                       created_at:
+ *                         type: string
+ *                         format: date-time
+ *                       updated_at:
+ *                         type: string
+ *                         format: date-time
+ *                 totalCount:
+ *                   type: integer
+ *       405:
+ *         description: Method Not Allowed
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Method GET Not Allowed
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: null
+ *                 totalCount:
+ *                   type: integer
+ *                   example: 0
+ *                 error:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse

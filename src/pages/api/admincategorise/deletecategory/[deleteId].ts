@@ -1,6 +1,63 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { connectionPool } from "@/utils/db";
 
+/**
+ * @swagger
+ * /api/admincategorise/deletecategory/{deleteId}:
+ *   delete:
+ *     summary: Delete a category
+ *     description: Deletes a category from the database based on the provided ID
+ *     tags: [Admin, Categories]
+ *     parameters:
+ *       - in: path
+ *         name: deleteId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the category to delete
+ *     responses:
+ *       201:
+ *         description: Category deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Category deleted successfully.
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Category id is missing.
+ *       404:
+ *         description: Category not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Category not found.
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error.
+ */
+
 export default async function adminDelete(
   req: NextApiRequest,
   res: NextApiResponse

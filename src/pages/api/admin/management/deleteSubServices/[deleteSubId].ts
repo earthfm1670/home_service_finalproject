@@ -4,6 +4,62 @@ import { connectionPool } from "@/utils/db";
 // interface QueryParams {
 //   deleteSubId: string | string[];
 // }
+/**
+ * @swagger
+ * /api/admin/management/deleteSubServices/{deleteSubId}:
+ *   delete:
+ *     summary: Delete a sub-service
+ *     description: Deletes a sub-service from the database based on the provided ID.
+ *     tags: [Admin]
+ *     parameters:
+ *       - in: path
+ *         name: deleteSubId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the sub-service to delete
+ *     responses:
+ *       201:
+ *         description: Sub-service deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Delete service successfully.
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Service id is missing
+ *       404:
+ *         description: Service not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Service not found.
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error.
+ */
 
 export default async function adminDelete(
   req: NextApiRequest,
