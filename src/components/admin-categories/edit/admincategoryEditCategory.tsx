@@ -35,9 +35,7 @@ export function AdminCategoryEditCategory({
 
   const handleDelete = async () => {
     try {
-      const response = await axios.delete(
-        `/api/admincategorise/deletecategory/${id}`
-      );
+      await axios.delete(`/api/admincategorise/deletecategory/${id}`);
       router.push("/admincategory");
       console.log();
     } catch (error) {
