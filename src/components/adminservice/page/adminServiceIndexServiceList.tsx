@@ -121,7 +121,7 @@ export const AdminserviceIndexServiceList = ({
                     <tr
                       key={service.service_id}
                       className="border-t bg-white h-20 text-black">
-                      <td className="px-auto text-center active:bg-gray-600">
+                      <td className="px-auto text-center">
                         <IconDrag />
                       </td>
                       <td className="px-auto  text-center">{index + 1}</td>

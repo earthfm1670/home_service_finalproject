@@ -65,7 +65,7 @@ export default function AdminNavbar() {
                 onClick={() => router.push("/admincategory")}>
                 <IconArrowBack />
                 <div className="flex flex-col">
-                  <div className="text-xs">บริการ</div>
+                  <div className="text-xs">หมวดหมู่</div>
                   <div className="text-xl font-medium">{nameTopic}</div>
                 </div>
               </div>

@@ -66,11 +66,11 @@ export default function AdminCategoryEditIndex() {
   return (
     <div className="flex flex-row w-full">
       {/* AdminCategoryEditSidebar */}
-      <AdminSidebar />
+      <AdminSidebar  />
       <div className="w-full flex flex-col">
         <form onSubmit={handleSubmit}>
           {/* AdminCategoryEditNavbar */}
-          <AdminCategoryEditNavbar />
+          <AdminCategoryEditNavbar categoryTitle={category.category}/>
           {/* AdminCategoryEditCategory */}
           <AdminCategoryEditCategory
             inputCategory={inputCategory}
