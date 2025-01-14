@@ -51,8 +51,6 @@ export function AddSubService({
             }}
             className="border border-gray-300 h-11 rounded-lg w-[422px] pl-5 "
             />
-            {/* {index === 0 &&subserviceEmpty && (
-              <p className="text-red-500 text-sm  absolute bottom-0 font-medium">กรุณากรอกข้อมูลให้ถูกต้อง</p> */}
           {index === 0 && subServiceEmpty && (
             <p className="text-red-500 text-sm  absolute bottom-0 font-medium">
               กรุณากรอกข้อมูลให้ถูกต้อง
@@ -66,11 +64,11 @@ export function AddSubService({
           >
             ค่าบริการ / 1 หน่วย
           </label>
-          {index === 0 && (
+          {/* {index === 0 && (
             <span className="text-red-600 text-base absolute left-[115] top-5 font-medium">
               *
             </span>
-          )}
+          )} */}
           <input
             type="number"
             id={`subservicePrice-${index}`}
@@ -89,9 +87,9 @@ export function AddSubService({
           >
             หน่วยการบริการ
           </label>
-          {index === 0 && (
+          {/* {index === 0 && (
             <span className="text-red-600 text-base absolute left-[94] top-5 font-medium">*</span>
-          )}
+          )} */}
           <input
             type="text"
             id={`subserviceUnit-${index}`}
