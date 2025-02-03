@@ -62,7 +62,7 @@
   - SQL Database: PostgreSQL (via Supabase)
   - Authentication: Supabase Auth
   - File Storage: Supabase Storage
-  - API Documentation: Google Docs + Swagger
+  - API Documentation: Google Docs + Swagger (access via /api-docs)
   - ERD Diagram: Diagrams.net
 
 ## Architecture
